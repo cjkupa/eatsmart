@@ -51,14 +51,14 @@ async function geocodeSuburb(suburb, city) {
 }
 
 async function searchRestaurants(lat, lon, radiusMeters) {
-  const url = `http://localhost:3001/api/places?lat=${lat}&lng=${lon}&radius=${radiusMeters}`;
+  const url = `https://eatsmart-production-7bcf.up.railway.app/api/places?lat=${lat}&lng=${lon}&radius=${radiusMeters}`;
   const res = await fetch(url);
   const data = await res.json();
   const places = data.results || [];
   // Fetch details for each place to get website/phone
   const detailed = await Promise.all(places.map(async (place) => {
     try {
-      const dr = await fetch(`http://localhost:3001/api/place-details?place_id=${place.place_id}`);
+      const dr = await fetch(`https://eatsmart-production-7bcf.up.railway.app/api/place-details?place_id=${place.place_id}`);
       const dd = await dr.json();
       const d = dd.result || {};
       return { ...place, website: d.website || null, formatted_phone_number: d.formatted_phone_number || null, opening_hours: d.opening_hours || null };
