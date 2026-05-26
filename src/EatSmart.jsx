@@ -280,7 +280,7 @@ export default function EatSmart() {
           <button
             key={tab.id}
             style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => { setActiveTab(tab.id); if (tab.id === "search") { setSearched(false); setResults([]); setError(null); } }}
           >
             <span style={{fontSize:22}}>{tab.emoji}</span>
             <span style={{fontSize:11,marginTop:2,fontWeight: activeTab === tab.id ? 700 : 400}}>{tab.label}</span>
