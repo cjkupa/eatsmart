@@ -1,0 +1,445 @@
+import { useState, useCallback } from "react";
+
+const NZ_CITIES = {
+  "Auckland": [
+    "Albany", "Avondale", "Balmoral", "Beachlands", "Birkenhead", "Blockhouse Bay",
+    "Botany Downs", "Browns Bay", "Clevedon", "Devonport", "East Tamaki", "Eden Terrace",
+    "Ellerslie", "Epsom", "Flat Bush", "Forrest Hill", "Freemans Bay", "Glen Eden",
+    "Glen Innes", "Glendowie", "Glenfield", "Grey Lynn", "Half Moon Bay", "Henderson",
+    "Herne Bay", "Hillsborough", "Howick", "Kingsland", "Kohimarama", "Lynfield",
+    "Manukau", "Manurewa", "Massey", "Mission Bay", "Morningside", "Mount Albert",
+    "Mount Eden", "Mount Roskill", "Mount Wellington", "Newmarket", "Newton",
+    "New Lynn", "Northcote", "Onehunga", "Orewa", "Pakuranga", "Panmure",
+    "Papakura", "Parnell", "Papatoetoe", "Penrose", "Point Chevalier", "Ponsonby",
+    "Pukekohe", "Remuera", "Royal Oak", "Sandringham", "Silverdale", "St Heliers",
+    "St Johns", "St Lukes", "Takapuna", "Titirangi", "Wairau Valley", "Warkworth",
+    "Waterview", "Wellsford", "Westmere", "Whangaparaoa",
+  ],
+  "Wellington": [
+    "Aro Valley", "Berhampore", "Brooklyn", "Churton Park", "Crofton Downs",
+    "Glenside", "Hataitai", "Highbury", "Houghton Bay", "Island Bay", "Johnsonville",
+    "Karori", "Kelburn", "Kilbirnie", "Khandallah", "Lambton", "Lyall Bay",
+    "Miramar", "Mornington", "Mount Cook", "Mount Victoria", "Newlands", "Newtown",
+    "Ngaio", "Northland", "Oriental Bay", "Owhiro Bay", "Petone", "Porirua",
+    "Roseneath", "Seatoun", "Strathmore Park", "Tawa", "Te Aro", "Thorndon",
+    "Upper Hutt", "Wadestown", "Waterloo", "Wilton", "Woodridge",
+  ],
+  "Christchurch": [
+    "Addington", "Aranui", "Avonhead", "Beckenham", "Belfast", "Bishopdale",
+    "Bryndwr", "Burnside", "Cashmere", "Cathedral Square", "Christchurch Central",
+    "Edgeware", "Ferrymead", "Fendalton", "Halswell", "Harewood", "Heathcote",
+    "Hillmorton", "Hornby", "Ilam", "Islington", "Linwood", "Lyttelton",
+    "Merivale", "New Brighton", "Northcote", "Papanui", "Parklands", "Phillipstown",
+    "Prebbleton", "Redcliffs", "Riccarton", "Rolleston", "Russley", "Shirley",
+    "Sockburn", "Spreydon", "St Albans", "St Martins", "Sumner", "Sydenham",
+    "Templeton", "Upper Riccarton", "Waltham", "Woolston",
+  ],
+  "Hamilton": [
+    "Beerescourt", "Chartwell", "Claudelands", "Dinsdale", "Fairfield", "Flagstaff",
+    "Frankton", "Hamilton Central", "Hamilton East", "Hamilton Lake", "Hillcrest",
+    "Huntington", "Melville", "Nawton", "Peacocke", "Rototuna", "Saint Andrews",
+    "Silverdale", "Southgate", "Temple View", "Te Rapa", "Whitiora",
+  ],
+  "Tauranga": [
+    "Arataki", "Bethlehem", "Brookfield", "Gate Pa", "Greerton", "Hairini",
+    "Judea", "Katikati", "Maungatapu", "Mount Maunganui", "Ohauiti",
+    "Otumoetai", "Papamoa", "Pyes Pa", "Tauranga Central", "Te Puke", "Welcome Bay",
+  ],
+  "Dunedin": [
+    "Andersons Bay", "Brockville", "Caversham", "Corstorphine", "Dunedin Central",
+    "East Taieri", "Forbury", "Green Island", "Halfway Bush", "Kaikorai",
+    "Liberton", "Maori Hill", "Mornington", "Mosgiel", "Musselburgh",
+    "North East Valley", "Otago Peninsula", "Pine Hill", "Port Chalmers",
+    "Ravensbourne", "Roslyn", "Saint Clair", "Saint Kilda", "Shiel Hill",
+    "South Dunedin", "Tainui", "Wakari",
+  ],
+  "Napier": [
+    "Ahuriri", "Bay View", "Bluff Hill", "Greenmeadows", "Hospital Hill",
+    "Maraenui", "Marewa", "Meeanee", "Napier Central", "Napier Hill",
+    "Onekawa", "Pirimai", "Taradale", "Tamatea", "Te Awa",
+  ],
+  "Hastings": [
+    "Akina", "Camberley", "Clive", "Flaxmere", "Frimley", "Hastings Central",
+    "Havelock North", "Irongate", "Karamu", "Mahora", "Mangateretere",
+    "Mayfair", "Omahu", "Parklands", "Raureka", "Southampton", "Te Awanga",
+    "Tomoana", "Whakatu", "Windsor Park",
+  ],
+  "New Plymouth": [
+    "Bell Block", "Blagdon", "Brooklands", "Fernbrook", "Fitzroy",
+    "Frankleigh Park", "Glen Avon", "Highlands Park", "Hurdon", "Marfell",
+    "Merrilands", "Moturoa", "New Plymouth Central", "Oakura", "Okato",
+    "Spotswood", "St Leonards", "Vogeltown", "Waitara", "Westown",
+  ],
+  "Palmerston North": [
+    "Aokautere", "Awapuni", "Bunnythorpe", "Cloverlea", "Hokowhitu",
+    "Kelvin Grove", "Longburn", "Milson", "Palmerston North Central",
+    "Roslyn", "Takaro", "Terrace End", "West End",
+  ],
+  "Nelson": [
+    "Atawhai", "Bishopdale", "Brook", "Enner Glynn", "Motueka", "Nayland",
+    "Nelson Central", "Richmond", "Stoke", "Tahunanui", "The Wood", "Toi Toi",
+    "Washington Valley",
+  ],
+  "Rotorua": [
+    "Fairy Springs", "Fenton Park", "Glenholme", "Hannahs Bay", "Holdens Bay",
+    "Koutu", "Lynmore", "Ngapuna", "Ohinemutu", "Rotorua Central",
+    "Springfield", "Sunnyvale", "Utuhina", "Victoria",
+  ],
+  "Invercargill": [
+    "Appleby", "Avenal", "Bluff", "Georgetown", "Gladstone", "Grasmere",
+    "Hawthorndale", "Invercargill Central", "Kew", "Newfield",
+    "North Invercargill", "Otatara", "Richmond", "Strathern", "Waikiwi", "Windsor",
+  ],
+  "Whanganui": [
+    "Aramoho", "Castlecliff", "Gonville", "Kai Iwi", "Marybank",
+    "Putiki", "Springvale", "St Johns Hill", "Whanganui Central", "Whanganui East",
+  ],
+  "Gisborne": [
+    "Elgin", "Gisborne Central", "Kaiti", "Lytton", "Mangapapa",
+    "Outer Kaiti", "Riverdale", "Tamarau", "Whataupoko",
+  ],
+  "Whangarei": [
+    "Abbey Caves", "Avenues", "Flanshaw", "Glenbervie", "Kamo",
+    "Maunu", "Morningside", "Onerahi", "Otangarei", "Tikipunga",
+    "Whangarei Central", "Whangarei Heads", "Woodhill",
+  ],
+};const CUISINES = [
+  "Any", "NZ Modern", "Italian", "Japanese", "Chinese", "Indian", "Thai",
+  "Mexican", "Korean", "Mediterranean", "American", "French", "Vietnamese",
+  "Middle Eastern", "Seafood", "Vegetarian", "Cafe", "Pizza", "Burgers",
+];
+
+const CUISINE_EMOJI = {
+  "italian": "🍝", "japanese": "🍣", "chinese": "🥢", "indian": "🍛",
+  "thai": "🌶️", "mexican": "🌮", "korean": "🍱", "mediterranean": "🥗",
+  "american": "🍔", "french": "🥐", "vietnamese": "🍜", "seafood": "🐟",
+  "vegetarian": "🥦", "cafe": "☕", "pizza": "🍕", "burger": "🍔",
+  "default": "🍽️",
+};
+
+function getCuisineEmoji(cuisine) {
+  if (!cuisine) return CUISINE_EMOJI.default;
+  const key = cuisine.toLowerCase();
+  for (const [k, v] of Object.entries(CUISINE_EMOJI)) {
+    if (key.includes(k)) return v;
+  }
+  return CUISINE_EMOJI.default;
+}
+
+async function geocodeSuburb(suburb, city) {
+  const queries = [
+    `${suburb}, ${city}, New Zealand`,
+    `${suburb}, New Zealand`,
+    `${city}, New Zealand`,
+  ];
+  for (const q of queries) {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=3&countrycodes=nz&addressdetails=1`;
+    try {
+      const res = await fetch(url, { headers: { "Accept-Language": "en", "User-Agent": "EatSmartNZ/1.0" } });
+      const data = await res.json();
+      if (data && data.length > 0) {
+        const best = data.find(d => d.display_name.toLowerCase().includes(city.toLowerCase())) || data[0];
+        return { lat: parseFloat(best.lat), lon: parseFloat(best.lon), displayName: best.display_name };
+      }
+    } catch (e) {}
+  }
+  return null;
+}
+
+async function searchRestaurants(lat, lon, radiusMeters = 800) {
+  const query = `
+    [out:json][timeout:20];
+    (
+      node["amenity"="restaurant"](around:${radiusMeters},${lat},${lon});
+      node["amenity"="cafe"](around:${radiusMeters},${lat},${lon});
+      node["amenity"="fast_food"](around:${radiusMeters},${lat},${lon});
+      node["amenity"="pub"]["food"](around:${radiusMeters},${lat},${lon});
+    );
+    out body;
+  `;
+  const res = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: query });
+  const data = await res.json();
+  return data.elements || [];
+}
+
+function formatRestaurant(el, index) {
+  const tags = el.tags || {};
+  const name = tags.name || "Unnamed Restaurant";
+  const cuisine = tags.cuisine || "";
+  const amenity = tags.amenity || "";
+  const opening = tags.opening_hours || null;
+  const phone = tags.phone || tags["contact:phone"] || null;
+  const website = tags.website || tags["contact:website"] || null;
+  const addr = [tags["addr:housenumber"], tags["addr:street"]].filter(Boolean).join(" ");
+  const tagsList = [
+    amenity === "cafe" ? "Café" : null,
+    amenity === "fast_food" ? "Fast Food" : null,
+    amenity === "pub" ? "Pub" : null,
+    tags["outdoor_seating"] === "yes" ? "Outdoor seating" : null,
+    tags["takeaway"] === "yes" ? "Takeaway" : null,
+    tags["diet:vegetarian"] === "yes" ? "Vegetarian friendly" : null,
+    tags["diet:vegan"] === "yes" ? "Vegan friendly" : null,
+  ].filter(Boolean).slice(0, 3);
+  return { id: el.id || index, name, emoji: getCuisineEmoji(cuisine || amenity), cuisine: cuisine.split(";")[0].trim(), amenity, address: addr || null, opening, phone, website, tags: tagsList };
+}
+
+function formatRadius(m) {
+  return m >= 1000 ? `${(m / 1000).toFixed(1)} km` : `${m} m`;
+}export default function EatSmart() {
+  const cities = Object.keys(NZ_CITIES);
+  const [budget, setBudget] = useState(30);
+  const [city, setCity] = useState("Napier");
+  const [suburb, setSuburb] = useState("Ahuriri");
+  const [cuisine, setCuisine] = useState("Any");
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [searched, setSearched] = useState(false);
+  const [saved, setSaved] = useState({});
+  const [locating, setLocating] = useState(false);
+  const [searchRadius, setSearchRadius] = useState(800);
+
+  function handleCityChange(newCity) {
+    setCity(newCity);
+    setSuburb(NZ_CITIES[newCity][0]);
+    setSearched(false);
+    setResults([]);
+    setError(null);
+  }
+
+  function handleLocate() {
+    setLocating(true);
+    if (!navigator.geolocation) { setLocating(false); return; }
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&countrycodes=nz`);
+          const data = await res.json();
+          const addr = data.address || {};
+          const detectedCity = addr.city || addr.town || addr.village || city;
+          const detectedSuburb = addr.suburb || addr.neighbourhood || addr.quarter || suburb;
+          const matchedCity = cities.find(c => c.toLowerCase() === detectedCity.toLowerCase()) || city;
+          setCity(matchedCity);
+          setSuburb(detectedSuburb);
+        } catch (e) {}
+        setLocating(false);
+      },
+      () => setLocating(false)
+    );
+  }
+
+  const handleSearch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setSearched(true);
+    setResults([]);
+    try {
+      const coords = await geocodeSuburb(suburb, city);
+      if (!coords) {
+        setError(`Couldn't find "${suburb}, ${city}". Try a nearby suburb.`);
+        setLoading(false);
+        return;
+      }
+      const radii = [800, 1200, 2000];
+      let spots = [];
+      let usedRadius = 800;
+      for (const r of radii) {
+        const elements = await searchRestaurants(coords.lat, coords.lon, r);
+        spots = elements.map((el, i) => formatRestaurant(el, i));
+        if (cuisine !== "Any") {
+          const q = cuisine.toLowerCase();
+          const filtered = spots.filter(s => s.cuisine.toLowerCase().includes(q));
+          if (filtered.length > 0) spots = filtered;
+        }
+        if (spots.length > 0) { usedRadius = r; break; }
+      }
+      setSearchRadius(usedRadius);
+      setResults(spots.slice(0, 20));
+    } catch (e) {
+      setError("Something went wrong. Please try again.");
+    }
+    setLoading(false);
+  }, [suburb, city, cuisine]);
+
+  function toggleSave(id) {
+    setSaved((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
+
+  const suburbs = NZ_CITIES[city] || [];
+
+  return (
+    <div style={styles.page}>
+      <header style={styles.header}>
+        <div style={styles.logo}>
+          <span style={styles.logoEat}>Eat</span>
+          <span style={styles.logoSmart}>Smart</span>
+          <span style={styles.logoIcon}>🍽️</span>
+        </div>
+        <p style={styles.tagline}>Find great food near you — on any budget</p>
+        <div style={styles.wave} />
+      </header>
+
+      <div style={styles.card}>
+        <div style={styles.locationRow}>
+          <button style={{ ...styles.locateBtn, opacity: locating ? 0.7 : 1 }} onClick={handleLocate}>
+            <span>📍</span>
+            <span style={{ color: "#c0392b", fontWeight: 600 }}>{locating ? "Locating…" : "Use my location"}</span>
+          </button>
+          <button style={styles.typeBtn}>Type it</button>
+        </div>
+
+        <div style={styles.row}>
+          <div style={styles.selectWrap}>
+            <select style={styles.select} value={city} onChange={(e) => handleCityChange(e.target.value)}>
+              {cities.map((c) => <option key={c}>{c}</option>)}
+            </select>
+            <span style={styles.chevron}>▾</span>
+          </div>
+          <div style={styles.selectWrap}>
+            <select style={styles.select} value={suburb} onChange={(e) => { setSuburb(e.target.value); setSearched(false); setError(null); }}>
+              {suburbs.map((s) => <option key={s}>{s}</option>)}
+            </select>
+            <span style={styles.chevron}>▾</span>
+          </div>
+        </div>
+
+        <div style={styles.row}>
+          <div style={styles.budgetWrap}>
+            <span style={{ color: "#c0392b", fontWeight: 700, fontSize: 18 }}>$</span>
+            <input type="number" value={budget} min={5} max={200} onChange={(e) => setBudget(Number(e.target.value))} style={styles.budgetInput} />
+          </div>
+          <div style={styles.selectWrap}>
+            <select style={styles.select} value={cuisine} onChange={(e) => setCuisine(e.target.value)}>
+              {CUISINES.map((c) => <option key={c}>{c}</option>)}
+            </select>
+            <span style={styles.chevron}>▾</span>
+          </div>
+        </div>
+
+        <button style={{ ...styles.cta, opacity: loading ? 0.7 : 1 }} onClick={handleSearch} disabled={loading}>
+          {loading ? "Searching…" : "Find somewhere to eat →"}
+        </button>
+      </div>
+
+      {searched && (
+        <div style={styles.results}>
+          {loading && (
+            <div style={styles.loadingWrap}>
+              <div style={styles.spinner} />
+              <p style={styles.loadingText}>Finding restaurants in {suburb}, {city}…</p>
+            </div>
+          )}
+          {error && <div style={styles.errorBox}>⚠️ {error}</div>}
+          {!loading && !error && results.length === 0 && (
+            <div style={styles.emptyBox}>😕 No restaurants found near {suburb}. Try a nearby suburb.</div>
+          )}
+          {!loading && results.length > 0 && (
+            <>
+              <div style={styles.resultsHeader}>
+                <span style={styles.resultsCount}><strong>{results.length} spots</strong> near you</span>
+                <span style={styles.resultsLocation}>📍 {suburb}, {city}</span>
+              </div>
+              <div style={styles.radiusBadge}>🔍 Searching within {formatRadius(searchRadius)} of {suburb}</div>
+            </>
+          )}
+          {!loading && results.map((spot) => (
+            <div key={spot.id} style={styles.spotCard}>
+              <div style={styles.spotTop}>
+                <div style={styles.spotLeft}>
+                  <span style={styles.spotEmoji}>{spot.emoji}</span>
+                  <div>
+                    <div style={styles.spotName}>{spot.name}</div>
+                    <div style={styles.spotMeta}>{spot.cuisine ? spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1) : spot.amenity.charAt(0).toUpperCase() + spot.amenity.slice(1)}</div>
+                    <span style={styles.badge}>✅ In budget</span>
+                  </div>
+                </div>
+                <div style={styles.spotPriceCol}>
+                  <span style={styles.dollarSign}>$</span>
+                  <span style={styles.perPerson}>per person</span>
+                </div>
+              </div>
+              {spot.address && <p style={styles.spotDesc}>📍 {spot.address}</p>}
+              {spot.opening && (
+                <div style={styles.dishRow}>
+                  <span style={styles.dishLabel}>🕐 Hours</span>
+                  <span style={{ fontSize: 12, color: "#555", textAlign: "right", maxWidth: "60%" }}>{spot.opening}</span>
+                </div>
+              )}
+              {spot.tags.length > 0 && (
+                <div style={styles.tagRow}>
+                  {spot.tags.map((t) => <span key={t} style={styles.tag}>{t}</span>)}
+                </div>
+              )}
+              <div style={styles.actionRow}>
+                {spot.website ? (
+                  <a href={spot.website} target="_blank" rel="noopener noreferrer" style={{ ...styles.openBtn, textDecoration: "none", textAlign: "center" }}>🌐 Website</a>
+                ) : spot.phone ? (
+                  <a href={`tel:${spot.phone}`} style={{ ...styles.openBtn, textDecoration: "none", textAlign: "center" }}>📞 {spot.phone}</a>
+                ) : (
+                  <button style={styles.openBtn}>👍 Still open?</button>
+                )}
+                <button style={{ ...styles.saveBtn, background: saved[spot.id] ? "#fde8e8" : "#fef2f2" }} onClick={() => toggleSave(spot.id)}>
+                  {saved[spot.id] ? "🩷 Saved" : "🤍 Save"}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+const styles = {
+  page: { fontFamily: "'Georgia', serif", background: "#f5f5f0", minHeight: "100vh", maxWidth: 480, margin: "0 auto", paddingBottom: 40 },
+  header: { background: "#c0392b", padding: "28px 24px 48px", position: "relative", overflow: "hidden" },
+  logo: { display: "flex", alignItems: "center", gap: 2, marginBottom: 6 },
+  logoEat: { fontFamily: "'Georgia', serif", fontWeight: 900, fontSize: 32, color: "#fff", letterSpacing: -1 },
+  logoSmart: { fontFamily: "'Georgia', serif", fontWeight: 900, fontSize: 32, color: "#f9c784", letterSpacing: -1 },
+  logoIcon: { fontSize: 28, marginLeft: 6 },
+  tagline: { color: "rgba(255,255,255,0.88)", fontSize: 14, margin: 0 },
+  wave: { position: "absolute", bottom: -2, left: 0, right: 0, height: 32, background: "#f5f5f0", borderRadius: "50% 50% 0 0 / 100% 100% 0 0" },
+  card: { background: "#fff", borderRadius: 20, margin: "0 16px", padding: "20px 16px", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", marginTop: -16, position: "relative", zIndex: 2, display: "flex", flexDirection: "column", gap: 12 },
+  locationRow: { display: "flex", gap: 10 },
+  locateBtn: { flex: 1, display: "flex", alignItems: "center", gap: 8, background: "#fef2f2", border: "none", borderRadius: 12, padding: "14px 16px", cursor: "pointer", fontSize: 15 },
+  typeBtn: { background: "#fff", border: "1.5px solid #e0e0e0", borderRadius: 12, padding: "14px 18px", cursor: "pointer", fontSize: 15, color: "#999", fontFamily: "inherit" },
+  row: { display: "flex", gap: 10 },
+  selectWrap: { flex: 1, position: "relative" },
+  select: { width: "100%", appearance: "none", border: "1.5px solid #e0e0e0", borderRadius: 12, padding: "13px 36px 13px 14px", fontSize: 15, background: "#fff", fontFamily: "inherit", cursor: "pointer", color: "#222", outline: "none" },
+  chevron: { position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#aaa", fontSize: 14 },
+  budgetWrap: { flex: 1, display: "flex", alignItems: "center", border: "1.5px solid #e0e0e0", borderRadius: 12, padding: "0 14px", gap: 4, background: "#fff" },
+  budgetInput: { border: "none", outline: "none", fontSize: 22, fontWeight: 700, width: "100%", fontFamily: "inherit", color: "#222", background: "transparent" },
+  cta: { background: "#c0392b", color: "#fff", border: "none", borderRadius: 14, padding: "18px", fontSize: 17, fontWeight: 700, fontFamily: "inherit", cursor: "pointer", letterSpacing: 0.3 },
+  results: { padding: "24px 16px 0" },
+  loadingWrap: { display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 0" },
+  spinner: { width: 36, height: 36, border: "3px solid #f0e0de", borderTop: "3px solid #c0392b", borderRadius: "50%", animation: "spin 0.8s linear infinite" },
+  loadingText: { marginTop: 14, color: "#888", fontSize: 14 },
+  errorBox: { background: "#fff3f3", border: "1px solid #f5c6c6", borderRadius: 12, padding: "16px", color: "#c0392b", fontSize: 14, marginBottom: 12 },
+  emptyBox: { background: "#fff", borderRadius: 12, padding: "24px", textAlign: "center", color: "#888", fontSize: 15 },
+  resultsHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
+  resultsCount: { fontSize: 17, color: "#222" },
+  resultsLocation: { fontSize: 13, color: "#888" },
+  radiusBadge: { fontSize: 12, color: "#aaa", marginBottom: 16, paddingLeft: 2 },
+  spotCard: { background: "#fff", borderRadius: 18, padding: "18px 16px", marginBottom: 14, boxShadow: "0 2px 12px rgba(0,0,0,0.06)" },
+  spotTop: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 },
+  spotLeft: { display: "flex", gap: 10, alignItems: "flex-start" },
+  spotEmoji: { fontSize: 32, lineHeight: 1 },
+  spotName: { fontWeight: 700, fontSize: 17, color: "#1a1a1a" },
+  spotMeta: { fontSize: 13, color: "#888", marginTop: 2 },
+  badge: { display: "inline-block", marginTop: 6, background: "#eafaf1", color: "#27ae60", borderRadius: 20, padding: "3px 10px", fontSize: 12, fontWeight: 600, border: "1px solid #a9dfbf" },
+  spotPriceCol: { display: "flex", flexDirection: "column", alignItems: "center" },
+  dollarSign: { color: "#c0392b", fontWeight: 700, fontSize: 26, lineHeight: 1 },
+  perPerson: { fontSize: 11, color: "#aaa", marginTop: 2 },
+  spotDesc: { fontSize: 13, color: "#777", margin: "0 0 10px" },
+  dishRow: { display: "flex", justifyContent: "space-between", alignItems: "center", background: "#fdf6ee", borderRadius: 10, padding: "10px 14px", marginBottom: 12 },
+  dishLabel: { fontWeight: 600, fontSize: 14, color: "#333" },
+  tagRow: { display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 },
+  tag: { background: "#f2f2f2", borderRadius: 20, padding: "5px 12px", fontSize: 12, color: "#555", fontWeight: 500 },
+  actionRow: { display: "flex", gap: 10 },
+  openBtn: { flex: 1, background: "#f0faf4", border: "none", borderRadius: 10, padding: "11px", fontSize: 14, fontWeight: 600, color: "#27ae60", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center" },
+  saveBtn: { flex: 1, border: "none", borderRadius: 10, padding: "11px", fontSize: 14, fontWeight: 600, color: "#c0392b", cursor: "pointer", fontFamily: "inherit" },
+};
+
+const styleEl = document.createElement("style");
+styleEl.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
+document.head.appendChild(styleEl);head -5 ~/eatsmart/eatsmart/src/EatSmart.jsx
