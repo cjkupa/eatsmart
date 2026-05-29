@@ -77,9 +77,9 @@ function formatRestaurant(place, index) {
 
 export default function EatSmart() {
   const cities = Object.keys(NZ_CITIES);
-  const [budget, setBudget] = useState(30);
-  const [city, setCity] = useState("Napier");
-  const [suburb, setSuburb] = useState("Ahuriri");
+  const [budget, setBudget] = useState(() => Number(localStorage.getItem("es_budget")) || 30);
+  const [city, setCity] = useState(() => localStorage.getItem("es_city") || "Auckland");
+  const [suburb, setSuburb] = useState(() => localStorage.getItem("es_suburb") || "Remuera");
   const [cuisine, setCuisine] = useState("Any");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -105,7 +105,14 @@ export default function EatSmart() {
     document.head.appendChild(link);
   }, []);
 
-  function handleCityChange(newCity) { setCity(newCity); setSuburb(NZ_CITIES[newCity][0]); setSearched(false); setResults([]); setError(null); }
+  function handleCityChange(newCity) {
+    setCity(newCity);
+    const newSuburb = NZ_CITIES[newCity][0];
+    setSuburb(newSuburb);
+    localStorage.setItem("es_city", newCity);
+    localStorage.setItem("es_suburb", newSuburb);
+    setSearched(false); setResults([]); setError(null);
+  }
 
   function handleLocate() {
     setLocating(true);
@@ -122,6 +129,8 @@ export default function EatSmart() {
           const matchedSuburb = NZ_CITIES[matchedCity].find(s => s.toLowerCase() === detectedSuburb.toLowerCase()) || NZ_CITIES[matchedCity][0];
           setCity(matchedCity);
           setSuburb(matchedSuburb);
+          localStorage.setItem("es_city", matchedCity);
+          localStorage.setItem("es_suburb", matchedSuburb);
           setSearched(false);
           setResults([]);
         } else {
@@ -210,6 +219,7 @@ export default function EatSmart() {
             : spot.phone
             ? <a href={"tel:"+spot.phone} style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>📞 Call</a>
             : <button style={S.openBtn}>👍 Looks good?</button>}
+          <a href={"https://www.google.com/maps/search/" + encodeURIComponent(spot.name + " " + (spot.address || ""))} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center",background:"#f0f7ff",color:"#1a73e8"}}>🗺️ Maps</a>
           <button style={{...S.saveBtn, background: saved[spot.id] ? "#fde8e8" : "#fef2f2"}} onClick={() => toggleSave(spot.id)}>{saved[spot.id] ? "🩷 Saved" : "🤍 Save"}</button>
         </div>
       </div>
@@ -246,7 +256,10 @@ export default function EatSmart() {
                     const typedCity = parts[1] || "";
                     const matchedCity = cities.find(c => c.toLowerCase() === typedCity.toLowerCase()) || cities.find(c => NZ_CITIES[c].some(s => s.toLowerCase() === typedSuburb.toLowerCase())) || city;
                     const matchedSuburb = NZ_CITIES[matchedCity].find(s => s.toLowerCase() === typedSuburb.toLowerCase()) || typedSuburb;
-                    setCity(matchedCity); setSuburb(matchedSuburb); setTypeMode(false); setTypeInput("");
+                    setCity(matchedCity); setSuburb(matchedSuburb);
+                    localStorage.setItem("es_city", matchedCity);
+                    localStorage.setItem("es_suburb", matchedSuburb);
+                    setTypeMode(false); setTypeInput("");
                   }
                 }}
               />
@@ -265,10 +278,10 @@ export default function EatSmart() {
           )}
           <div style={S.row}>
             <div style={S.selectWrap}><select style={S.select} value={city} onChange={e => handleCityChange(e.target.value)}>{cities.map(c => <option key={c}>{c}</option>)}</select><span style={S.chevron}>▾</span></div>
-            <div style={S.selectWrap}><select style={S.select} value={suburb} onChange={e => { setSuburb(e.target.value); setSearched(false); }}>{suburbs.map(s => <option key={s}>{s}</option>)}</select><span style={S.chevron}>▾</span></div>
+            <div style={S.selectWrap}><select style={S.select} value={suburb} onChange={e => { setSuburb(e.target.value); localStorage.setItem("es_suburb", e.target.value); setSearched(false); }}>{suburbs.map(s => <option key={s}>{s}</option>)}</select><span style={S.chevron}>▾</span></div>
           </div>
           <div style={S.row}>
-            <div style={S.budgetWrap}><span style={{color:"#e83a2a",fontWeight:700,fontSize:18}}>$</span><input type="number" value={budget} min={5} max={200} onChange={e => setBudget(Number(e.target.value))} style={S.budgetInput} /></div>
+            <div style={S.budgetWrap}><span style={{color:"#e83a2a",fontWeight:700,fontSize:18}}>$</span><input type="number" value={budget} min={5} max={200} onChange={e => { setBudget(Number(e.target.value)); localStorage.setItem("es_budget", e.target.value); }} style={S.budgetInput} /></div>
             <div style={S.selectWrap}><select style={S.select} value={cuisine} onChange={e => setCuisine(e.target.value)}>{CUISINES.map(c => <option key={c}>{c}</option>)}</select><span style={S.chevron}>▾</span></div>
           </div>
           <button style={{...S.cta, opacity: loading ? 0.7 : 1}} onClick={handleSearch} disabled={loading}>{loading ? "Searching…" : "Find somewhere to eat →"}</button>
