@@ -123,7 +123,11 @@ export default function EatSmart() {
         const res = await fetch("https://nominatim.openstreetmap.org/reverse?lat=" + pos.coords.latitude + "&lon=" + pos.coords.longitude + "&format=json&countrycodes=nz&addressdetails=1");
         const data = await res.json();
         const addr = data.address || {};
-        const detectedCity = addr.city || addr.town || addr.village || addr.county || "";
+        const rawCity = addr.city || addr.town || addr.village || addr.county || "";
+        // Auckland has many council area names - map them all to Auckland
+        const aucklandAreas = ["albert-eden","waitemata","henderson-massey","whau","great barrier","waitakere ranges","upper harbour","kaipatiki","devonport-takapuna","hibiscus and bays","howick","manurewa","papakura","franklin","otara-papatoetoe","mangere-otahuhu","maungakiekie-tamaki","orakei","puketapapa","waitematā","albert eden"];
+        const isAuckland = aucklandAreas.some(a => rawCity.toLowerCase().includes(a));
+        const detectedCity = isAuckland ? "Auckland" : rawCity;
         const matchedCity = cities.find(c => c.toLowerCase() === detectedCity.toLowerCase()) || null;
         if (matchedCity) {
           const detectedSuburb = addr.suburb || addr.neighbourhood || addr.hamlet || addr.village || "";
