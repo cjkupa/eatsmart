@@ -125,6 +125,7 @@ export default function EatSmart() {
         const addr = data.address || {};
         const rawCity = addr.city || addr.town || addr.village || addr.county || "";
         // Auckland has many council area names - map them all to Auckland
+        alert("DEBUG: " + JSON.stringify({city:addr.city,town:addr.town,county:addr.county,state_district:addr.state_district,suburb:addr.suburb,neighbourhood:addr.neighbourhood}));
         const allFields = [addr.city, addr.town, addr.village, addr.county, addr.state_district, addr.municipality, addr.region].filter(Boolean).join(" ").toLowerCase();
         const isAuckland = allFields.includes("auckland") || ["albert-eden","waitemata","henderson-massey","whau","waitakere","upper harbour","kaipatiki","devonport","hibiscus","howick","manurewa","papakura","otara","mangere","maungakiekie","orakei","puketapapa"].some(a => allFields.includes(a));
         const rawCity = addr.city || addr.town || addr.village || addr.county || "";
