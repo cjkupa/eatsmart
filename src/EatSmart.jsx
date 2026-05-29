@@ -69,10 +69,11 @@ function formatRestaurant(place, index) {
   const addr = place.vicinity || null;
   const website = place.website || null;
   const phone = place.formatted_phone_number || null;
-  const rating = place.rating ? `⭐ ${place.rating}` : null;
+  const rating = place.rating || null;
+  const ratingCount = place.user_ratings_total || null;
+  const priceLevel = (place.price_level !== undefined && place.price_level !== null) ? place.price_level : null;
   const isOpen = place.opening_hours ? (place.opening_hours.open_now ? "✅ Open now" : "❌ Closed") : null;
-  const tagsList = [rating, isOpen].filter(Boolean);
-  return { id: place.place_id || index, name, emoji: getCuisineEmoji(cuisine), cuisine, address: addr || null, phone, website, tags: tagsList, isOpen };
+  return { id: place.place_id || index, name, emoji: getCuisineEmoji(cuisine), cuisine, address: addr || null, phone, website, tags: [isOpen].filter(Boolean), isOpen, rating, ratingCount, priceLevel };
 }
 
 export default function EatSmart() {
@@ -138,7 +139,7 @@ export default function EatSmart() {
         }
       } catch(e) { alert("Location lookup failed. Please select manually."); }
       setLocating(false);
-    }, () => { alert("Location access denied. Please allow location access and try again."); setLocating(false); });
+    }, () => { setError("📍 Location access was denied. On iPhone go to Settings → Privacy → Location Services → Safari → While Using. On Android go to Settings → Apps → Chrome → Permissions → Location."); setLocating(false); });
   }
 
   const handleSearch = useCallback(async () => {
@@ -177,11 +178,7 @@ export default function EatSmart() {
   const suburbs = NZ_CITIES[city] || [];
   const openSpots = results.filter(r => r.isOpen && r.isOpen.includes("Open"));
   const savedSpots = results.filter(r => saved[r.id]);
-  const topRatedSpots = [...results].sort((a, b) => {
-    const ratingA = parseFloat((a.tags.find(t => t.startsWith("⭐")) || "⭐0").replace("⭐","")) || 0;
-    const ratingB = parseFloat((b.tags.find(t => t.startsWith("⭐")) || "⭐0").replace("⭐","")) || 0;
-    return ratingB - ratingA;
-  }).filter(r => r.tags.some(t => t.startsWith("⭐"))).slice(0, resultLimit);
+  const topRatedSpots = [...results].filter(r => r.rating).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, resultLimit);
 
   const SpotCard = ({ spot }) => {
     const meal = getMealSuggestion(spot.cuisine, budget);
@@ -193,6 +190,11 @@ export default function EatSmart() {
             <div>
               <div style={S.spotName}>{spot.name}</div>
               <div style={S.spotMeta}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
+              <div style={{display:"flex",gap:8,marginTop:4,alignItems:"center",flexWrap:"wrap"}}>
+                {spot.rating && <span style={{fontSize:13,fontWeight:600,color:"#f39c12"}}>⭐ {spot.rating}{spot.ratingCount ? <span style={{fontWeight:400,color:"#aaa",fontSize:11}}> ({spot.ratingCount})</span> : ""}</span>}
+                {spot.priceLevel !== null && spot.priceLevel !== undefined && <span style={{fontSize:13,fontWeight:700,color:"#27ae60"}}>{"$".repeat(spot.priceLevel + 1)}</span>}
+                {spot.isOpen && <span style={{fontSize:11,fontWeight:600,color: spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a"}}>{spot.isOpen}</span>}
+              </div>
             </div>
           </div>
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
