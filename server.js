@@ -25,7 +25,7 @@ app.get('/api/places', async (req, res) => {
 // Get place details (website, phone, hours)
 app.get('/api/place-details', async (req, res) => {
   const { place_id } = req.query;
-  const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&fields=name,website,formatted_phone_number,opening_hours,price_level&key=${GOOGLE_API_KEY}`;
+  const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place_id}&fields=name,website,formatted_phone_number,opening_hours,price_level,rating,user_ratings_total&key=${GOOGLE_API_KEY}`;
   try {
     const r = await fetch(url);
     const data = await r.json();
