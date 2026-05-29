@@ -243,7 +243,7 @@ export default function EatSmart() {
           <div style={S.wave} />
         </header>
         <div style={S.card}>
-          <button style={{background:"none",border:"none",color:"#e83a2a",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:"inherit",padding:"4px 0",textAlign:"left"}} onClick={handleLocate}>{locating ? "⏳ Detecting…" : "📍 Detect my location"}</button>
+
 
           <div style={S.row}>
             <div style={S.selectWrap}><select style={S.select} value={city} onChange={e => handleCityChange(e.target.value)}>{cities.map(c => <option key={c}>{c}</option>)}</select><span style={S.chevron}>▾</span></div>
