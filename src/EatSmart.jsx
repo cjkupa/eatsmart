@@ -243,46 +243,8 @@ export default function EatSmart() {
           <div style={S.wave} />
         </header>
         <div style={S.card}>
-          <div style={S.row}>
-            <button style={{...S.locateBtn, opacity: locating ? 0.7 : 1}} onClick={handleLocate}>
-              <span>📍</span><span style={{color:"#e83a2a",fontWeight:600}}>{locating ? "Locating…" : "Use my location"}</span>
-            </button>
-            <button style={{...S.typeBtn, background: typeMode ? "#fff5f4" : "#fff", color: typeMode ? "#e83a2a" : "#999", borderColor: typeMode ? "#e83a2a" : "#ede8e3"}} onClick={() => setTypeMode(t => !t)}>✏️ Type it</button>
-          </div>
-          {typeMode && (
-            <div style={{display:"flex",gap:8}}>
-              <input
-                style={{flex:1,border:"1.5px solid #e83a2a",borderRadius:14,padding:"13px 14px",fontSize:15,fontFamily:"inherit",outline:"none"}}
-                placeholder="e.g. Taradale, Napier..."
-                value={typeInput}
-                onChange={e => setTypeInput(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === "Enter" && typeInput.trim()) {
-                    const parts = typeInput.split(",").map(p => p.trim());
-                    const typedSuburb = parts[0];
-                    const typedCity = parts[1] || "";
-                    const matchedCity = cities.find(c => c.toLowerCase() === typedCity.toLowerCase()) || cities.find(c => NZ_CITIES[c].some(s => s.toLowerCase() === typedSuburb.toLowerCase())) || city;
-                    const matchedSuburb = NZ_CITIES[matchedCity].find(s => s.toLowerCase() === typedSuburb.toLowerCase()) || typedSuburb;
-                    setCity(matchedCity); setSuburb(matchedSuburb);
-                    localStorage.setItem("es_city", matchedCity);
-                    localStorage.setItem("es_suburb", matchedSuburb);
-                    setTypeMode(false); setTypeInput("");
-                  }
-                }}
-              />
-              <button style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:14,padding:"13px 18px",fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}
-                onClick={() => {
-                  if (typeInput.trim()) {
-                    const parts = typeInput.split(",").map(p => p.trim());
-                    const typedSuburb = parts[0];
-                    const typedCity = parts[1] || "";
-                    const matchedCity = cities.find(c => c.toLowerCase() === typedCity.toLowerCase()) || cities.find(c => NZ_CITIES[c].some(s => s.toLowerCase() === typedSuburb.toLowerCase())) || city;
-                    const matchedSuburb = NZ_CITIES[matchedCity].find(s => s.toLowerCase() === typedSuburb.toLowerCase()) || typedSuburb;
-                    setCity(matchedCity); setSuburb(matchedSuburb); setTypeMode(false); setTypeInput("");
-                  }
-                }}>Go</button>
-            </div>
-          )}
+          <button style={{background:"none",border:"none",color:"#e83a2a",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:"inherit",padding:"4px 0",textAlign:"left"}} onClick={handleLocate}>{locating ? "⏳ Detecting…" : "📍 Detect my location"}</button>
+
           <div style={S.row}>
             <div style={S.selectWrap}><select style={S.select} value={city} onChange={e => handleCityChange(e.target.value)}>{cities.map(c => <option key={c}>{c}</option>)}</select><span style={S.chevron}>▾</span></div>
             <div style={S.selectWrap}><select style={S.select} value={suburb} onChange={e => { setSuburb(e.target.value); localStorage.setItem("es_suburb", e.target.value); setSearched(false); }}>{suburbs.map(s => <option key={s}>{s}</option>)}</select><span style={S.chevron}>▾</span></div>
