@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useState, useCallback, useRef } from "react";
 import { getMealSuggestion } from "./mealData.js";
 
@@ -101,6 +101,9 @@ export default function EatSmart() {
   const [locating, setLocating] = useState(false);
   const [typeMode, setTypeMode] = useState(false);
   const [activeTab, setActiveTab] = useState("search");
+  const searchRef = useRef(null);
+  const openNowRef = useRef(null);
+  const savedRef = useRef(null);
   const [typeInput, setTypeInput] = useState("");
   const [searchRadius, setSearchRadius] = useState(800);
 
@@ -154,6 +157,7 @@ export default function EatSmart() {
 
   return (
     <div style={S.page}>
+      <div ref={searchRef} />
       <header style={S.header}>
         <div style={S.logo}><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span><span style={S.logoIcon}>🍽️</span></div>
         <p style={S.tagline}>Find great food near you — on any budget</p>
@@ -280,7 +284,21 @@ export default function EatSmart() {
           <button
             key={tab.id}
             style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              setActiveTab(tab.id);
+              if (tab.id === "search") {
+                searchRef.current?.scrollIntoView({ behavior: "smooth" });
+              } else if (tab.id === "opennow") {
+                openNowRef.current?.scrollIntoView({ behavior: "smooth" });
+              } else if (tab.id === "saved") {
+                savedRef.current?.scrollIntoView({ behavior: "smooth" });
+              } else if (tab.id === "map") {
+                const query = results.length > 0
+                  ? results.map(r => r.name).slice(0,3).join(" OR ") + " " + suburb + " " + city + " New Zealand"
+                  : "restaurants near " + suburb + " " + city + " New Zealand";
+                window.open("https://www.google.com/maps/search/" + encodeURIComponent(query), "_blank");
+              }
+            }}
           >
             <span style={{fontSize:22}}>{tab.emoji}</span>
             <span style={{fontSize:11,marginTop:2,fontWeight: activeTab === tab.id ? 700 : 400}}>{tab.label}</span>
@@ -289,8 +307,8 @@ export default function EatSmart() {
       </nav>
 
       {/* Saved Tab */}
-      {activeTab === "saved" && (
-        <div style={{...S.results, paddingTop:16}}>
+      {(
+        <div ref={savedRef} style={{...S.results, paddingTop:16}}>
           <div style={{fontWeight:700,fontSize:18,color:"#1a1a1a",marginBottom:16}}>❤️ Saved Places</div>
           {Object.keys(saved).filter(id => saved[id]).length === 0
             ? <div style={S.emptyBox}>No saved places yet — heart a restaurant to save it!</div>
@@ -321,8 +339,8 @@ export default function EatSmart() {
       )}
 
       {/* Open Now Tab */}
-      {activeTab === "opennow" && (
-        <div style={{...S.results, paddingTop:16}}>
+      {(
+        <div ref={openNowRef} style={{...S.results, paddingTop:16}}>
           <div style={{fontWeight:700,fontSize:18,color:"#1a1a1a",marginBottom:4}}>🕐 Open Right Now</div>
           <div style={{fontSize:13,color:"#888",marginBottom:16}}>Showing places currently open near {suburb}, {city}</div>
           {!searched || results.length === 0
@@ -368,7 +386,7 @@ export default function EatSmart() {
       )}
 
       {/* Map Tab */}
-      {activeTab === "map" && (
+      {false && (
         <div style={{paddingTop:16,paddingBottom:100}}>
           <div style={{fontWeight:700,fontSize:18,color:"#1a1a1a",marginBottom:4,padding:"0 16px"}}>🗺️ Map View</div>
           <div style={{fontSize:13,color:"#888",marginBottom:12,padding:"0 16px"}}>
