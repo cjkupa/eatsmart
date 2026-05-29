@@ -128,8 +128,7 @@ export default function EatSmart() {
 
         const allFields = [addr.city, addr.town, addr.village, addr.county, addr.state_district, addr.municipality, addr.region].filter(Boolean).join(" ").toLowerCase();
         const isAuckland = allFields.includes("auckland") || ["albert-eden","waitemata","henderson-massey","whau","waitakere","upper harbour","kaipatiki","devonport","hibiscus","howick","manurewa","papakura","otara","mangere","maungakiekie","orakei","puketapapa"].some(a => allFields.includes(a));
-        const rawCity = addr.city || addr.town || addr.village || addr.county || "";
-        const detectedCity = isAuckland ? "Auckland" : rawCity;
+        const detectedCity = isAuckland ? "Auckland" : (addr.city || addr.town || addr.village || addr.county || "");
         const matchedCity = cities.find(c => c.toLowerCase() === detectedCity.toLowerCase()) || null;
         if (matchedCity) {
           const detectedSuburb = addr.suburb || addr.neighbourhood || addr.hamlet || addr.village || "";
