@@ -91,10 +91,12 @@ export default function EatSmart() {
   const [typeMode, setTypeMode] = useState(false);
   const [typeInput, setTypeInput] = useState("");
   const [activeTab, setActiveTab] = useState("search");
+  const [resultLimit, setResultLimit] = useState(5);
 
   const searchRef = useRef(null);
   const openNowRef = useRef(null);
   const savedRef = useRef(null);
+  const topRatedRef = useRef(null);
 
   useEffect(() => {
     const link = document.createElement('link');
@@ -158,17 +160,19 @@ export default function EatSmart() {
       openNowRef.current?.scrollIntoView({ behavior: "smooth" });
     } else if (tabId === "saved") {
       savedRef.current?.scrollIntoView({ behavior: "smooth" });
-    } else if (tabId === "map") {
-      const query = results.length > 0
-        ? "restaurants near " + suburb + " " + city + " New Zealand"
-        : "restaurants near " + city + " New Zealand";
-      window.open("https://www.google.com/maps/search/" + encodeURIComponent(query), "_blank");
+    } else if (tabId === "toprated") {
+      topRatedRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }
 
   const suburbs = NZ_CITIES[city] || [];
   const openSpots = results.filter(r => r.isOpen && r.isOpen.includes("Open"));
   const savedSpots = results.filter(r => saved[r.id]);
+  const topRatedSpots = [...results].sort((a, b) => {
+    const ratingA = parseFloat((a.tags.find(t => t.startsWith("⭐")) || "⭐0").replace("⭐","")) || 0;
+    const ratingB = parseFloat((b.tags.find(t => t.startsWith("⭐")) || "⭐0").replace("⭐","")) || 0;
+    return ratingB - ratingA;
+  }).filter(r => r.tags.some(t => t.startsWith("⭐"))).slice(0, resultLimit);
 
   const SpotCard = ({ spot }) => {
     const meal = getMealSuggestion(spot.cuisine, budget);
@@ -294,8 +298,19 @@ export default function EatSmart() {
           {!loading && results.length > 0 && <>
             <div style={S.resultsHeader}><span style={S.resultsCount}><strong>{results.length} spots</strong> near you</span><span style={S.resultsLocation}>📍 {suburb}, {city}</span></div>
             <div style={S.radiusBadge}>🔍 Within {searchRadius >= 1000 ? (searchRadius/1000).toFixed(1)+"km" : searchRadius+"m"} of {suburb}</div>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
+              <span style={{fontSize:13,color:"#888"}}>Show:</span>
+              {[5,10,20].map(n => (
+                <button key={n} onClick={() => setResultLimit(n)} style={{background: resultLimit===n ? "#e83a2a" : "#fff", color: resultLimit===n ? "#fff" : "#888", border:"1.5px solid", borderColor: resultLimit===n ? "#e83a2a" : "#ede8e3", borderRadius:20, padding:"4px 14px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit"}}>{n}</button>
+              ))}
+            </div>
           </>}
-          {!loading && results.map(spot => <SpotCard key={spot.id} spot={spot} />)}
+          {!loading && results.slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
+          {!loading && results.length > resultLimit && (
+            <div style={{textAlign:"center",padding:"8px 0 16px"}}>
+              <button onClick={() => setResultLimit(r => Math.min(r + 5, 20))} style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:20,padding:"10px 24px",fontSize:14,fontWeight:600,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit"}}>Show more results ↓</button>
+            </div>
+          )}
         </div>
       )}
 
@@ -320,13 +335,25 @@ export default function EatSmart() {
         }
       </div>
 
+      {/* TOP RATED SECTION */}
+      <div ref={topRatedRef} style={{...S.results, paddingTop:24, borderTop:"2px solid #f0ebe6", marginTop:8}}>
+        <div style={{fontWeight:800,fontSize:20,color:"#1a1a1a",marginBottom:4}}>⭐ Top Rated Nearby</div>
+        <div style={{fontSize:13,color:"#aaa",marginBottom:16}}>{suburb}, {city}</div>
+        {!searched
+          ? <div style={S.emptyBox}>🔍 Do a search first to see top rated places!</div>
+          : topRatedSpots.length === 0
+          ? <div style={S.emptyBox}>😕 No rated places found in your last search.</div>
+          : topRatedSpots.map(spot => <SpotCard key={spot.id} spot={spot} />)
+        }
+      </div>
+
       {/* BOTTOM NAV */}
       <nav style={S.bottomNav}>
         {[
-          { id: "search", emoji: "🔍", label: "Search" },
+          { id: "search", emoji: "🏠", label: "Home" },
           { id: "opennow", emoji: "🕐", label: "Open Now" },
           { id: "saved", emoji: "❤️", label: "Saved" },
-          { id: "map", emoji: "🗺️", label: "Map" },
+          { id: "toprated", emoji: "⭐", label: "Top Rated" },
         ].map(tab => (
           <button key={tab.id} style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}} onClick={() => handleTabPress(tab.id)}>
             <span style={{fontSize:22}}>{tab.emoji}</span>
