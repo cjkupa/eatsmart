@@ -143,7 +143,7 @@ export default function EatSmart() {
         } else {
           alert("Could not detect your NZ city. Please select manually.");
         }
-      } catch(e) { alert("Location lookup failed. Please select manually."); }
+      } catch(e) { alert("ERROR: " + e.message + " | coords: " + pos.coords.latitude + "," + pos.coords.longitude); }
       setLocating(false);
     }, () => { setError("📍 Location access was denied. On iPhone go to Settings → Privacy → Location Services → Safari → While Using. On Android go to Settings → Apps → Chrome → Permissions → Location."); setLocating(false); });
   }
