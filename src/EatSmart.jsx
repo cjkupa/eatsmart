@@ -125,7 +125,7 @@ export default function EatSmart() {
         const addr = data.address || {};
         const rawCity = addr.city || addr.town || addr.village || addr.county || "";
         // Auckland has many council area names - map them all to Auckland
-        alert("ADDR: " + JSON.stringify(addr));
+
         const allFields = [addr.city, addr.town, addr.village, addr.county, addr.state_district, addr.municipality, addr.region].filter(Boolean).join(" ").toLowerCase();
         const isAuckland = allFields.includes("auckland") || ["albert-eden","waitemata","henderson-massey","whau","waitakere","upper harbour","kaipatiki","devonport","hibiscus","howick","manurewa","papakura","otara","mangere","maungakiekie","orakei","puketapapa"].some(a => allFields.includes(a));
         const rawCity = addr.city || addr.town || addr.village || addr.county || "";
@@ -143,7 +143,7 @@ export default function EatSmart() {
         } else {
           alert("Could not detect your NZ city. Please select manually.");
         }
-      } catch(e) { alert("ERROR: " + e.message + " | coords: " + pos.coords.latitude + "," + pos.coords.longitude); }
+      } catch(e) { setError("Could not detect location. Please select your city and suburb manually."); }
       setLocating(false);
     }, () => { setError("📍 Location access was denied. On iPhone go to Settings → Privacy → Location Services → Safari → While Using. On Android go to Settings → Apps → Chrome → Permissions → Location."); setLocating(false); });
   }
