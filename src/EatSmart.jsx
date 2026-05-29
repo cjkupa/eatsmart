@@ -215,7 +215,7 @@ export default function EatSmart() {
         </div>
         <button style={{...S.cta, opacity: loading ? 0.7 : 1}} onClick={handleSearch} disabled={loading}>{loading ? "Searching…" : "Find somewhere to eat →"}</button>
       </div>
-      {activeTab === "search" && !searched && (
+      {!searched && (
         <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
           <div style={{fontSize:72,marginBottom:16}}>🍽️</div>
           <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:8}}>What are you hungry for?</div>
@@ -227,7 +227,7 @@ export default function EatSmart() {
           </div>
         </div>
       )}
-      {activeTab === "search" && searched && (
+      {searched && (
         <div style={S.results}>
           {loading && <div style={S.loadingWrap}><div style={S.spinner}/><p style={S.loadingText}>Finding restaurants in {suburb}, {city}…</p></div>}
           {error && <div style={S.errorBox}>⚠️ {error}</div>}
@@ -280,7 +280,7 @@ export default function EatSmart() {
           <button
             key={tab.id}
             style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}}
-            onClick={() => { setActiveTab(tab.id); if (tab.id === "search") { setSearched(false); setResults([]); setError(null); } }}
+            onClick={() => setActiveTab(tab.id)}
           >
             <span style={{fontSize:22}}>{tab.emoji}</span>
             <span style={{fontSize:11,marginTop:2,fontWeight: activeTab === tab.id ? 700 : 400}}>{tab.label}</span>
