@@ -125,8 +125,9 @@ export default function EatSmart() {
         const addr = data.address || {};
         const rawCity = addr.city || addr.town || addr.village || addr.county || "";
         // Auckland has many council area names - map them all to Auckland
-        const aucklandAreas = ["albert-eden","waitemata","henderson-massey","whau","great barrier","waitakere ranges","upper harbour","kaipatiki","devonport-takapuna","hibiscus and bays","howick","manurewa","papakura","franklin","otara-papatoetoe","mangere-otahuhu","maungakiekie-tamaki","orakei","puketapapa","waitematā","albert eden"];
-        const isAuckland = aucklandAreas.some(a => rawCity.toLowerCase().includes(a));
+        const allFields = [addr.city, addr.town, addr.village, addr.county, addr.state_district, addr.municipality, addr.region].filter(Boolean).join(" ").toLowerCase();
+        const isAuckland = allFields.includes("auckland") || ["albert-eden","waitemata","henderson-massey","whau","waitakere","upper harbour","kaipatiki","devonport","hibiscus","howick","manurewa","papakura","otara","mangere","maungakiekie","orakei","puketapapa"].some(a => allFields.includes(a));
+        const rawCity = addr.city || addr.town || addr.village || addr.county || "";
         const detectedCity = isAuckland ? "Auckland" : rawCity;
         const matchedCity = cities.find(c => c.toLowerCase() === detectedCity.toLowerCase()) || null;
         if (matchedCity) {
