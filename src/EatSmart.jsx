@@ -382,11 +382,7 @@ export default function EatSmart() {
 
       {/* FOOTER */}
       <div style={{textAlign:"center",padding:"24px 16px 8px",borderTop:"1px solid #f0ebe6",marginTop:16}}>
-        <div style={{background:"#fff5f4",border:"1.5px solid #ffd5d0",borderRadius:16,padding:"16px",marginBottom:12}}>
-          <p style={{fontSize:14,fontWeight:700,color:"#e83a2a",margin:"0 0 4px"}}>💰 Know what something costs here?</p>
-          <p style={{fontSize:12,color:"#888",margin:"0 0 10px"}}>Help other Kiwis by submitting real prices you've paid!</p>
-          <button onClick={() => { setPriceModal({name:""}); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{display:"inline-block",background:"#e83a2a",color:"#fff",borderRadius:20,padding:"8px 20px",fontSize:13,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit"}}>Submit a real price →</button>
-        </div>
+
         <div style={{background:"#f8f8f8",border:"1.5px solid #ede8e3",borderRadius:16,padding:"16px",marginBottom:12}}>
           <p style={{fontSize:14,fontWeight:700,color:"#333",margin:"0 0 4px"}}>✉️ Missing a restaurant?</p>
           <p style={{fontSize:12,color:"#888",margin:"0 0 10px"}}>Let us know and we'll get it added!</p>
