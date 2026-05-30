@@ -329,6 +329,13 @@ export default function EatSmart() {
         }
       </div>
 
+      {/* FOOTER */}
+      <div style={{textAlign:"center",padding:"24px 16px 8px",borderTop:"1px solid #f0ebe6",marginTop:16}}>
+        <p style={{fontSize:13,color:"#aaa",margin:"0 0 6px"}}>Missing a restaurant or got feedback?</p>
+        <a href="mailto:eatsmartapp@gmail.com" style={{fontSize:13,fontWeight:600,color:"#e83a2a",textDecoration:"none"}}>✉️ Let us know</a>
+        <p style={{fontSize:11,color:"#ccc",marginTop:12}}>© 2025 EatSmart NZ · eatsmart.co.nz</p>
+      </div>
+
       {/* BOTTOM NAV */}
       <nav style={S.bottomNav}>
         {[
