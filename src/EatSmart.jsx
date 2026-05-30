@@ -114,6 +114,10 @@ export default function EatSmart() {
   const [typeMode, setTypeMode] = useState(false);
   const [typeInput, setTypeInput] = useState("");
   const [activeTab, setActiveTab] = useState("search");
+  const [priceModal, setPriceModal] = useState(null);
+  const [priceForm, setPriceForm] = useState({ dish: "", price: "", date: new Date().toISOString().split('T')[0] });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [resultLimit, setResultLimit] = useState(5);
 
   const searchRef = useRef(null);
@@ -126,6 +130,10 @@ export default function EatSmart() {
     link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap';
     link.rel = 'stylesheet';
     document.head.appendChild(link);
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
+    script.onload = () => window.emailjs.init('ADleKoFQQMlb9OHSw');
+    document.head.appendChild(script);
   }, []);
 
   function handleCityChange(newCity) {
@@ -189,6 +197,23 @@ export default function EatSmart() {
 
   function toggleSave(id) { setSaved(prev => ({ ...prev, [id]: !prev[id] })); }
 
+  async function handlePriceSubmit() {
+    if (!priceForm.dish || !priceForm.price) return;
+    setSubmitting(true);
+    try {
+      await window.emailjs.send('service_e66oqlm', 'template_wla193g', {
+        restaurant_name: priceModal?.name || '',
+        suburb_city: suburb + ', ' + city,
+        dish: priceForm.dish,
+        price: priceForm.price,
+        date: priceForm.date,
+      });
+      setSubmitSuccess(true);
+      setTimeout(() => { setPriceModal(null); setSubmitSuccess(false); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }, 2000);
+    } catch(e) { alert("Failed to submit. Please try again."); }
+    setSubmitting(false);
+  }
+
   function handleTabPress(tabId) {
     setActiveTab(tabId);
     if (tabId === "search") {
@@ -233,7 +258,7 @@ export default function EatSmart() {
           <div style={{background:"#eafaf1",border:"1px solid #a9dfbf",borderRadius:12,padding:"8px 12px",marginBottom:10}}>
             <div style={{fontWeight:700,fontSize:14,color:"#27ae60"}}>{meal.emoji} {meal.dish}</div>
             <div style={{fontSize:12,color:"#888",marginTop:2}}>Est. price: {meal.typical}</div>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfAJiZq0I82rrrJ2VEz9ziTjMqADIbPgmoc_Ahqi_QnPyoPrg/viewform" target="_blank" rel="noopener noreferrer" style={{display:"inline-block",marginTop:6,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"4px 12px",fontSize:12,fontWeight:700,textDecoration:"none"}}>💰 Submit real price</a>
+            <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{display:"inline-block",marginTop:6,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"4px 12px",fontSize:12,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit"}}>💰 Submit real price</button>
           </div>
         ) : (
           <div style={{background:"#fff3f3",border:"1px solid #f5c6c6",borderRadius:12,padding:"8px 12px",marginBottom:10}}>
@@ -360,7 +385,7 @@ export default function EatSmart() {
         <div style={{background:"#fff5f4",border:"1.5px solid #ffd5d0",borderRadius:16,padding:"16px",marginBottom:12}}>
           <p style={{fontSize:14,fontWeight:700,color:"#e83a2a",margin:"0 0 4px"}}>💰 Know what something costs here?</p>
           <p style={{fontSize:12,color:"#888",margin:"0 0 10px"}}>Help other Kiwis by submitting real prices you've paid!</p>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfAJiZq0I82rrrJ2VEz9ziTjMqADIbPgmoc_Ahqi_QnPyoPrg/viewform" target="_blank" rel="noopener noreferrer" style={{display:"inline-block",background:"#e83a2a",color:"#fff",borderRadius:20,padding:"8px 20px",fontSize:13,fontWeight:700,textDecoration:"none"}}>Submit a real price →</a>
+          <button onClick={() => { setPriceModal({name:""}); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{display:"inline-block",background:"#e83a2a",color:"#fff",borderRadius:20,padding:"8px 20px",fontSize:13,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit"}}>Submit a real price →</button>
         </div>
         <div style={{background:"#f8f8f8",border:"1.5px solid #ede8e3",borderRadius:16,padding:"16px",marginBottom:12}}>
           <p style={{fontSize:14,fontWeight:700,color:"#333",margin:"0 0 4px"}}>✉️ Missing a restaurant?</p>
@@ -369,6 +394,46 @@ export default function EatSmart() {
         </div>
         <p style={{fontSize:11,color:"#ccc",marginTop:12}}>© 2025 EatSmart NZ · eatsmart.co.nz</p>
       </div>
+
+      {/* PRICE SUBMISSION MODAL */}
+      {priceModal && (
+        <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
+          <div style={{background:"#fff",borderRadius:24,padding:"24px",width:"100%",maxWidth:420,boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}>
+            {submitSuccess ? (
+              <div style={{textAlign:"center",padding:"20px 0"}}>
+                <div style={{fontSize:48,marginBottom:12}}>🎉</div>
+                <div style={{fontWeight:800,fontSize:20,color:"#27ae60"}}>Thanks!</div>
+                <div style={{fontSize:14,color:"#888",marginTop:8}}>Your price has been submitted — you're helping Kiwis eat smart!</div>
+              </div>
+            ) : (
+              <>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                  <div style={{fontWeight:800,fontSize:18,color:"#1a1a1a"}}>💰 Submit Real Price</div>
+                  <button onClick={() => setPriceModal(null)} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#aaa"}}>✕</button>
+                </div>
+                {priceModal.name && <div style={{background:"#faf9f7",borderRadius:12,padding:"10px 14px",marginBottom:16,fontWeight:600,fontSize:15,color:"#333"}}>🍽️ {priceModal.name}</div>}
+                <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                  <div>
+                    <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>What did you order?</label>
+                    <input value={priceForm.dish} onChange={e => setPriceForm(p => ({...p, dish: e.target.value}))} placeholder="e.g. 2 pieces fish + chips" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
+                  </div>
+                  <div>
+                    <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>How much did you pay? ($)</label>
+                    <input type="number" value={priceForm.price} onChange={e => setPriceForm(p => ({...p, price: e.target.value}))} placeholder="e.g. 14" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
+                  </div>
+                  <div>
+                    <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>Date visited</label>
+                    <input type="date" value={priceForm.date} onChange={e => setPriceForm(p => ({...p, date: e.target.value}))} style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
+                  </div>
+                  <button onClick={handlePriceSubmit} disabled={submitting || !priceForm.dish || !priceForm.price} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:14,padding:"16px",fontSize:16,fontWeight:700,cursor:"pointer",fontFamily:"inherit",opacity: submitting || !priceForm.dish || !priceForm.price ? 0.6 : 1}}>
+                    {submitting ? "Submitting…" : "Submit Price 🙌"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* BOTTOM NAV */}
       <nav style={S.bottomNav}>
