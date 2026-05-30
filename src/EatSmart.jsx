@@ -232,7 +232,8 @@ export default function EatSmart() {
         {meal.canAfford ? (
           <div style={{background:"#eafaf1",border:"1px solid #a9dfbf",borderRadius:12,padding:"8px 12px",marginBottom:10}}>
             <div style={{fontWeight:700,fontSize:14,color:"#27ae60"}}>{meal.emoji} {meal.dish}</div>
-            <div style={{fontSize:12,color:"#888",marginTop:2}}>Est. price: {meal.typical} · <a href="https://docs.google.com/forms/d/e/1FAIpQLSfAJiZq0I82rrrJ2VEz9ziTjMqADIbPgmoc_Ahqi_QnPyoPrg/viewform" target="_blank" rel="noopener noreferrer" style={{color:"#e83a2a",textDecoration:"none",fontWeight:600}}>Submit real price</a></div>
+            <div style={{fontSize:12,color:"#888",marginTop:2}}>Est. price: {meal.typical}</div>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfAJiZq0I82rrrJ2VEz9ziTjMqADIbPgmoc_Ahqi_QnPyoPrg/viewform" target="_blank" rel="noopener noreferrer" style={{display:"inline-block",marginTop:6,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"4px 12px",fontSize:12,fontWeight:700,textDecoration:"none"}}>💰 Submit real price</a>
           </div>
         ) : (
           <div style={{background:"#fff3f3",border:"1px solid #f5c6c6",borderRadius:12,padding:"8px 12px",marginBottom:10}}>
@@ -356,10 +357,16 @@ export default function EatSmart() {
 
       {/* FOOTER */}
       <div style={{textAlign:"center",padding:"24px 16px 8px",borderTop:"1px solid #f0ebe6",marginTop:16}}>
-        <p style={{fontSize:13,color:"#aaa",margin:"0 0 6px"}}>Know what something actually costs here?</p>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfAJiZq0I82rrrJ2VEz9ziTjMqADIbPgmoc_Ahqi_QnPyoPrg/viewform" target="_blank" rel="noopener noreferrer" style={{fontSize:13,fontWeight:600,color:"#e83a2a",textDecoration:"none"}}>💰 Submit a real price</a>
-        <p style={{fontSize:13,color:"#aaa",margin:"12px 0 6px"}}>Missing a restaurant or got feedback?</p>
-        <a href="mailto:eatsmartapp@gmail.com" style={{fontSize:13,fontWeight:600,color:"#e83a2a",textDecoration:"none"}}>✉️ Let us know</a>
+        <div style={{background:"#fff5f4",border:"1.5px solid #ffd5d0",borderRadius:16,padding:"16px",marginBottom:12}}>
+          <p style={{fontSize:14,fontWeight:700,color:"#e83a2a",margin:"0 0 4px"}}>💰 Know what something costs here?</p>
+          <p style={{fontSize:12,color:"#888",margin:"0 0 10px"}}>Help other Kiwis by submitting real prices you've paid!</p>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfAJiZq0I82rrrJ2VEz9ziTjMqADIbPgmoc_Ahqi_QnPyoPrg/viewform" target="_blank" rel="noopener noreferrer" style={{display:"inline-block",background:"#e83a2a",color:"#fff",borderRadius:20,padding:"8px 20px",fontSize:13,fontWeight:700,textDecoration:"none"}}>Submit a real price →</a>
+        </div>
+        <div style={{background:"#f8f8f8",border:"1.5px solid #ede8e3",borderRadius:16,padding:"16px",marginBottom:12}}>
+          <p style={{fontSize:14,fontWeight:700,color:"#333",margin:"0 0 4px"}}>✉️ Missing a restaurant?</p>
+          <p style={{fontSize:12,color:"#888",margin:"0 0 10px"}}>Let us know and we'll get it added!</p>
+          <a href="mailto:eatsmartapp@gmail.com" style={{display:"inline-block",background:"#333",color:"#fff",borderRadius:20,padding:"8px 20px",fontSize:13,fontWeight:700,textDecoration:"none"}}>Get in touch →</a>
+        </div>
         <p style={{fontSize:11,color:"#ccc",marginTop:12}}>© 2025 EatSmart NZ · eatsmart.co.nz</p>
       </div>
 
