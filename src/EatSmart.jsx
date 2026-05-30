@@ -164,7 +164,7 @@ export default function EatSmart() {
     try {
       const coords = await geocodeSuburb(suburb, city);
       if (!coords) { setError("Couldn't find " + suburb + ", " + city + ". Try a nearby suburb."); setLoading(false); return; }
-      const radii = suburb === "All Suburbs" ? [3000, 5000] : [800, 1500, 2500];
+      const radii = suburb === "All Suburbs" ? [2000, 3000] : [600, 1000, 1500];
       let spots = []; let usedRadius = 800;
       for (const r of radii) {
         const elements = await searchRestaurants(coords.lat, coords.lon, r);
