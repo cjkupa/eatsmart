@@ -418,8 +418,11 @@ export default function EatSmart() {
                     <input value={priceForm.dish} onChange={e => setPriceForm(p => ({...p, dish: e.target.value}))} placeholder="e.g. 2 pieces fish + chips" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
                   </div>
                   <div>
-                    <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>How much did you pay? ($)</label>
-                    <input type="number" value={priceForm.price} onChange={e => setPriceForm(p => ({...p, price: e.target.value}))} placeholder="e.g. 14" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
+                    <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>How much did you pay?</label>
+                    <div style={{display:"flex",alignItems:"center",border:"1.5px solid #ede8e3",borderRadius:12,overflow:"hidden",background:"#fff"}}>
+                      <span style={{padding:"12px 14px",fontWeight:700,fontSize:18,color:"#e83a2a",background:"#fff5f4"}}>$</span>
+                      <input type="number" value={priceForm.price} onChange={e => setPriceForm(p => ({...p, price: e.target.value}))} placeholder="14" style={{flex:1,border:"none",padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none"}} />
+                    </div>
                   </div>
                   <div>
                     <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>Date visited</label>
