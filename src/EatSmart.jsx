@@ -40,7 +40,9 @@ function getCuisineEmoji(cuisine) {
 }
 
 async function geocodeSuburb(suburb, city) {
-  const queries = [suburb + ", " + city + ", New Zealand", suburb + ", New Zealand", city + ", New Zealand"];
+  const queries = suburb === "All Suburbs"
+    ? [city + ", New Zealand"]
+    : [suburb + ", " + city + ", New Zealand", suburb + ", New Zealand", city + ", New Zealand"];
   for (const q of queries) {
     const url = "https://nominatim.openstreetmap.org/search?q=" + encodeURIComponent(q) + "&format=json&limit=3&countrycodes=nz&addressdetails=1";
     try {
@@ -161,7 +163,7 @@ export default function EatSmart() {
     try {
       const coords = await geocodeSuburb(suburb, city);
       if (!coords) { setError("Couldn't find " + suburb + ", " + city + ". Try a nearby suburb."); setLoading(false); return; }
-      const radii = [800, 1500, 2500];
+      const radii = suburb === "All Suburbs" ? [3000, 5000] : [800, 1500, 2500];
       let spots = []; let usedRadius = 800;
       for (const r of radii) {
         const elements = await searchRestaurants(coords.lat, coords.lon, r);
@@ -256,7 +258,10 @@ export default function EatSmart() {
 
           <div style={S.row}>
             <div style={S.selectWrap}><select style={S.select} value={city} onChange={e => handleCityChange(e.target.value)}>{cities.map(c => <option key={c}>{c}</option>)}</select><span style={S.chevron}>▾</span></div>
-            <div style={S.selectWrap}><select style={S.select} value={suburb} onChange={e => { setSuburb(e.target.value); localStorage.setItem("es_suburb", e.target.value); setSearched(false); }}>{suburbs.map(s => <option key={s}>{s}</option>)}</select><span style={S.chevron}>▾</span></div>
+            <div style={S.selectWrap}><select style={S.select} value={suburb} onChange={e => { setSuburb(e.target.value); localStorage.setItem("es_suburb", e.target.value); setSearched(false); }}>
+    <option key="all">All Suburbs</option>
+    {suburbs.map(s => <option key={s}>{s}</option>)}
+  </select><span style={S.chevron}>▾</span></div>
           </div>
           <div style={S.row}>
             <div style={S.budgetWrap}><span style={{color:"#e83a2a",fontWeight:700,fontSize:18}}>$</span><input type="number" value={budget || ""} min={5} max={200} placeholder="30" onChange={e => { setBudget(Number(e.target.value)); localStorage.setItem("es_budget", e.target.value); }} style={S.budgetInput} /></div>
