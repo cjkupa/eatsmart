@@ -115,6 +115,10 @@ export default function EatSmart() {
   const [typeInput, setTypeInput] = useState("");
   const [activeTab, setActiveTab] = useState("search");
   const [priceModal, setPriceModal] = useState(null);
+  const [contactModal, setContactModal] = useState(false);
+  const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
+  const [contactSubmitting, setContactSubmitting] = useState(false);
+  const [contactSuccess, setContactSuccess] = useState(false);
   const [priceForm, setPriceForm] = useState({ dish: "", price: "", date: new Date().toISOString().split('T')[0] });
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -197,6 +201,24 @@ export default function EatSmart() {
 
   function toggleSave(id) { setSaved(prev => ({ ...prev, [id]: !prev[id] })); }
 
+  async function handleContactSubmit() {
+    if (!contactForm.message) return;
+    setContactSubmitting(true);
+    try {
+      await window.emailjs.send('service_ew0ksvq', 'template_wla193g', {
+        restaurant_name: "Contact Form",
+        suburb_city: contactForm.name || "Anonymous",
+        dish: contactForm.email || "No email provided",
+        price: "-",
+        date: new Date().toLocaleDateString('en-NZ'),
+        message: contactForm.message,
+      });
+      setContactSuccess(true);
+      setTimeout(() => { setContactModal(false); setContactSuccess(false); setContactForm({ name: "", email: "", message: "" }); setActiveTab("search"); }, 2000);
+    } catch(e) { alert("Failed to send. Please email us at eatsmartappnz@gmail.com"); }
+    setContactSubmitting(false);
+  }
+
   async function handlePriceSubmit() {
     if (!priceForm.dish || !priceForm.price) return;
     setSubmitting(true);
@@ -222,8 +244,8 @@ export default function EatSmart() {
       openNowRef.current?.scrollIntoView({ behavior: "smooth" });
     } else if (tabId === "saved") {
       savedRef.current?.scrollIntoView({ behavior: "smooth" });
-    } else if (tabId === "toprated") {
-      topRatedRef.current?.scrollIntoView({ behavior: "smooth" });
+    } else if (tabId === "contact") {
+      setContactModal(true);
     }
   }
 
@@ -368,17 +390,7 @@ export default function EatSmart() {
         }
       </div>
 
-      {/* TOP RATED SECTION */}
-      <div ref={topRatedRef} style={{...S.results, paddingTop:24, borderTop:"2px solid #f0ebe6", marginTop:8}}>
-        <div style={{fontWeight:800,fontSize:20,color:"#1a1a1a",marginBottom:4}}>⭐ Top Rated Nearby</div>
-        <div style={{fontSize:13,color:"#aaa",marginBottom:16}}>{suburb}, {city}</div>
-        {!searched
-          ? <div style={S.emptyBox}>🔍 Do a search first to see top rated places!</div>
-          : topRatedSpots.length === 0
-          ? <div style={S.emptyBox}>😕 No rated places found in your last search.</div>
-          : topRatedSpots.map(spot => <SpotCard key={spot.id} spot={spot} />)
-        }
-      </div>
+
 
       {/* FOOTER */}
       <div style={{textAlign:"center",padding:"24px 16px 8px",borderTop:"1px solid #f0ebe6",marginTop:16}}>
@@ -390,6 +402,47 @@ export default function EatSmart() {
         </div>
         <p style={{fontSize:11,color:"#ccc",marginTop:12}}>© 2025 EatSmart NZ · eatsmart.co.nz</p>
       </div>
+
+      {/* CONTACT MODAL */}
+      {contactModal && (
+        <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
+          <div style={{background:"#fff",borderRadius:24,padding:"24px",width:"100%",maxWidth:420,boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}>
+            {contactSuccess ? (
+              <div style={{textAlign:"center",padding:"20px 0"}}>
+                <div style={{fontSize:48,marginBottom:12}}>🙌</div>
+                <div style={{fontWeight:800,fontSize:20,color:"#27ae60"}}>Message sent!</div>
+                <div style={{fontSize:14,color:"#888",marginTop:8}}>Thanks for getting in touch — we'll get back to you soon!</div>
+              </div>
+            ) : (
+              <>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                  <div style={{fontWeight:800,fontSize:18,color:"#1a1a1a"}}>✉️ Get in Touch</div>
+                  <button onClick={() => { setContactModal(false); setActiveTab("search"); }} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#aaa"}}>✕</button>
+                </div>
+                <p style={{fontSize:13,color:"#888",marginBottom:16}}>Missing a restaurant? Found a bug? Have an idea? We'd love to hear from you!</p>
+                <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                  <div>
+                    <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>Your name (optional)</label>
+                    <input value={contactForm.name} onChange={e => setContactForm(p => ({...p, name: e.target.value}))} placeholder="e.g. Sarah" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
+                  </div>
+                  <div>
+                    <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>Your email (optional)</label>
+                    <input type="email" value={contactForm.email} onChange={e => setContactForm(p => ({...p, email: e.target.value}))} placeholder="so we can reply to you" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
+                  </div>
+                  <div>
+                    <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>Message</label>
+                    <textarea value={contactForm.message} onChange={e => setContactForm(p => ({...p, message: e.target.value}))} placeholder="Tell us what's on your mind..." rows={4} style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",resize:"none"}} />
+                  </div>
+                  <button onClick={handleContactSubmit} disabled={contactSubmitting || !contactForm.message} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:14,padding:"16px",fontSize:16,fontWeight:700,cursor:"pointer",fontFamily:"inherit",opacity: contactSubmitting || !contactForm.message ? 0.6 : 1}}>
+                    {contactSubmitting ? "Sending…" : "Send Message 🙌"}
+                  </button>
+                  <a href="mailto:eatsmartappnz@gmail.com" style={{textAlign:"center",fontSize:13,color:"#aaa",textDecoration:"none"}}>or email us at eatsmartappnz@gmail.com</a>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* PRICE SUBMISSION MODAL */}
       {priceModal && (
@@ -440,7 +493,7 @@ export default function EatSmart() {
           { id: "search", emoji: "🏠", label: "Home" },
           { id: "opennow", emoji: "🕐", label: "Open Now" },
           { id: "saved", emoji: "❤️", label: "Saved" },
-          { id: "toprated", emoji: "⭐", label: "Top Rated" },
+          { id: "contact", emoji: "✉️", label: "Contact" },
         ].map(tab => (
           <button key={tab.id} style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}} onClick={() => handleTabPress(tab.id)}>
             <span style={{fontSize:22}}>{tab.emoji}</span>
