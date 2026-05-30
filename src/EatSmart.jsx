@@ -201,7 +201,7 @@ export default function EatSmart() {
     if (!priceForm.dish || !priceForm.price) return;
     setSubmitting(true);
     try {
-      await window.emailjs.send('service_e66oqlm', 'template_wla193g', {
+      await window.emailjs.send('service_ew0ksvq', 'template_wla193g', {
         restaurant_name: priceModal?.name || '',
         suburb_city: suburb + ', ' + city,
         dish: priceForm.dish,
