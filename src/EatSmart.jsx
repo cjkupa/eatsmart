@@ -134,6 +134,14 @@ export default function EatSmart() {
     link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap';
     link.rel = 'stylesheet';
     document.head.appendChild(link);
+    const ga = document.createElement('script');
+    ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-06CLZN1L9N';
+    ga.async = true;
+    document.head.appendChild(ga);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-06CLZN1L9N');
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
     script.onload = () => window.emailjs.init('ADleKoFQQMlb9OHSw');
