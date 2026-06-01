@@ -55,18 +55,15 @@ function getCuisineEmoji(cuisine) {
 }
 
 async function geocodeSuburb(suburb, city) {
-  const queries = suburb === "All Suburbs"
-    ? [city + ", New Zealand"]
-    : [suburb + ", " + city + ", New Zealand", suburb + ", New Zealand", city + ", New Zealand"];
-  for (const q of queries) {
-    const url = "https://nominatim.openstreetmap.org/search?q=" + encodeURIComponent(q) + "&format=json&limit=3&countrycodes=nz&addressdetails=1";
-    try {
-      const res = await fetch(url, { headers: { "Accept-Language": "en", "User-Agent": "EatSmartNZ/1.0" } });
-      const data = await res.json();
-      if (data && data.length > 0) {
-        const best = data.find(d => d.display_name.toLowerCase().includes(city.toLowerCase())) || data[0];
-        return { lat: parseFloat(best.lat), lon: parseFloat(best.lon) };
-      }
+  if (suburb === "All Suburbs") {
+    const results = await geocodeAddress(city, "");
+    if (results.length > 0) return { lat: results[0].lat, lon: results[0].lon };
+    return null;
+  }
+  const results = await geocodeAddress(suburb + " " + city, city);
+  if (results.length > 0) return { lat: results[0].lat, lon: results[0].lon };
+  return null;
+}
     } catch (e) {}
   }
   return null;
