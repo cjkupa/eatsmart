@@ -183,6 +183,8 @@ export default function EatSmart() {
     document.head.appendChild(link);
     document.body.style.overflowX = "hidden";
     document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
+    document.documentElement.style.overflowX = "hidden";
     const ga = document.createElement('script');
     ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-06CLZN1L9N';
     ga.async = true;
