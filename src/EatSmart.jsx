@@ -276,6 +276,14 @@ export default function EatSmart() {
         }
       }
       }
+      // When specific cuisine selected, remove chains that don't match
+      if (cuisine !== "Any") {
+        const wrongCuisineChains = ["subway","mcdonald","burger king","kfc","pizza hut","dominos","domino's","carl's jr","wendy's","taco bell","hungry jack","oporto","nando","red rooster","georgie pie","starbucks","dunkin","baskin"];
+        filteredSpots = filteredSpots.filter(spot => {
+          const n = spot.name.toLowerCase();
+          return !wrongCuisineChains.some(c => n.includes(c));
+        });
+      }
       setResults(filteredSpots.slice(0, 20));
     } catch(e) { setError("Something went wrong. Please try again."); }
     setLoading(false);
