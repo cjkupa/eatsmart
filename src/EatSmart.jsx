@@ -292,7 +292,7 @@ export default function EatSmart() {
     return (
       <div style={S.spotCard}>
         {spot.photoRef
-          ? <img src={"https://eatsmart-production-7bcf.up.railway.app/api/photo?ref=" + spot.photoRef} alt={spot.name} style={{width:"100%",height:160,objectFit:"cover",borderRadius:"16px 16px 0 0",display:"block"}} onError={e => { e.target.style.display='none'; }} />
+          ? <img src={"https://eatsmart-production-7bcf.up.railway.app/api/photo?ref=" + spot.photoRef} alt={spot.name} style={{width:"100%",height:160,objectFit:"cover",borderRadius:"16px 16px 0 0",display:"block"}} onError={e => { e.target.style.display="none"; }} />
           : <div style={{width:"100%",height:120,background:"#e83a2a",borderRadius:"16px 16px 0 0",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:8}}>
               <span style={{fontSize:48}}>{spot.emoji}</span>
               <span style={{color:"rgba(255,255,255,0.8)",fontSize:12,fontWeight:600}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
