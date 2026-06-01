@@ -94,7 +94,7 @@ function formatRestaurant(place, index) {
   if (types.includes("bakery") && !types.includes("restaurant")) return null;
   if (types.includes("store") && !types.includes("restaurant") && !types.includes("food")) return null;
   if (excludedNameWords.some(w => nameLower.includes(w))) return null;
-  const blacklist = ["bollywood","noodle canteen","motor lodge","motor inn","holiday inn","best western","supermarket","new world","countdown","pak n save","4 square","fresh choice","night n day","petrol","z energy","mobil","bp station"];
+  const blacklist = ["meal delivery","delivery","bollywood","noodle canteen","motor lodge","motor inn","holiday inn","best western","supermarket","new world","countdown","pak n save","4 square","fresh choice","night n day","petrol","z energy","mobil","bp station"];
   if (blacklist.some(b => nameLower.includes(b))) return null;
 
   const name = place.name || "Unnamed Restaurant";
@@ -303,8 +303,7 @@ export default function EatSmart() {
             <div style={{fontSize:12,color:"#888",marginTop:2}}>undefined per person</div>
           </div>
         )}
-        <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{marginBottom:8,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"8px 18px",fontSize:13,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit",width:"100%"}}>💰 What did you pay here?</button>
-        <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{marginBottom:8,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"8px 18px",fontSize:13,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit",width:"100%"}}>💰 What did you pay here?</button>
+        <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{marginBottom:8,background:"#fff5f4",color:"#e83a2a",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,border:"1.5px solid #ffd5d0",cursor:"pointer",fontFamily:"inherit"}}>💰 What did you pay here?</button>
         {spot.address && <p style={S.spotDesc}>📍 {spot.address}</p>}
         {spot.tags.length > 0 && <div style={S.tagRow}>{spot.tags.map(t => <span key={t} style={S.tag}>{t}</span>)}</div>}
         <div style={S.actionRow}>
