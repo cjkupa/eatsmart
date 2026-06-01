@@ -357,7 +357,9 @@ export default function EatSmart() {
   </select><span style={S.chevron}>▾</span></div>
           </div>
           <div style={S.row}>
-            <div style={S.budgetWrap}><span style={{color:"#e83a2a",fontWeight:700,fontSize:18}}>$</span><input type="number" value={budget || ""} min={5} max={200} placeholder="30" onChange={e => { setBudget(Number(e.target.value)); localStorage.setItem("es_budget", e.target.value); }} style={S.budgetInput} /></div>
+            <div style={{display:"flex",gap:6,flex:1}}>{[10,15,20,30,50].map(b => (
+  <button key={b} onClick={() => { setBudget(b); localStorage.setItem("es_budget",b); }} style={{flex:1,background:budget===b?"#e83a2a":"#fff",color:budget===b?"#fff":"#333",border:"1.5px solid",borderColor:budget===b?"#e83a2a":"#ede8e3",borderRadius:12,padding:"11px 2px",fontWeight:700,fontSize:14,cursor:"pointer",fontFamily:"inherit"}}>${b}</button>
+))}</div>
   
           </div>
           <button style={{...S.cta, opacity: loading ? 0.7 : 1}} onClick={handleSearch} disabled={loading}>{loading ? "Searching…" : "Find somewhere to eat →"}</button>
