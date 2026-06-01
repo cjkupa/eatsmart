@@ -298,21 +298,22 @@ export default function EatSmart() {
               <span style={{color:"rgba(255,255,255,0.8)",fontSize:12,fontWeight:600}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
             </div>
         }
-        <div style={S.spotTop}>
-          <div style={S.spotLeft}>
-            <span style={S.spotEmoji}>{spot.emoji}</span>
-            <div>
-              <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-                <div style={S.spotName}>{spot.name}</div>
-                {featured && <span style={{background:"#ffd97d",color:"#a06000",borderRadius:20,padding:"2px 10px",fontSize:11,fontWeight:700}}>⭐ Featured</span>}
-              </div>
-              <div style={S.spotMeta}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
-              <div style={{display:"flex",gap:8,marginTop:4,alignItems:"center",flexWrap:"wrap"}}>
-                {spot.rating && <span style={{fontSize:13,fontWeight:600,color:"#f39c12"}}>⭐ {spot.rating}{spot.ratingCount ? <span style={{fontWeight:400,color:"#aaa",fontSize:11}}> ({spot.ratingCount})</span> : ""}</span>}
-                {spot.priceLevel !== null && spot.priceLevel !== undefined && <span style={{fontSize:13,fontWeight:700,color:"#27ae60"}}>{"$".repeat(spot.priceLevel + 1)}</span>}
-                {spot.isOpen && <span style={{fontSize:11,fontWeight:600,color: spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a"}}>{spot.isOpen}</span>}
-              </div>
-            </div>
+        <div style={{padding:"12px 14px 4px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
+            <div style={{fontWeight:700,fontSize:16,color:"#1a1a1a",flex:1}}>{spot.name}</div>
+            {featured && <span style={{background:"#ffd97d",color:"#a06000",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700,whiteSpace:"nowrap",marginLeft:6}}>⭐ Featured</span>}
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:4,fontSize:12,color:"#888",flexWrap:"wrap"}}>
+            {spot.rating && <span style={{fontWeight:700,color:"#e67e22"}}>⭐ {spot.rating}</span>}
+            {spot.ratingCount && <span style={{color:"#bbb"}}>({spot.ratingCount})</span>}
+            {spot.rating && <span style={{color:"#ddd"}}>·</span>}
+            <span>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
+            {spot.priceLevel !== null && spot.priceLevel !== undefined && <><span style={{color:"#ddd"}}>·</span><span style={{color:"#27ae60",fontWeight:600}}>{"$".repeat(spot.priceLevel + 1)}</span></>}
+            {spot.isOpen && <><span style={{color:"#ddd"}}>·</span><span style={{fontWeight:600,color:spot.isOpen.includes("Open")?"#27ae60":"#e83a2a"}}>{spot.isOpen}</span></>}
+            {searchCoords && spot.lat && <><span style={{color:"#ddd"}}>·</span><span>{getDistance(searchCoords.lat,searchCoords.lon,spot.lat,spot.lng)}</span></>}
+          </div>
+          {spot.address && <p style={{fontSize:11,color:"#bbb",margin:"6px 0 0",lineHeight:1.4}}>📍 {spot.address}</p>}
+        </div>
           </div>
 
         </div>
