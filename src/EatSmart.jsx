@@ -309,9 +309,9 @@ export default function EatSmart() {
             <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{display:"inline-block",marginTop:6,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"4px 12px",fontSize:12,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit"}}>💰 Submit real price</button>
           </div>
         ) : (
-          <div style={{background:"#fff3f3",border:"1px solid #f5c6c6",borderRadius:12,padding:"8px 12px",marginBottom:10}}>
-            <div style={{fontWeight:700,fontSize:14,color:"#e83a2a"}}>⚠️ Tight budget here</div>
-            <div style={{fontSize:12,color:"#888",marginTop:2}}>Expect to pay {meal.typical}</div>
+          <div style={{background:"#fff3f3",border:"1px solid #f5c6c6",borderRadius:10,padding:"6px 10px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{fontWeight:600,fontSize:13,color:"#e83a2a"}}>⚠️ Tight budget</div>
+            <div style={{fontSize:11,color:"#888"}}>~{meal.typical}</div>
           </div>
         )}
         {spot.address && <p style={S.spotDesc}>📍 {spot.address}</p>}
@@ -399,7 +399,7 @@ export default function EatSmart() {
       )}
 
       {/* OPEN NOW SECTION */}
-      <div ref={openNowRef} style={{...S.results, paddingTop:24, borderTop:"2px solid #f0ebe6", marginTop:8}}>
+      <div ref={openNowRef} style={{...S.results, paddingTop:24, borderTop:"2px solid #f0ebe6", marginTop:8, display: activeTab === "opennow" ? "block" : "none"}}>
         <div style={{fontWeight:800,fontSize:20,color:"#1a1a1a",marginBottom:4}}>🕐 Open Right Now</div>
         <div style={{fontSize:13,color:"#aaa",marginBottom:16}}>{suburb}, {city}</div>
         {!searched
@@ -411,7 +411,7 @@ export default function EatSmart() {
       </div>
 
       {/* SAVED SECTION */}
-      <div ref={savedRef} style={{...S.results, paddingTop:24, borderTop:"2px solid #f0ebe6", marginTop:8}}>
+      <div ref={savedRef} style={{...S.results, paddingTop:24, borderTop:"2px solid #f0ebe6", marginTop:8, display: activeTab === "saved" ? "block" : "none"}}>
         <div style={{fontWeight:800,fontSize:20,color:"#1a1a1a",marginBottom:16}}>❤️ Saved Places</div>
         {savedSpots.length === 0
           ? <div style={S.emptyBox}>Heart a restaurant to save it here!</div>
@@ -563,18 +563,18 @@ const S = {
   resultsCount:{fontSize:17,color:"#222"},
   resultsLocation:{fontSize:13,color:"#888"},
   radiusBadge:{fontSize:12,color:"#aaa",marginBottom:16,paddingLeft:2},
-  spotCard:{background:"#fff",borderRadius:24,padding:"18px 16px",marginBottom:14,boxShadow:"0 4px 16px rgba(0,0,0,0.07)",borderLeft:"4px solid #e83a2a"},
+  spotCard:{background:"#fff",borderRadius:16,padding:"12px 14px",marginBottom:10,boxShadow:"0 2px 8px rgba(0,0,0,0.06)",borderLeft:"4px solid #e83a2a"},
   spotTop:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12},
   spotLeft:{display:"flex",gap:10,alignItems:"flex-start"},
-  spotEmoji:{fontSize:32,lineHeight:1},
-  spotName:{fontWeight:700,fontSize:17,color:"#1a1a1a"},
+  spotEmoji:{fontSize:26,lineHeight:1},
+  spotName:{fontWeight:700,fontSize:15,color:"#1a1a1a"},
   spotMeta:{fontSize:13,color:"#888",marginTop:2},
   spotDesc:{fontSize:13,color:"#777",margin:"0 0 10px"},
   tagRow:{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14},
   tag:{background:"#f2f2f2",borderRadius:20,padding:"5px 12px",fontSize:12,color:"#555",fontWeight:500},
   actionRow:{display:"flex",gap:10},
-  openBtn:{flex:1,background:"#f0faf4",border:"none",borderRadius:12,padding:"12px",fontSize:14,fontWeight:600,color:"#27ae60",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center"},
-  saveBtn:{flex:1,border:"none",borderRadius:12,padding:"12px",fontSize:14,fontWeight:600,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit"},
+  openBtn:{flex:1,background:"#f0faf4",border:"none",borderRadius:10,padding:"9px",fontSize:13,fontWeight:600,color:"#27ae60",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center"},
+  saveBtn:{flex:1,border:"none",borderRadius:10,padding:"9px",fontSize:13,fontWeight:600,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit"},
   bottomNav:{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:"#fff",borderTop:"1px solid #f0ebe6",display:"flex",justifyContent:"space-around",padding:"8px 0 20px",zIndex:100,boxShadow:"0 -4px 20px rgba(200,50,40,0.08)"},
   navBtn:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",background:"none",border:"none",cursor:"pointer",color:"#aaa",fontFamily:"inherit",padding:"4px 0"},
   navBtnActive:{color:"#e83a2a"},
