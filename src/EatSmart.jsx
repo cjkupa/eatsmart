@@ -106,7 +106,7 @@ function formatRestaurant(place, index) {
   const ratingCount = place.user_ratings_total || null;
   const priceLevel = (place.price_level !== undefined && place.price_level !== null) ? place.price_level : null;
   const isOpen = place.opening_hours ? (place.opening_hours.open_now ? "✅ Open now" : "❌ Closed") : null;
-  return { id: place.place_id || index, name, emoji: getCuisineEmoji(cuisine), cuisine, address: addr || null, phone, website, tags: [isOpen].filter(Boolean), isOpen, rating, ratingCount, priceLevel, rawTypes: types };
+  const photoRef = place.photoRef || place.photos?.[0]?.photo_reference || null; return { id: place.place_id || index, name, emoji: getCuisineEmoji(cuisine), cuisine, address: addr || null, phone, website, tags: [isOpen].filter(Boolean), isOpen, rating, ratingCount, priceLevel, rawTypes: types, photoRef };
 }
 
 export default function EatSmart() {
@@ -278,6 +278,13 @@ export default function EatSmart() {
     const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
+        {spot.photoRef
+          ? <img src={"https://eatsmart-production-7bcf.up.railway.app/api/photo?ref=" + spot.photoRef} alt={spot.name} style={{width:"100%",height:160,objectFit:"cover",borderRadius:"16px 16px 0 0",display:"block"}} onError={e => { e.target.style.display='none'; }} />
+          : <div style={{width:"100%",height:120,background:"linear-gradient(135deg,#e83a2a,#c0392b)",borderRadius:"16px 16px 0 0",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:8}}>
+              <span style={{fontSize:48}}>{spot.emoji}</span>
+              <span style={{color:"rgba(255,255,255,0.8)",fontSize:12,fontWeight:600}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
+            </div>
+        }
         <div style={S.spotTop}>
           <div style={S.spotLeft}>
             <span style={S.spotEmoji}>{spot.emoji}</span>
