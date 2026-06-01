@@ -109,6 +109,17 @@ function formatRestaurant(place, index) {
   const photoRef = place.photoRef || place.photos?.[0]?.photo_reference || null; return { id: place.place_id || index, name, emoji: getCuisineEmoji(cuisine), cuisine, address: addr || null, phone, website, tags: [isOpen].filter(Boolean), isOpen, rating, ratingCount, priceLevel, rawTypes: types, photoRef };
 }
 
+function getDistance(lat1, lon1, lat2, lon2) {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+  const R = 6371;
+  const dLat = (lat2-lat1) * Math.PI/180;
+  const dLon = (lon2-lon1) * Math.PI/180;
+  const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  const c = 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  const d = R*c;
+  return d < 1 ? Math.round(d*1000) + 'm' : d.toFixed(1) + 'km';
+}
+
 export default function EatSmart() {
   const cities = Object.keys(NZ_CITIES);
   const [budget, setBudget] = useState(null);
@@ -123,6 +134,7 @@ export default function EatSmart() {
   const [locating, setLocating] = useState(false);
   const [searchRadius, setSearchRadius] = useState(800);
   const [typeMode, setTypeMode] = useState(false);
+  const [searchCoords, setSearchCoords] = useState(null);
   const [typeInput, setTypeInput] = useState("");
   const [activeTab, setActiveTab] = useState("search");
   const [priceModal, setPriceModal] = useState(null);
@@ -205,6 +217,7 @@ export default function EatSmart() {
     try {
       const coords = await geocodeSuburb(suburb, city);
       if (!coords) { setError("Couldn't find " + suburb + ", " + city + ". Try a nearby suburb."); setLoading(false); return; }
+      setSearchCoords(coords);
       const radii = suburb === "All Suburbs" ? [5000, 8000] : [800, 1500, 2500];
       if (suburb === "All Suburbs") setResultLimit(20);
       let spots = []; let usedRadius = 800;
