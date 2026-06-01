@@ -275,7 +275,6 @@ export default function EatSmart() {
           filteredSpots = byType.length >= 2 ? byType : spots;
         }
       }
-      }
       // When specific cuisine selected, remove chains that don't match
       if (cuisine !== "Any") {
         const wrongCuisineChains = ["subway","mcdonald","burger king","kfc","pizza hut","dominos","dominos","carl jr","wendys","taco bell","hungry jack","oporto","nando","red rooster","georgie pie","starbucks","dunkin","baskin"];
