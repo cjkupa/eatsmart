@@ -309,7 +309,7 @@ export default function EatSmart() {
             {spot.rating && <span style={{color:"#ddd"}}>·</span>}
             <span>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
             {spot.priceLevel !== null && spot.priceLevel !== undefined && <><span style={{color:"#ddd"}}>·</span><span style={{color:"#27ae60",fontWeight:600}}>{["","$","$","$$","$$"][spot.priceLevel + 1] || ""}</span></>}
-            {spot.isOpen && <><span style={{color:"#ddd"}}>·</span><span style={{fontWeight:600,color:spot.isOpen.includes("Open")?"#27ae60":"#e83a2a"}}>{spot.isOpen}</span></>}
+            {spot.isOpen && <><span style={{color:"#ddd"}}>·</span><span style={{fontWeight:600,color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a"}}>{spot.isOpen}</span></>}
             {searchCoords && spot.lat && <><span style={{color:"#ddd"}}>·</span><span>{getDistance(searchCoords.lat,searchCoords.lon,spot.lat,spot.lng)}</span></>}
           </div>
           {spot.address && <p style={{fontSize:11,color:"#bbb",margin:"6px 0 0",lineHeight:1.4}}>📍 {spot.address}</p>}
