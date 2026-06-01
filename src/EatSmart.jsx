@@ -382,7 +382,7 @@ export default function EatSmart() {
                 onBlur={() => setTimeout(() => setCitySuggestions([]), 200)}
               />
               {citySuggestions.length > 0 && (
-                <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.12)",zIndex:100,maxHeight:240,overflowY:"auto",marginTop:4}}>
+                <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.12)",zIndex:100,maxHeight:240,overflowY:"auto",marginTop:4,width:"100%",boxSizing:"border-box"}}>
                   {citySuggestions.map((c,i) => (
                     <div key={i} onMouseDown={() => { handleCityChange(c); setCitySearch(null); setCitySuggestions([]); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333",textAlign:"left"}}>
                       {c}
