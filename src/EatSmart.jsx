@@ -102,7 +102,7 @@ function formatRestaurant(place, index) {
   const ratingCount = place.user_ratings_total || null;
   const priceLevel = (place.price_level !== undefined && place.price_level !== null) ? place.price_level : null;
   const isOpen = place.opening_hours ? (place.opening_hours.open_now ? "✅ Open now" : "❌ Closed") : null;
-  return { id: place.place_id || index, name, emoji: getCuisineEmoji(cuisine), cuisine, address: addr || null, phone, website, tags: [isOpen].filter(Boolean), isOpen, rating, ratingCount, priceLevel };
+  return { id: place.place_id || index, name, emoji: getCuisineEmoji(cuisine), cuisine, address: addr || null, phone, website, tags: [isOpen].filter(Boolean), isOpen, rating, ratingCount, priceLevel, rawTypes: types };
 }
 
 export default function EatSmart() {
@@ -234,32 +234,70 @@ export default function EatSmart() {
         "turkish": ["turkish","kebab","doner"],
         "greek": ["greek","souvlaki","gyros"],
       };
+      // Map Google types to cuisine groups
+      const googleTypeToCuisine = {
+        "indian_restaurant": "indian",
+        "chinese_restaurant": "chinese",
+        "japanese_restaurant": "japanese",
+        "thai_restaurant": "thai",
+        "mexican_restaurant": "mexican",
+        "italian_restaurant": "italian",
+        "korean_restaurant": "korean",
+        "vietnamese_restaurant": "vietnamese",
+        "french_restaurant": "french",
+        "greek_restaurant": "greek",
+        "turkish_restaurant": "turkish",
+        "seafood_restaurant": "seafood",
+        "american_restaurant": "american",
+        "pizza_restaurant": "pizza",
+        "hamburger_restaurant": "burgers",
+        "fast_food_restaurant": "takeaway",
+        "cafe": "cafe",
+        "bakery": "bakery",
+        "bar_and_grill": "pub food",
+      };
+
+      const cuisineGroupMap = {
+        "fish & chips": ["seafood","fish","takeaway"],
+        "cafe": ["cafe","coffee","breakfast"],
+        "bakery": ["bakery"],
+        "pub food": ["pub food","bar","american"],
+        "burgers": ["burgers","american","takeaway"],
+        "pizza": ["pizza","italian"],
+        "takeaway": ["takeaway","fast food","american","burgers"],
+        "italian": ["italian","pizza"],
+        "japanese": ["japanese"],
+        "sushi": ["japanese"],
+        "chinese": ["chinese"],
+        "indian": ["indian"],
+        "thai": ["thai"],
+        "mexican": ["mexican"],
+        "korean": ["korean"],
+        "mediterranean": ["greek","turkish","mediterranean"],
+        "american": ["american","burgers"],
+        "french": ["french"],
+        "vietnamese": ["vietnamese"],
+        "seafood": ["seafood","fish"],
+        "vegetarian": ["vegetarian","vegan"],
+        "turkish": ["turkish"],
+        "greek": ["greek"],
+      };
+
       let filteredSpots = spots;
       if (cuisine !== "Any") {
-        const keywords = cuisineKeywordMap[cuisine.toLowerCase()] || [cuisine.toLowerCase()];
-        // Also exclude known incompatible cuisine names
-        const excludeCuisineNames = {
-          "fish & chips": ["indian","bollywood","chinese","thai","mexican","korean","italian","japanese","sushi","vietnamese","turkish","greek","pizza","burger","kebab","noodle","curry","masala","tandoor","wok","dim sum","pho","banh","taco","burrito"],
-          "indian": ["fish","chips","sushi","japanese","chinese","thai","mexican","burger","pizza","kebab","noodle","pho"],
-          "chinese": ["indian","bollywood","thai","japanese","sushi","mexican","burger","pizza","fish","chips"],
-          "thai": ["indian","bollywood","chinese","japanese","sushi","mexican","burger","pizza","fish","chips"],
-          "italian": ["indian","bollywood","chinese","thai","japanese","sushi","mexican","burger","fish","chips","kebab"],
-          "pizza": ["indian","bollywood","chinese","thai","japanese","sushi","mexican","fish","chips","kebab","noodle"],
-          "burgers": ["indian","bollywood","chinese","thai","japanese","sushi","mexican","pizza","fish","chips","kebab","noodle"],
-        };
-        const excludeWords = excludeCuisineNames[cuisine.toLowerCase()] || [];
-        const byKeyword = spots.filter(spot => {
-          const txt = (spot.name + " " + spot.cuisine + " " + (spot.address || "")).toLowerCase();
-          const hasKeyword = keywords.some(k => txt.includes(k));
-          const hasExcluded = excludeWords.some(k => txt.includes(k));
-          return hasKeyword && !hasExcluded;
+        const allowedGroups = cuisineGroupMap[cuisine.toLowerCase()] || [cuisine.toLowerCase()];
+        filteredSpots = spots.filter(spot => {
+          // Check Google place types
+          const placeTypes = spot.rawTypes || [];
+          const mappedCuisine = placeTypes.map(t => googleTypeToCuisine[t]).filter(Boolean);
+          if (mappedCuisine.length > 0) {
+            return mappedCuisine.some(c => allowedGroups.includes(c));
+          }
+          // Fall back to name/cuisine text check
+          const txt = (spot.name + " " + spot.cuisine).toLowerCase();
+          return allowedGroups.some(g => txt.includes(g));
         });
-        // Always exclude incompatible cuisines regardless of match count
-        const cleanedSpots = spots.filter(spot => {
-          const txt = (spot.name + " " + spot.cuisine + " " + (spot.address || "")).toLowerCase();
-          return !excludeWords.some(k => txt.includes(k));
-        });
-        filteredSpots = byKeyword.length >= 2 ? byKeyword : cleanedSpots;
+        if (filteredSpots.length < 2) filteredSpots = spots;
       }
       setResults(filteredSpots.slice(0, 20));
     } catch(e) { setError("Something went wrong. Please try again."); }
