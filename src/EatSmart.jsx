@@ -152,6 +152,8 @@ export default function EatSmart() {
   const [locating, setLocating] = useState(false);
   const [searchRadius, setSearchRadius] = useState(800);
   const [typeMode, setTypeMode] = useState(false);
+  const [locationSearch, setLocationSearch] = useState(null);
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [searchCoords, setSearchCoords] = useState(null);
   const [typeInput, setTypeInput] = useState("");
   const [activeTab, setActiveTab] = useState("search");
