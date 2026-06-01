@@ -90,7 +90,9 @@ function formatRestaurant(place, index) {
   const excludedTypes = ["lodging","motel","hotel","motor_lodge","rv_park","campground","real_estate_agency","car_rental","gas_station","convenience_store","grocery_or_supermarket","supermarket","pharmacy","bank","atm","hospital","doctor","dentist"];
   const excludedNameWords = ["motel","motor lodge","motor inn","lodge","hotel","inn","backpacker","hostel","holiday park","caravan","accommodation","b&b","bed and breakfast","apartment","suites"];
   const nameLower = (place.name || "").toLowerCase();
-  if (types.some(t => excludedTypes.includes(t))) return null;
+  if (types.some(t => excludedTypes.includes(t)) && !types.includes("restaurant")) return null;
+  if (types.includes("bakery") && !types.includes("restaurant")) return null;
+  if (types.includes("store") && !types.includes("restaurant") && !types.includes("food")) return null;
   if (excludedNameWords.some(w => nameLower.includes(w))) return null;
   const blacklist = ["bollywood","noodle canteen","motor lodge","motor inn","holiday inn","best western","supermarket","new world","countdown","pak n save"];
   if (blacklist.some(b => nameLower.includes(b))) return null;
