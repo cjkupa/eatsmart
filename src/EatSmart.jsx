@@ -88,7 +88,10 @@ async function searchRestaurants(lat, lon, radiusMeters) {
 function formatRestaurant(place, index) {
   const types = place.types || [];
   const excludedTypes = ["lodging","motel","hotel","motor_lodge","rv_park","campground","real_estate_agency","car_rental","gas_station","convenience_store","grocery_or_supermarket","supermarket","pharmacy","bank","atm","hospital","doctor","dentist"];
-  if (types.some(t => excludedTypes.includes(t)) && !types.includes("restaurant") && !types.includes("food")) return null;
+  const excludedNameWords = ["motel","motor lodge","motor inn","lodge","hotel","inn","backpacker","hostel","holiday park","caravan","accommodation","b&b","bed and breakfast","apartment","suites"];
+  const nameLower = (place.name || "").toLowerCase();
+  if (types.some(t => excludedTypes.includes(t))) return null;
+  if (excludedNameWords.some(w => nameLower.includes(w))) return null;
   const name = place.name || "Unnamed Restaurant";
   const cuisine = types.length > 0 ? types[0].replace(/_/g, " ") : "restaurant";
   const addr = place.vicinity || null;
