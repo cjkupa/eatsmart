@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { getMealSuggestion } from "./mealData.js";
 import { getFeatured } from "./featuredData.js";
 
 const NZ_CITIES = {
@@ -144,7 +143,6 @@ function searchLocations(query) {
 
 export default function EatSmart() {
   const cities = Object.keys(NZ_CITIES);
-  const [budget, setBudget] = useState(null);
   const [city, setCity] = useState(() => localStorage.getItem("es_city") || "Auckland");
   const [suburb, setSuburb] = useState(() => localStorage.getItem("es_suburb") || "Remuera");
   const [cuisine, setCuisine] = useState("Any");
