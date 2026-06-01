@@ -292,11 +292,11 @@ export default function EatSmart() {
     if (!contactForm.message) return;
     setContactSubmitting(true);
     try {
-      await window.emailjs.send('service_ew0ksvq', 'template_wla193g', {
-        restaurant_name: "Contact Form",
-        suburb_city: contactForm.name || "Anonymous",
-        dish: contactForm.email || "No email provided",
-        price: "-",
+      await window.emailjs.send('service_ew0ksvq', 'template_gmd0d4o', {
+        from_name: contactForm.name || 'Anonymous',
+        from_email: contactForm.email || 'No email provided',
+        message: contactForm.message,
+      });
         date: new Date().toLocaleDateString('en-NZ'),
         message: contactForm.message,
       });
