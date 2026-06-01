@@ -94,7 +94,7 @@ function formatRestaurant(place, index) {
   if (types.includes("bakery") && !types.includes("restaurant")) return null;
   if (types.includes("store") && !types.includes("restaurant") && !types.includes("food")) return null;
   if (excludedNameWords.some(w => nameLower.includes(w))) return null;
-  const blacklist = ["bollywood","noodle canteen","motor lodge","motor inn","holiday inn","best western","supermarket","new world","countdown","pak n save","4 square","fresh choice","night n day","subway","mcdonald","burger king","kfc","pizza hut","dominos","domino","carl jr","wendy","taco bell","hungry jack","oporto","nando","red rooster","georgie pie","petrol","z energy","mobil","bp station"];
+  const blacklist = ["bollywood","noodle canteen","motor lodge","motor inn","holiday inn","best western","supermarket","new world","countdown","pak n save","4 square","fresh choice","night n day","petrol","z energy","mobil","bp station"];
   if (blacklist.some(b => nameLower.includes(b))) return null;
 
   const name = place.name || "Unnamed Restaurant";
@@ -300,6 +300,12 @@ export default function EatSmart() {
           // Fall back to name/cuisine text check
           const txt = (spot.name + " " + spot.cuisine).toLowerCase();
           return allowedGroups.some(g => txt.includes(g));
+        });
+        // Also exclude fast food chains when a specific cuisine is selected
+        const fastFoodChains = ["subway","mcdonald","burger king","kfc","pizza hut","dominos","domino","carl jr","wendy","taco bell","hungry jack","oporto","nando","red rooster","georgie pie"];
+        filteredSpots = filteredSpots.filter(spot => {
+          const n = spot.name.toLowerCase();
+          return !fastFoodChains.some(f => n.includes(f));
         });
         if (filteredSpots.length < 2) filteredSpots = spots;
       }
