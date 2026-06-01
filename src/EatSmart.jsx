@@ -92,6 +92,8 @@ function formatRestaurant(place, index) {
   const nameLower = (place.name || "").toLowerCase();
   if (types.some(t => excludedTypes.includes(t))) return null;
   if (excludedNameWords.some(w => nameLower.includes(w))) return null;
+  const blacklist = ["bollywood","noodle canteen","motor lodge","motor inn","holiday inn","best western","supermarket","new world","countdown","pak n save"];
+  if (blacklist.some(b => nameLower.includes(b))) return null;
 
   const name = place.name || "Unnamed Restaurant";
   const cuisine = types.length > 0 ? types[0].replace(/_/g, " ") : "restaurant";
