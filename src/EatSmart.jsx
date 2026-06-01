@@ -377,7 +377,7 @@ export default function EatSmart() {
                   setLocationSearch(e.target.value);
                   const q = e.target.value.toLowerCase();
                   const matches = q.length > 0
-                    ? (NZ_CITIES[city] || []).filter(s => s.toLowerCase().startsWith(q)).slice(0,8)
+                    ? (NZ_CITIES[city] || []).filter(s => s.toLowerCase().startsWith(q)).slice(0,15)
                     : [];
                   setLocationSuggestions(matches.map(s => ({label:s, city, suburb:s})));
                 }}
