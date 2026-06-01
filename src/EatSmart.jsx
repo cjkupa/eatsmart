@@ -94,7 +94,7 @@ function formatRestaurant(place, index) {
   if (types.includes("bakery") && !types.includes("restaurant")) return null;
   if (types.includes("store") && !types.includes("restaurant") && !types.includes("food")) return null;
   if (excludedNameWords.some(w => nameLower.includes(w))) return null;
-  const blacklist = ["bollywood","noodle canteen","motor lodge","motor inn","holiday inn","best western","supermarket","new world","countdown","pak n save"];
+  const blacklist = ["bollywood","noodle canteen","motor lodge","motor inn","holiday inn","best western","supermarket","new world","countdown","pak n save","4 square","fresh choice","night n day","subway","mcdonald","burger king","kfc","pizza hut","dominos","domino","carl jr","wendy","taco bell","hungry jack","oporto","nando","red rooster","georgie pie","petrol","z energy","mobil","bp station"];
   if (blacklist.some(b => nameLower.includes(b))) return null;
 
   const name = place.name || "Unnamed Restaurant";
