@@ -141,6 +141,30 @@ function searchLocations(query) {
   return results.slice(0, 8);
 }
 
+async function geocodeAddress(query, city) {
+  const searches = [
+    query + ", " + city + ", New Zealand",
+    query + ", New Zealand"
+  ];
+  for (const q of searches) {
+    const url = "https://nominatim.openstreetmap.org/search?q=" + encodeURIComponent(q) + "&format=json&limit=5&countrycodes=nz&addressdetails=1";
+    try {
+      const res = await fetch(url, { headers: { "Accept-Language": "en", "User-Agent": "EatSmartNZ/1.0" } });
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return data.slice(0,5).map(d => ({
+          label: d.display_name.replace(", New Zealand","").split(",").slice(0,3).join(","),
+          lat: parseFloat(d.lat),
+          lon: parseFloat(d.lon),
+          suburb: d.address?.suburb || d.address?.neighbourhood || d.address?.town || d.address?.village || "",
+          city: d.address?.city || d.address?.town || city
+        }));
+      }
+    } catch(e) {}
+  }
+  return [];
+}
+
 export default function EatSmart() {
   const cities = Object.keys(NZ_CITIES);
   const [city, setCity] = useState(() => localStorage.getItem("es_city") || "Auckland");
@@ -158,6 +182,8 @@ export default function EatSmart() {
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [citySearch, setCitySearch] = useState(null);
   const [citySuggestions, setCitySuggestions] = useState([]);
+  const [customCoords, setCustomCoords] = useState(null);
+  const [streetSearching, setStreetSearching] = useState(false);
   const [searchCoords, setSearchCoords] = useState(null);
   const [typeInput, setTypeInput] = useState("");
   const [activeTab, setActiveTab] = useState("search");
@@ -243,8 +269,8 @@ export default function EatSmart() {
   const handleSearch = useCallback(async () => {
     setLoading(true); setError(null); setSearched(true); setResults([]);
     try {
-      const coords = await geocodeSuburb(suburb, city);
-      if (!coords) { setError("Couldn't find " + suburb + ", " + city + ". Try a nearby suburb."); setLoading(false); return; }
+      const coords = customCoords || await geocodeSuburb(suburb, city);
+      if (!coords) { setError("Couldn't find " + suburb + ", " + city + ". Try a nearby suburb or street."); setLoading(false); return; }
       setSearchCoords(coords);
       const radii = suburb === "All Suburbs" ? [5000, 8000] : [1500, 2500, 4000];
       if (suburb === "All Suburbs") setResultLimit(20);
@@ -414,9 +440,26 @@ export default function EatSmart() {
                   <div onMouseDown={() => { setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs"); setLocationSearch(null); setLocationSuggestions([]); setSearched(false); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#e83a2a",fontWeight:600,textAlign:"left"}}>
                     📍 All Suburbs in {city}
                   </div>
+                  {streetSearching && <div style={{padding:"11px 16px",fontSize:13,color:"#aaa"}}>Searching streets...</div>}
                   {locationSuggestions.map((s,i) => (
-                    <div key={i} onMouseDown={() => { setSuburb(s.suburb); localStorage.setItem("es_suburb",s.suburb); setLocationSearch(null); setLocationSuggestions([]); setSearched(false); setResults([]); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333",textAlign:"left"}}>
-                      {s.label}
+                    <div key={i} onMouseDown={() => {
+                      if (s.type === "street") {
+                        setCustomCoords({lat: s.lat, lon: s.lon});
+                        setLocationSearch(s.label);
+                        setLocationSuggestions([]);
+                        setSearched(false);
+                        setResults([]);
+                      } else {
+                        setSuburb(s.suburb);
+                        setCustomCoords(null);
+                        localStorage.setItem("es_suburb",s.suburb);
+                        setLocationSearch(null);
+                        setLocationSuggestions([]);
+                        setSearched(false);
+                        setResults([]);
+                      }
+                    }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333",textAlign:"left"}}>
+                      {s.type === "street" ? "🗺️ " : "📍 "}{s.label}
                     </div>
                   ))}
                 </div>
