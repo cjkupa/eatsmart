@@ -297,8 +297,6 @@ export default function EatSmart() {
         from_email: contactForm.email || 'No email provided',
         message: contactForm.message,
       });
-        date: new Date().toLocaleDateString('en-NZ'),
-        message: contactForm.message,
       });
       setContactSuccess(true);
       setTimeout(() => { setContactModal(false); setContactSuccess(false); setContactForm({ name: "", email: "", message: "" }); setActiveTab("search"); }, 2000);
