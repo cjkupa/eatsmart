@@ -145,7 +145,7 @@ export default function EatSmart() {
   const [priceForm, setPriceForm] = useState({ dish: "", price: "", date: new Date().toISOString().split('T')[0] });
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [resultLimit, setResultLimit] = useState(5);
+  const [resultLimit, setResultLimit] = useState(10);
 
   const searchRef = useRef(null);
   const openNowRef = useRef(null);
@@ -227,7 +227,7 @@ export default function EatSmart() {
         if (spots.length > 0) { usedRadius = r; break; }
       }
       setSearchRadius(usedRadius);
-      setResults(spots.slice(0, resultLimit));
+      setResults(spots.slice(0, 20));
     } catch(e) { setError("Something went wrong. Please try again."); }
     setLoading(false);
   }, [suburb, city]);
