@@ -312,7 +312,7 @@ export default function EatSmart() {
             {spot.isOpen && <><span style={{color:"#ddd"}}>·</span><span style={{fontWeight:600,color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a"}}>{spot.isOpen}</span></>}
             {searchCoords && spot.lat && <><span style={{color:"#ddd"}}>·</span><span>{getDistance(searchCoords.lat,searchCoords.lon,spot.lat,spot.lng)}</span></>}
           </div>
-          {spot.address && <p style={{fontSize:11,color:"#bbb",margin:"6px 0 0",lineHeight:1.4}}>📍 {spot.address}</p>}
+          {spot.address && <p style={{fontSize:11,color:"#bbb",margin:"6px 0 0",lineHeight:1.4}}>{spot.address}</p>}
         </div>
           </div>
 
