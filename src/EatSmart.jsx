@@ -435,8 +435,8 @@ export default function EatSmart() {
       {!searched && (
         <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
           <div style={{fontSize:72,marginBottom:16}}>🍽️</div>
-          <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:8}}>What are you hungry for?</div>
-          <div style={{fontSize:14,color:"#aaa",lineHeight:1.6}}>Pick your suburb and find great local restaurants nearby.</div>
+          <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:8}}>Find great food near you</div>
+          <div style={{fontSize:14,color:"#aaa",lineHeight:1.6}}>Pick your suburb and discover cafes, restaurants, takeaways and more nearby.</div>
           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
             {["🐟 Fish & Chips","☕ Cafe","🍔 Burgers","🍕 Pizza","🍛 Indian"].map(c => (
               <span key={c} style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:20,padding:"8px 16px",fontSize:13,fontWeight:500,color:"#555",boxShadow:"0 2px 6px rgba(0,0,0,0.05)"}}>{c}</span>
