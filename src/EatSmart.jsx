@@ -421,13 +421,19 @@ export default function EatSmart() {
                 style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"13px 14px 13px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222",textAlign:"left"}}
                 placeholder="Search suburb..."
                 value={locationSearch !== null ? locationSearch : suburb}
-                onChange={e => {
-                  setLocationSearch(e.target.value);
-                  const q = e.target.value.toLowerCase();
-                  const matches = q.length > 0
-                    ? (NZ_CITIES[city] || []).filter(s => q.length === 0 || s.toLowerCase().startsWith(q)).slice(0,20)
-                    : [];
-                  setLocationSuggestions(matches.map(s => ({label:s, city, suburb:s})));
+                onChange={async e => {
+                  const val = e.target.value;
+                  setLocationSearch(val);
+                  const q = val.toLowerCase();
+                  const suburbMatches = (NZ_CITIES[city] || []).filter(s => q.length === 0 || s.toLowerCase().startsWith(q)).slice(0,8);
+                  const suggestions = suburbMatches.map(s => ({label:s, city, suburb:s, type:"suburb"}));
+                  if (val.length > 3 && suburbMatches.length < 3) {
+                    setStreetSearching(true);
+                    const streetResults = await geocodeAddress(val, city);
+                    streetResults.forEach(r => suggestions.push({...r, type:"street"}));
+                    setStreetSearching(false);
+                  }
+                  setLocationSuggestions(suggestions.slice(0,10));
                 }}
                 onFocus={() => { setLocationSearch(""); setLocationSuggestions([]); }}
                 onBlur={() => setTimeout(() => setLocationSuggestions([]), 200)}
