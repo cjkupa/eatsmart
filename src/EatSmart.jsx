@@ -273,7 +273,13 @@ export default function EatSmart() {
       if (!coords) {
         coords = await geocodeSuburb(suburb, city);
       }
-      if (!coords) { setError("Couldn't find " + suburb + ", " + city + ". Try a nearby suburb or street."); setLoading(false); return; }
+      if (!coords && locationSearch && locationSearch.length > 2) {
+        const streetResults = await geocodeAddress(locationSearch, city);
+        if (streetResults.length > 0) {
+          coords = { lat: streetResults[0].lat, lon: streetResults[0].lon };
+        }
+      }
+      if (!coords) { setError("Couldn't find that location. Try a suburb name or street address."); setLoading(false); return; }
       setSearchCoords(coords);
       const radii = suburb === "All Suburbs" ? [5000, 8000] : [1500, 2500, 4000];
       if (suburb === "All Suburbs") setResultLimit(20);
