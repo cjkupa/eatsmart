@@ -273,6 +273,7 @@ export default function EatSmart() {
             return allowedTypes.some(at => t.includes(at));
           });
           filteredSpots = byType.length >= 2 ? byType : spots;
+        }
       }
       // When specific cuisine selected, remove chains that don't match
       if (cuisine !== "Any") {
