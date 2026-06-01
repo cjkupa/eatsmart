@@ -304,14 +304,7 @@ export default function EatSmart() {
           </div>
         )}
         {meal.canAfford ? (
-          <div style={{background:"#eafaf1",border:"1px solid #a9dfbf",borderRadius:12,padding:"8px 12px",marginBottom:10}}>
-            <div style={{fontWeight:700,fontSize:14,color:"#27ae60"}}>{meal.emoji} {meal.dish}</div>
-            <div style={{fontSize:12,color:"#888",marginTop:2}}>Est. price: {meal.typical}</div>
-            <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{display:"inline-block",marginTop:8,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"6px 16px",fontSize:13,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit"}}>💰 What did you pay here?</button>
-          </div>
-        ) : (
-
-        )}
+        <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{marginBottom:8,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"8px 18px",fontSize:13,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit",width:"100%"}}>💰 What did you pay here?</button>
         {spot.address && <p style={S.spotDesc}>📍 {spot.address}</p>}
         {spot.tags.length > 0 && <div style={S.tagRow}>{spot.tags.map(t => <span key={t} style={S.tag}>{t}</span>)}</div>}
         <div style={S.actionRow}>
