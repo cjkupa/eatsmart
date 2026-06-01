@@ -92,7 +92,7 @@ function formatRestaurant(place, index) {
   const nameLower = (place.name || "").toLowerCase();
   if (types.some(t => excludedTypes.includes(t))) return null;
   if (excludedNameWords.some(w => nameLower.includes(w))) return null;
-  if (place.rating && place.rating < 3.5) return null;
+  if (place.rating && place.rating < 4.0) return null;
   const name = place.name || "Unnamed Restaurant";
   const cuisine = types.length > 0 ? types[0].replace(/_/g, " ") : "restaurant";
   const addr = place.vicinity || null;
