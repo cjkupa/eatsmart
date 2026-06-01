@@ -209,7 +209,41 @@ export default function EatSmart() {
         if (spots.length > 0) { usedRadius = r; break; }
       }
       setSearchRadius(usedRadius);
-      setResults(spots.slice(0, 20));
+      const cuisineKeywordMap = {
+        "fish & chips": ["fish","chips","seafood","fish & chip"],
+        "cafe": ["cafe","coffee","breakfast","brunch"],
+        "bakery": ["bakery","bread","pastry","cake","pie"],
+        "pub food": ["pub","bar","tavern","bistro"],
+        "burgers": ["burger","grill","american","bbq"],
+        "pizza": ["pizza","italian","pizzeria"],
+        "takeaway": ["takeaway","takeout","fast food","chicken","kebab"],
+        "italian": ["italian","pasta","pizza","trattoria"],
+        "japanese": ["japanese","sushi","ramen"],
+        "sushi": ["sushi","japanese"],
+        "chinese": ["chinese","dim sum","cantonese"],
+        "indian": ["indian","curry","tandoor","masala"],
+        "thai": ["thai","pad thai"],
+        "mexican": ["mexican","taco","burrito"],
+        "korean": ["korean","bibimbap","kimchi"],
+        "mediterranean": ["mediterranean","greek","turkish","middle eastern","falafel"],
+        "american": ["american","burger","bbq","steakhouse"],
+        "french": ["french","bistro","brasserie"],
+        "vietnamese": ["vietnamese","pho","banh mi"],
+        "seafood": ["seafood","fish","oyster","prawn"],
+        "vegetarian": ["vegetarian","vegan","plant"],
+        "turkish": ["turkish","kebab","doner"],
+        "greek": ["greek","souvlaki","gyros"],
+      };
+      let filteredSpots = spots;
+      if (cuisine !== "Any") {
+        const keywords = cuisineKeywordMap[cuisine.toLowerCase()] || [cuisine.toLowerCase()];
+        const byKeyword = spots.filter(spot => {
+          const txt = (spot.name + " " + spot.cuisine + " " + (spot.address || "")).toLowerCase();
+          return keywords.some(k => txt.includes(k));
+        });
+        filteredSpots = byKeyword.length >= 3 ? byKeyword : spots;
+      }
+      setResults(filteredSpots.slice(0, 20));
     } catch(e) { setError("Something went wrong. Please try again."); }
     setLoading(false);
   }, [suburb, city]);
