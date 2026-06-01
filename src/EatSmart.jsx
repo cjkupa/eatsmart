@@ -377,7 +377,7 @@ export default function EatSmart() {
                   setLocationSearch(e.target.value);
                   const q = e.target.value.toLowerCase();
                   const matches = q.length > 0
-                    ? (NZ_CITIES[city] || []).filter(s => s.toLowerCase().startsWith(q)).slice(0,15)
+                    ? (NZ_CITIES[city] || []).filter(s => q.length === 0 || s.toLowerCase().startsWith(q)).slice(0,20)
                     : [];
                   setLocationSuggestions(matches.map(s => ({label:s, city, suburb:s})));
                 }}
@@ -386,11 +386,11 @@ export default function EatSmart() {
               />
               {locationSuggestions.length > 0 && (
                 <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.12)",zIndex:100,maxHeight:240,overflowY:"auto",marginTop:4}}>
-                  <div onMouseDown={() => { setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs"); setLocationSearch(null); setLocationSuggestions([]); setSearched(false); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#e83a2a",fontWeight:600}}>
+                  <div onMouseDown={() => { setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs"); setLocationSearch(null); setLocationSuggestions([]); setSearched(false); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#e83a2a",fontWeight:600,textAlign:"left"}}>
                     📍 All Suburbs in {city}
                   </div>
                   {locationSuggestions.map((s,i) => (
-                    <div key={i} onMouseDown={() => { setSuburb(s.suburb); localStorage.setItem("es_suburb",s.suburb); setLocationSearch(null); setLocationSuggestions([]); setSearched(false); setResults([]); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333"}}>
+                    <div key={i} onMouseDown={() => { setSuburb(s.suburb); localStorage.setItem("es_suburb",s.suburb); setLocationSearch(null); setLocationSuggestions([]); setSearched(false); setResults([]); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333",textAlign:"left"}}>
                       {s.label}
                     </div>
                   ))}
