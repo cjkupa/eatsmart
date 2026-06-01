@@ -277,7 +277,8 @@ export default function EatSmart() {
       }
       if (!coords) { setError("Couldn't find that location. Try a suburb name or street address."); setLoading(false); return; }
       setSearchCoords(coords);
-      const radii = suburb === "All Suburbs" ? [5000, 8000] : [1500, 2500, 4000];
+      const isStreetSearch = suburb && !Object.values(NZ_CITIES).flat().includes(suburb) && suburb !== "All Suburbs";
+      const radii = suburb === "All Suburbs" ? [5000, 8000] : isStreetSearch ? [500, 1000, 1500] : [1500, 2500, 4000];
       if (suburb === "All Suburbs") setResultLimit(20);
       let spots = []; let usedRadius = 800;
       for (const r of radii) {
