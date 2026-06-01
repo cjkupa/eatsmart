@@ -213,77 +213,7 @@ export default function EatSmart() {
         if (spots.length > 0) { usedRadius = r; break; }
       }
       setSearchRadius(usedRadius);
-      const cuisineKeywordMap = {
-        "fish & chips": ["fish","chips","seafood","fish & chip"],
-        "cafe": ["cafe","coffee","breakfast","brunch"],
-        "bakery": ["bakery","bread","pastry","cake","pie"],
-        "pub food": ["pub","bar","tavern","bistro"],
-        "burgers": ["burger","grill","american","bbq"],
-        "pizza": ["pizza","italian","pizzeria"],
-        "takeaway": ["takeaway","takeout","fast food","chicken","kebab"],
-        "italian": ["italian","pasta","pizza","trattoria"],
-        "japanese": ["japanese","sushi","ramen"],
-        "sushi": ["sushi","japanese"],
-        "chinese": ["chinese","dim sum","cantonese"],
-        "indian": ["indian","curry","tandoor","masala"],
-        "thai": ["thai","pad thai"],
-        "mexican": ["mexican","taco","burrito"],
-        "korean": ["korean","bibimbap","kimchi"],
-        "mediterranean": ["mediterranean","greek","turkish","middle eastern","falafel"],
-        "american": ["american","burger","bbq","steakhouse"],
-        "french": ["french","bistro","brasserie"],
-        "vietnamese": ["vietnamese","pho","banh mi"],
-        "seafood": ["seafood","fish","oyster","prawn"],
-        "vegetarian": ["vegetarian","vegan","plant"],
-        "turkish": ["turkish","kebab","doner"],
-        "greek": ["greek","souvlaki","gyros"],
-      };
-      // Simple cuisine filter based on Google place types
-      let filteredSpots = spots;
-      if (cuisine !== "Any") {
-        const cuisineTypeMap = {
-          "fish & chips": ["seafood_restaurant","fish_and_chips"],
-          "cafe": ["cafe","coffee_shop","breakfast_restaurant"],
-          "bakery": ["bakery"],
-          "pub food": ["bar","pub","bar_and_grill"],
-          "burgers": ["hamburger_restaurant","american_restaurant","bar_and_grill"],
-          "pizza": ["pizza_restaurant","italian_restaurant"],
-          "takeaway": ["fast_food_restaurant","takeaway"],
-          "italian": ["italian_restaurant","pizza_restaurant"],
-          "japanese": ["japanese_restaurant","ramen_restaurant","sushi_restaurant"],
-          "sushi": ["sushi_restaurant","japanese_restaurant"],
-          "chinese": ["chinese_restaurant"],
-          "indian": ["indian_restaurant","curry_restaurant"],
-          "thai": ["thai_restaurant"],
-          "mexican": ["mexican_restaurant"],
-          "korean": ["korean_restaurant","korean_barbecue_restaurant"],
-          "mediterranean": ["mediterranean_restaurant","greek_restaurant","middle_eastern_restaurant","turkish_restaurant","lebanese_restaurant"],
-          "american": ["american_restaurant","hamburger_restaurant","steak_house"],
-          "french": ["french_restaurant"],
-          "vietnamese": ["vietnamese_restaurant"],
-          "seafood": ["seafood_restaurant"],
-          "vegetarian": ["vegan_restaurant","vegetarian_restaurant"],
-          "turkish": ["turkish_restaurant","middle_eastern_restaurant"],
-          "greek": ["greek_restaurant","mediterranean_restaurant"],
-        };
-        const allowedTypes = cuisineTypeMap[cuisine.toLowerCase()] || [];
-        if (allowedTypes.length > 0) {
-          const byType = spots.filter(spot => {
-            const t = spot.rawTypes || [];
-            return allowedTypes.some(at => t.includes(at));
-          });
-          filteredSpots = byType.length >= 2 ? byType : spots;
-        }
-      }
-      // When specific cuisine selected, remove chains that don't match
-      if (cuisine !== "Any") {
-        const wrongCuisineChains = ["subway","mcdonald","burger king","kfc","pizza hut","dominos","dominos","carl jr","wendys","taco bell","hungry jack","oporto","nando","red rooster","georgie pie","starbucks","dunkin","baskin"];
-        filteredSpots = filteredSpots.filter(spot => {
-          const n = spot.name.toLowerCase();
-          return !wrongCuisineChains.some(c => n.includes(c));
-        });
-      }
-      setResults(filteredSpots.slice(0, 20));
+      setResults(spots.slice(0, resultLimit));
     } catch(e) { setError("Something went wrong. Please try again."); }
     setLoading(false);
   }, [suburb, city]);
