@@ -294,10 +294,7 @@ export default function EatSmart() {
               </div>
             </div>
           </div>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
-            <span style={{background:"#e83a2a",color:"#fff",borderRadius:10,padding:"4px 10px",fontWeight:900,fontSize:18}}>${budget}</span>
-            <span style={{fontSize:10,color:"#aaa"}}>budget</span>
-          </div>
+
         </div>
         {featured && (
           <div style={{background:"linear-gradient(135deg,#fff9ee,#fff5f4)",border:"1.5px solid #ffd97d",borderRadius:12,padding:"10px 14px",marginBottom:10}}>
@@ -313,10 +310,7 @@ export default function EatSmart() {
             <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{display:"inline-block",marginTop:8,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"6px 16px",fontSize:13,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit"}}>💰 What did you pay here?</button>
           </div>
         ) : (
-          <div style={{background:"#fff3f3",border:"1px solid #f5c6c6",borderRadius:10,padding:"6px 10px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div style={{fontWeight:600,fontSize:13,color:"#e83a2a"}}>⚠️ Tight budget</div>
-            <div style={{fontSize:11,color:"#888"}}>~{meal.typical}</div>
-          </div>
+
         )}
         {spot.address && <p style={S.spotDesc}>📍 {spot.address}</p>}
         {spot.tags.length > 0 && <div style={S.tagRow}>{spot.tags.map(t => <span key={t} style={S.tag}>{t}</span>)}</div>}
@@ -356,9 +350,7 @@ export default function EatSmart() {
   </select><span style={S.chevron}>▾</span></div>
           </div>
           <div style={S.row}>
-            <div style={{display:"flex",gap:6,flex:1}}>{[10,15,20,30,50].map(b => (
-  <button key={b} onClick={() => { setBudget(b); localStorage.setItem("es_budget",b); }} style={{flex:1,background:budget===b?"#e83a2a":"#fff",color:budget===b?"#fff":"#333",border:"1.5px solid",borderColor:budget===b?"#e83a2a":"#ede8e3",borderRadius:12,padding:"11px 2px",fontWeight:700,fontSize:14,cursor:"pointer",fontFamily:"inherit"}}>${b}</button>
-))}</div>
+            
   
           </div>
           <button style={{...S.cta, opacity: loading ? 0.7 : 1}} onClick={handleSearch} disabled={loading}>{loading ? "Searching…" : "Find somewhere to eat →"}</button>
