@@ -303,7 +303,7 @@ export default function EatSmart() {
             <div style={{fontSize:12,color:"#888",marginTop:2}}>undefined per person</div>
           </div>
         )}
-        {meal.canAfford ? (
+        <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{marginBottom:8,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"8px 18px",fontSize:13,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit",width:"100%"}}>💰 What did you pay here?</button>
         <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{marginBottom:8,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"8px 18px",fontSize:13,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit",width:"100%"}}>💰 What did you pay here?</button>
         {spot.address && <p style={S.spotDesc}>📍 {spot.address}</p>}
         {spot.tags.length > 0 && <div style={S.tagRow}>{spot.tags.map(t => <span key={t} style={S.tag}>{t}</span>)}</div>}
