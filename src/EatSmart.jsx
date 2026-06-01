@@ -206,6 +206,7 @@ export default function EatSmart() {
       const coords = await geocodeSuburb(suburb, city);
       if (!coords) { setError("Couldn't find " + suburb + ", " + city + ". Try a nearby suburb."); setLoading(false); return; }
       const radii = suburb === "All Suburbs" ? [5000, 8000] : [800, 1500, 2500];
+      if (suburb === "All Suburbs") setResultLimit(20);
       let spots = []; let usedRadius = 800;
       for (const r of radii) {
         const elements = await searchRestaurants(coords.lat, coords.lon, r, cuisine);
