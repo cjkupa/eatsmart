@@ -120,6 +120,24 @@ function getDistance(lat1, lon1, lat2, lon2) {
   return d < 1 ? Math.round(d*1000) + 'm' : d.toFixed(1) + 'km';
 }
 
+function searchLocations(query) {
+  if (!query || query.length < 2) return [];
+  const q = query.toLowerCase();
+  const results = [];
+  for (const [city, suburbs] of Object.entries(NZ_CITIES)) {
+    if (city.toLowerCase().includes(q)) {
+      results.push({ label: city + " (All Suburbs)", city, suburb: "All Suburbs" });
+    }
+    for (const suburb of suburbs) {
+      if (suburb.toLowerCase().includes(q)) {
+        results.push({ label: suburb + ", " + city, city, suburb });
+      }
+    }
+    if (results.length >= 8) break;
+  }
+  return results.slice(0, 8);
+}
+
 export default function EatSmart() {
   const cities = Object.keys(NZ_CITIES);
   const [budget, setBudget] = useState(null);
