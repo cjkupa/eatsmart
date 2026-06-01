@@ -370,7 +370,7 @@ export default function EatSmart() {
             </div>
             <div style={{flex:1,position:"relative"}}>
               <input
-                style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"13px 14px 13px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222"}}
+                style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"13px 14px 13px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222",textAlign:"left"}}
                 placeholder="Search suburb..."
                 value={locationSearch !== null ? locationSearch : suburb}
                 onChange={e => {
