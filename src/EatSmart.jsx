@@ -291,41 +291,27 @@ export default function EatSmart() {
     const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
-        {spot.photoRef
-          ? <img src={"https://eatsmart-production-7bcf.up.railway.app/api/photo?ref=" + spot.photoRef} alt={spot.name} style={{width:"100%",height:160,objectFit:"cover",borderRadius:"16px 16px 0 0",display:"block"}} onError={e => { e.target.style.display="none"; }} />
-          : <div style={{width:"100%",height:120,background:"#e83a2a",borderRadius:"16px 16px 0 0",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:8}}>
-              <span style={{fontSize:48}}>{spot.emoji}</span>
-              <span style={{color:"rgba(255,255,255,0.8)",fontSize:12,fontWeight:600}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
+        <div style={{padding:"14px 14px 8px"}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+            <div style={{width:50,height:50,borderRadius:10,background:"#e83a2a",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:26}}>{spot.emoji}</div>
+            <div style={{flex:1}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
+                <div style={{fontWeight:700,fontSize:15,color:"#1a1a1a"}}>{spot.name}</div>
+                {featured && <span style={{background:"#ffd97d",color:"#a06000",borderRadius:20,padding:"1px 7px",fontSize:10,fontWeight:700}}>Featured</span>}
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#888",flexWrap:"wrap"}}>
+                {spot.rating && <span style={{fontWeight:700,color:"#e67e22"}}>{spot.rating} stars</span>}
+                {spot.ratingCount && <span>({spot.ratingCount})</span>}
+                <span style={{color:"#ccc"}}>|</span>
+                <span>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
+                {spot.isOpen && <span style={{color:"#ccc"}}>|</span>}
+                {spot.isOpen && <span style={{fontWeight:600,color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a"}}>{spot.isOpen}</span>}
+              </div>
+              {spot.address && <div style={{fontSize:11,color:"#bbb",marginTop:4}}>{spot.address}</div>}
+              {featured && featured.signatureDish && <div style={{fontSize:12,color:"#a06000",marginTop:4,fontWeight:600}}>{featured.signatureDish}</div>}
             </div>
-        }
-        <div style={{padding:"12px 14px 4px"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
-            <div style={{fontWeight:700,fontSize:16,color:"#1a1a1a",flex:1}}>{spot.name}</div>
-            {featured && <span style={{background:"#ffd97d",color:"#a06000",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700,whiteSpace:"nowrap",marginLeft:6}}>⭐ Featured</span>}
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:4,fontSize:12,color:"#888",flexWrap:"wrap"}}>
-            {spot.rating && <span style={{fontWeight:700,color:"#e67e22"}}>⭐ {spot.rating}</span>}
-            {spot.ratingCount && <span style={{color:"#bbb"}}>({spot.ratingCount})</span>}
-            {spot.rating && <span style={{color:"#ddd"}}>·</span>}
-            <span>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
-            {spot.priceLevel !== null && spot.priceLevel !== undefined && <><span style={{color:"#ddd"}}>·</span><span style={{color:"#27ae60",fontWeight:600}}>{spot.priceLevel === 0 ? "Inexpensive" : spot.priceLevel === 1 ? "Moderate" : spot.priceLevel === 2 ? "Expensive" : spot.priceLevel === 3 ? "Very Expensive" : ""}</span></>}
-            {spot.isOpen && <><span style={{color:"#ddd"}}>·</span><span style={{fontWeight:600,color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a"}}>{spot.isOpen}</span></>}
-            {searchCoords && spot.lat && <><span style={{color:"#ddd"}}>·</span><span>{getDistance(searchCoords.lat,searchCoords.lon,spot.lat,spot.lng)}</span></>}
-          </div>
-          {spot.address && <p style={{fontSize:11,color:"#bbb",margin:"6px 0 0",lineHeight:1.4}}>{spot.address}</p>}
         </div>
-          </div>
-
-        </div>
-        {featured && featured.signatureDish && (
-          <div style={{background:"#fffbee",border:"1.5px solid #ffd97d",borderRadius:12,padding:"8px 12px",marginBottom:8}}>
-            <div style={{fontSize:11,color:"#a06000",fontWeight:700,marginBottom:2}}>Signature Dish</div>
-            <div style={{fontWeight:600,fontSize:13,color:"#333"}}>{featured.signatureDish}</div>
-          </div>
-        )}
-        <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{marginBottom:8,background:"#fff5f4",color:"#e83a2a",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,border:"1.5px solid #ffd5d0",cursor:"pointer",fontFamily:"inherit"}}>💰 What did you pay here?</button>
-
-
         <div style={{...S.actionRow, padding:"8px 14px 12px"}}>
           {spot.website
             ? <a href={spot.website} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>🌐 Website</a>
