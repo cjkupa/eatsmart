@@ -6,7 +6,7 @@ const NZ_CITIES = {
   "Kerikeri": ["Haruru","Kerikeri Central","Kaikohe","Kawakawa","Paihia","Russell","Waipapa","Waitangi"],
   "Dargaville": ["Dargaville Central","Awakino Point","Baylys Beach","Donnellys Crossing","Maropiu","Matakohe","Ruawai","Tinopai"],
   "Whangarei": ["Abbey Caves","Avenues","Flanshaw","Glenbervie","Kamo","Maunu","Morningside","Onerahi","Otangarei","Tikipunga","Whangarei Central","Whangarei Heads","Woodhill"],
-  "Auckland": ["Albany","Avondale","Balmoral","Beachlands","Birkenhead","Blockhouse Bay","Botany Downs","Browns Bay","Clevedon","Devonport","East Tamaki","Eden Terrace","Ellerslie","Epsom","Flat Bush","Forrest Hill","Freemans Bay","Glen Eden","Glen Innes","Glendowie","Glenfield","Grey Lynn","Half Moon Bay","Henderson","Herne Bay","Hillsborough","Hobsonville","Howick","Kingsland","Kohimarama","Kumeu","Lynfield","Manukau","Manurewa","Massey","Mission Bay","Morningside","Mount Albert","Mount Eden","Mount Roskill","Mount Wellington","Newmarket","Newton","New Lynn","Northcote","Onehunga","Orewa","Pakuranga","Panmure","Papakura","Parnell","Papatoetoe","Penrose","Point Chevalier","Ponsonby","Pukekohe","Remuera","Royal Oak","Sandringham","Silverdale","St Heliers","St Johns","St Lukes","Takapuna","Titirangi","Wairau Valley","Warkworth","Waterview","Wellsford","Westgate","Westmere","Whangaparaoa"],
+  "Auckland": ["Albany","Avondale","Balmoral","Beachlands","Birkenhead","Blockhouse Bay","Botany Downs","Browns Bay","Clevedon","Devonport","East Tamaki","Eden Terrace","Ellerslie","Epsom","Flat Bush","Forrest Hill","Freemans Bay","Glen Eden","Glen Innes","Glendowie","Glenfield","Grey Lynn","Half Moon Bay","Henderson","Herne Bay","Hillsborough","Hobsonville","Howick","Kingsland","Kohimarama","Kumeu","Lynfield","Manukau","Manurewa","Massey","Mission Bay","Morningside","Mount Albert","Mount Eden","Mount Roskill","Mount Wellington","Newmarket","Newton","New Lynn","Northcote","Onehunga","Orewa","Pakuranga","Panmure","Papakura","Parnell","Papatoetoe","Penrose","Point Chevalier","Ponsonby","Pukekohe","Remuera","Royal Oak","Sandringham","Silverdale","St Heliers","St Johns","St Lukes","Takanini","Takapuna","Titirangi","Wairau Valley","Warkworth","Waterview","Wellsford","Westgate","Westmere","Whangaparaoa"],
   "Pukekohe": ["Bombay","Buckland","Karaka","Paerata","Patumahoe","Pukekohe Central","Tuakau","Waiuku"],
   "Hamilton": ["Beerescourt","Chartwell","Claudelands","Dinsdale","Fairfield","Flagstaff","Frankton","Hamilton Central","Hamilton East","Hamilton Lake","Hillcrest","Huntington","Melville","Nawton","Peacocke","Rototuna","Saint Andrews","Silverdale","Southgate","Temple View","Te Rapa","Whitiora"],
   "Cambridge": ["Cambridge Central","Leamington","Ohaupo","Te Awamutu","Karapiro","Pukerimu"],
@@ -154,6 +154,8 @@ export default function EatSmart() {
   const [typeMode, setTypeMode] = useState(false);
   const [locationSearch, setLocationSearch] = useState(null);
   const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [citySearch, setCitySearch] = useState(null);
+  const [citySuggestions, setCitySuggestions] = useState([]);
   const [searchCoords, setSearchCoords] = useState(null);
   const [typeInput, setTypeInput] = useState("");
   const [activeTab, setActiveTab] = useState("search");
@@ -362,11 +364,28 @@ export default function EatSmart() {
 
 
           <div style={S.row}>
-            <div style={S.selectWrap}>
-              <select style={S.select} value={city} onChange={e => handleCityChange(e.target.value)}>
-                {cities.map(c => <option key={c}>{c}</option>)}
-              </select>
-              <span style={S.chevron}>▾</span>
+            <div style={{flex:1,position:"relative"}}>
+              <input
+                style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"13px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222",textAlign:"left"}}
+                placeholder="Search city..."
+                value={citySearch !== null ? citySearch : city}
+                onChange={e => {
+                  setCitySearch(e.target.value);
+                  const q = e.target.value.toLowerCase();
+                  setCitySuggestions(q.length > 0 ? cities.filter(c => c.toLowerCase().startsWith(q)).slice(0,8) : []);
+                }}
+                onFocus={() => { setCitySearch(""); setCitySuggestions([]); }}
+                onBlur={() => setTimeout(() => setCitySuggestions([]), 200)}
+              />
+              {citySuggestions.length > 0 && (
+                <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.12)",zIndex:100,maxHeight:240,overflowY:"auto",marginTop:4}}>
+                  {citySuggestions.map((c,i) => (
+                    <div key={i} onMouseDown={() => { handleCityChange(c); setCitySearch(null); setCitySuggestions([]); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333",textAlign:"left"}}>
+                      {c}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div style={{flex:1,position:"relative"}}>
               <input
