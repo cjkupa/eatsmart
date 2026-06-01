@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { getMealSuggestion } from "./mealData.js";
+import { getFeatured } from "./featuredData.js";
 
 const NZ_CITIES = {
   "Kerikeri": ["Haruru","Kerikeri Central","Kaikohe","Kawakawa","Paihia","Russell","Waipapa","Waitangi"],
@@ -264,13 +265,17 @@ export default function EatSmart() {
 
   const SpotCard = ({ spot }) => {
     const meal = getMealSuggestion(spot.cuisine, budget);
+    const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
         <div style={S.spotTop}>
           <div style={S.spotLeft}>
             <span style={S.spotEmoji}>{spot.emoji}</span>
             <div>
-              <div style={S.spotName}>{spot.name}</div>
+              <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                <div style={S.spotName}>{spot.name}</div>
+                {featured && <span style={{background:"#ffd97d",color:"#a06000",borderRadius:20,padding:"2px 10px",fontSize:11,fontWeight:700}}>⭐ Featured</span>}
+              </div>
               <div style={S.spotMeta}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
               <div style={{display:"flex",gap:8,marginTop:4,alignItems:"center",flexWrap:"wrap"}}>
                 {spot.rating && <span style={{fontSize:13,fontWeight:600,color:"#f39c12"}}>⭐ {spot.rating}{spot.ratingCount ? <span style={{fontWeight:400,color:"#aaa",fontSize:11}}> ({spot.ratingCount})</span> : ""}</span>}
@@ -284,6 +289,13 @@ export default function EatSmart() {
             <span style={{fontSize:10,color:"#aaa"}}>budget</span>
           </div>
         </div>
+        {featured && (
+          <div style={{background:"linear-gradient(135deg,#fff9ee,#fff5f4)",border:"1.5px solid #ffd97d",borderRadius:12,padding:"10px 14px",marginBottom:10}}>
+            <div style={{fontWeight:700,fontSize:13,color:"#a06000",marginBottom:2}}>🍽️ Signature Dish</div>
+            <div style={{fontWeight:600,fontSize:14,color:"#333"}}>{featured.signatureDish}</div>
+            <div style={{fontSize:12,color:"#888",marginTop:2}}>undefined per person</div>
+          </div>
+        )}
         {meal.canAfford ? (
           <div style={{background:"#eafaf1",border:"1px solid #a9dfbf",borderRadius:12,padding:"8px 12px",marginBottom:10}}>
             <div style={{fontWeight:700,fontSize:14,color:"#27ae60"}}>{meal.emoji} {meal.dish}</div>
