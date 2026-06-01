@@ -359,12 +359,24 @@ export default function EatSmart() {
         <div style={S.card}>
 
 
-          <div style={S.row}>
-            <div style={S.selectWrap}><select style={S.select} value={city} onChange={e => handleCityChange(e.target.value)}>{cities.map(c => <option key={c}>{c}</option>)}</select><span style={S.chevron}>▾</span></div>
-            <div style={S.selectWrap}><select style={S.select} value={suburb} onChange={e => { setSuburb(e.target.value); localStorage.setItem("es_suburb", e.target.value); setSearched(false); }}>
-    <option key="all">All Suburbs</option>
-    {suburbs.map(s => <option key={s}>{s}</option>)}
-  </select><span style={S.chevron}>▾</span></div>
+          <div style={{position:"relative"}}>
+            <input
+              style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"13px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff"}}
+              placeholder="Search suburb or city..."
+              value={locationSearch !== null ? locationSearch : (suburb === "All Suburbs" ? city + " (All Suburbs)" : suburb + ", " + city)}
+              onChange={e => { setLocationSearch(e.target.value); setLocationSuggestions(searchLocations(e.target.value)); }}
+              onFocus={() => { setLocationSearch(""); setLocationSuggestions([]); }}
+              onBlur={() => setTimeout(() => setLocationSuggestions([]), 200)}
+            />
+            {locationSuggestions.length > 0 && (
+              <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.12)",zIndex:100,maxHeight:280,overflowY:"auto",marginTop:4}}>
+                {locationSuggestions.map((s,i) => (
+                  <div key={i} onMouseDown={() => { setCity(s.city); setSuburb(s.suburb); localStorage.setItem("es_city",s.city); localStorage.setItem("es_suburb",s.suburb); setLocationSearch(null); setLocationSuggestions([]); setSearched(false); setResults([]); }} style={{padding:"12px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333"}}>
+                    📍 {s.label}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div style={S.row}>
             
