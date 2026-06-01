@@ -318,10 +318,10 @@ export default function EatSmart() {
 
         </div>
         {featured && (
-          <div style={{background:"linear-gradient(135deg,#fff9ee,#fff5f4)",border:"1.5px solid #ffd97d",borderRadius:12,padding:"10px 14px",marginBottom:10}}>
+          <div style={{background:"#fffbee",border:"1.5px solid #ffd97d",borderRadius:12,padding:"10px 14px",marginBottom:10}}>
             <div style={{fontWeight:700,fontSize:13,color:"#a06000",marginBottom:2}}>🍽️ Signature Dish</div>
             <div style={{fontWeight:600,fontSize:14,color:"#333"}}>{featured.signatureDish}</div>
-            <div style={{fontSize:12,color:"#888",marginTop:2}}>undefined per person</div>
+            
           </div>
         )}
         <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{marginBottom:8,background:"#fff5f4",color:"#e83a2a",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,border:"1.5px solid #ffd5d0",cursor:"pointer",fontFamily:"inherit"}}>💰 What did you pay here?</button>
