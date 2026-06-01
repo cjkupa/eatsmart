@@ -311,9 +311,9 @@ export default function EatSmart() {
           </div>
         )}
         <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{marginBottom:8,background:"#fff5f4",color:"#e83a2a",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,border:"1.5px solid #ffd5d0",cursor:"pointer",fontFamily:"inherit"}}>💰 What did you pay here?</button>
-        {spot.address && <p style={S.spotDesc}>📍 {spot.address}</p>}
-        {spot.tags.length > 0 && <div style={S.tagRow}>{spot.tags.map(t => <span key={t} style={S.tag}>{t}</span>)}</div>}
-        <div style={S.actionRow}>
+
+
+        <div style={{...S.actionRow, padding:"8px 14px 12px"}}>
           {spot.website
             ? <a href={spot.website} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>🌐 Website</a>
             : spot.phone
