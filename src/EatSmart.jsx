@@ -254,11 +254,12 @@ export default function EatSmart() {
           const hasExcluded = excludeWords.some(k => txt.includes(k));
           return hasKeyword && !hasExcluded;
         });
-        filteredSpots = byKeyword.length >= 3 ? byKeyword : spots.filter(spot => {
-          const txt = (spot.name + " " + spot.cuisine).toLowerCase();
-          const hasExcluded = excludeWords.some(k => txt.includes(k));
-          return !hasExcluded;
+        // Always exclude incompatible cuisines regardless of match count
+        const cleanedSpots = spots.filter(spot => {
+          const txt = (spot.name + " " + spot.cuisine + " " + (spot.address || "")).toLowerCase();
+          return !excludeWords.some(k => txt.includes(k));
         });
+        filteredSpots = byKeyword.length >= 2 ? byKeyword : cleanedSpots;
       }
       setResults(filteredSpots.slice(0, 20));
     } catch(e) { setError("Something went wrong. Please try again."); }
