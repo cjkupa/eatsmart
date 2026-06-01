@@ -238,76 +238,43 @@ export default function EatSmart() {
         "turkish": ["turkish","kebab","doner"],
         "greek": ["greek","souvlaki","gyros"],
       };
-      // Map Google types to cuisine groups
-      const googleTypeToCuisine = {
-        "indian_restaurant": "indian",
-        "chinese_restaurant": "chinese",
-        "japanese_restaurant": "japanese",
-        "thai_restaurant": "thai",
-        "mexican_restaurant": "mexican",
-        "italian_restaurant": "italian",
-        "korean_restaurant": "korean",
-        "vietnamese_restaurant": "vietnamese",
-        "french_restaurant": "french",
-        "greek_restaurant": "greek",
-        "turkish_restaurant": "turkish",
-        "seafood_restaurant": "seafood",
-        "american_restaurant": "american",
-        "pizza_restaurant": "pizza",
-        "hamburger_restaurant": "burgers",
-        "fast_food_restaurant": "takeaway",
-        "cafe": "cafe",
-        "bakery": "bakery",
-        "bar_and_grill": "pub food",
-      };
-
-      const cuisineGroupMap = {
-        "fish & chips": ["seafood","fish","takeaway"],
-        "cafe": ["cafe","coffee","breakfast"],
-        "bakery": ["bakery"],
-        "pub food": ["pub food","bar","american"],
-        "burgers": ["burgers","american","takeaway"],
-        "pizza": ["pizza","italian"],
-        "takeaway": ["takeaway","fast food","american","burgers"],
-        "italian": ["italian","pizza"],
-        "japanese": ["japanese"],
-        "sushi": ["japanese"],
-        "chinese": ["chinese"],
-        "indian": ["indian"],
-        "thai": ["thai"],
-        "mexican": ["mexican"],
-        "korean": ["korean"],
-        "mediterranean": ["greek","turkish","mediterranean"],
-        "american": ["american","burgers"],
-        "french": ["french"],
-        "vietnamese": ["vietnamese"],
-        "seafood": ["seafood","fish"],
-        "vegetarian": ["vegetarian","vegan"],
-        "turkish": ["turkish"],
-        "greek": ["greek"],
-      };
-
+      // Simple cuisine filter based on Google place types
       let filteredSpots = spots;
       if (cuisine !== "Any") {
-        const allowedGroups = cuisineGroupMap[cuisine.toLowerCase()] || [cuisine.toLowerCase()];
-        filteredSpots = spots.filter(spot => {
-          // Check Google place types
-          const placeTypes = spot.rawTypes || [];
-          const mappedCuisine = placeTypes.map(t => googleTypeToCuisine[t]).filter(Boolean);
-          if (mappedCuisine.length > 0) {
-            return mappedCuisine.some(c => allowedGroups.includes(c));
-          }
-          // Fall back to name/cuisine text check
-          const txt = (spot.name + " " + spot.cuisine).toLowerCase();
-          return allowedGroups.some(g => txt.includes(g));
-        });
-        // Also exclude fast food chains when a specific cuisine is selected
-        const fastFoodChains = ["subway","mcdonald","burger king","kfc","pizza hut","dominos","domino","carl jr","wendy","taco bell","hungry jack","oporto","nando","red rooster","georgie pie"];
-        filteredSpots = filteredSpots.filter(spot => {
-          const n = spot.name.toLowerCase();
-          return !fastFoodChains.some(f => n.includes(f));
-        });
-        if (filteredSpots.length < 2) filteredSpots = spots;
+        const cuisineTypeMap = {
+          "fish & chips": ["seafood_restaurant","fish_and_chips"],
+          "cafe": ["cafe","coffee_shop","breakfast_restaurant"],
+          "bakery": ["bakery"],
+          "pub food": ["bar","pub","bar_and_grill"],
+          "burgers": ["hamburger_restaurant","american_restaurant","bar_and_grill"],
+          "pizza": ["pizza_restaurant","italian_restaurant"],
+          "takeaway": ["fast_food_restaurant","takeaway"],
+          "italian": ["italian_restaurant","pizza_restaurant"],
+          "japanese": ["japanese_restaurant","ramen_restaurant","sushi_restaurant"],
+          "sushi": ["sushi_restaurant","japanese_restaurant"],
+          "chinese": ["chinese_restaurant"],
+          "indian": ["indian_restaurant","curry_restaurant"],
+          "thai": ["thai_restaurant"],
+          "mexican": ["mexican_restaurant"],
+          "korean": ["korean_restaurant","korean_barbecue_restaurant"],
+          "mediterranean": ["mediterranean_restaurant","greek_restaurant","middle_eastern_restaurant","turkish_restaurant","lebanese_restaurant"],
+          "american": ["american_restaurant","hamburger_restaurant","steak_house"],
+          "french": ["french_restaurant"],
+          "vietnamese": ["vietnamese_restaurant"],
+          "seafood": ["seafood_restaurant"],
+          "vegetarian": ["vegan_restaurant","vegetarian_restaurant"],
+          "turkish": ["turkish_restaurant","middle_eastern_restaurant"],
+          "greek": ["greek_restaurant","mediterranean_restaurant"],
+        };
+        const allowedTypes = cuisineTypeMap[cuisine.toLowerCase()] || [];
+        if (allowedTypes.length > 0) {
+          const byType = spots.filter(spot => {
+            const t = spot.rawTypes || [];
+            return allowedTypes.some(at => t.includes(at));
+          });
+          filteredSpots = byType.length >= 2 ? byType : spots;
+        }
+      }
       }
       setResults(filteredSpots.slice(0, 20));
     } catch(e) { setError("Something went wrong. Please try again."); }
