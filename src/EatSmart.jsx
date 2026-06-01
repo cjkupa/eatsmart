@@ -69,8 +69,8 @@ async function geocodeSuburb(suburb, city) {
   return null;
 }
 
-async function searchRestaurants(lat, lon, radiusMeters) {
-  const url = `https://eatsmart-production-7bcf.up.railway.app/api/places?lat=${lat}&lng=${lon}&radius=${radiusMeters}`;
+async function searchRestaurants(lat, lon, radiusMeters, cuisineType) {
+  const url = `https://eatsmart-production-7bcf.up.railway.app/api/places?lat=${lat}&lng=${lon}&radius=${radiusMeters}&cuisine=${encodeURIComponent(cuisineType || "Any")}`;
   const res = await fetch(url);
   const data = await res.json();
   const places = data.results || [];
@@ -204,7 +204,7 @@ export default function EatSmart() {
       const radii = suburb === "All Suburbs" ? [2000, 3000] : [600, 1000, 1500];
       let spots = []; let usedRadius = 800;
       for (const r of radii) {
-        const elements = await searchRestaurants(coords.lat, coords.lon, r);
+        const elements = await searchRestaurants(coords.lat, coords.lon, r, cuisine);
         spots = elements.map((el, i) => formatRestaurant(el, i)).filter(Boolean);
         if (spots.length > 0) { usedRadius = r; break; }
       }
