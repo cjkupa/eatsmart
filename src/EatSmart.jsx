@@ -237,11 +237,28 @@ export default function EatSmart() {
       let filteredSpots = spots;
       if (cuisine !== "Any") {
         const keywords = cuisineKeywordMap[cuisine.toLowerCase()] || [cuisine.toLowerCase()];
+        // Also exclude known incompatible cuisine names
+        const excludeCuisineNames = {
+          "fish & chips": ["indian","bollywood","chinese","thai","mexican","korean","italian","japanese","sushi","vietnamese","turkish","greek","pizza","burger","kebab","noodle","curry","masala","tandoor","wok","dim sum","pho","banh","taco","burrito"],
+          "indian": ["fish","chips","sushi","japanese","chinese","thai","mexican","burger","pizza","kebab","noodle","pho"],
+          "chinese": ["indian","bollywood","thai","japanese","sushi","mexican","burger","pizza","fish","chips"],
+          "thai": ["indian","bollywood","chinese","japanese","sushi","mexican","burger","pizza","fish","chips"],
+          "italian": ["indian","bollywood","chinese","thai","japanese","sushi","mexican","burger","fish","chips","kebab"],
+          "pizza": ["indian","bollywood","chinese","thai","japanese","sushi","mexican","fish","chips","kebab","noodle"],
+          "burgers": ["indian","bollywood","chinese","thai","japanese","sushi","mexican","pizza","fish","chips","kebab","noodle"],
+        };
+        const excludeWords = excludeCuisineNames[cuisine.toLowerCase()] || [];
         const byKeyword = spots.filter(spot => {
           const txt = (spot.name + " " + spot.cuisine + " " + (spot.address || "")).toLowerCase();
-          return keywords.some(k => txt.includes(k));
+          const hasKeyword = keywords.some(k => txt.includes(k));
+          const hasExcluded = excludeWords.some(k => txt.includes(k));
+          return hasKeyword && !hasExcluded;
         });
-        filteredSpots = byKeyword.length >= 3 ? byKeyword : spots;
+        filteredSpots = byKeyword.length >= 3 ? byKeyword : spots.filter(spot => {
+          const txt = (spot.name + " " + spot.cuisine).toLowerCase();
+          const hasExcluded = excludeWords.some(k => txt.includes(k));
+          return !hasExcluded;
+        });
       }
       setResults(filteredSpots.slice(0, 20));
     } catch(e) { setError("Something went wrong. Please try again."); }
