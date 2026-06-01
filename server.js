@@ -12,8 +12,12 @@ app.use((req, res, next) => {
 // Search nearby restaurants
 app.get('/api/places', async (req, res) => {
   const { lat, lng, radius, cuisine } = req.query;
-  let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius || 2000}&type=restaurant&key=${GOOGLE_API_KEY}`;
-  if (cuisine && cuisine !== 'Any') url += `&keyword=${encodeURIComponent(cuisine)}`;
+  let url;
+  if (cuisine && cuisine !== 'Any') {
+    url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(cuisine + ' restaurant')}&location=${lat},${lng}&radius=${radius || 2000}&key=${GOOGLE_API_KEY}`;
+  } else {
+    url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius || 2000}&type=restaurant&key=${GOOGLE_API_KEY}`;
+  }
   try {
     const r = await fetch(url);
     const data = await r.json();
