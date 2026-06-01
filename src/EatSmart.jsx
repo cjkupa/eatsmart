@@ -431,7 +431,7 @@ export default function EatSmart() {
                   const q = val.toLowerCase();
                   const suburbMatches = (NZ_CITIES[city] || []).filter(s => q.length === 0 || s.toLowerCase().startsWith(q)).slice(0,8);
                   const suggestions = suburbMatches.map(s => ({label:s, city, suburb:s, type:"suburb"}));
-                  if (val.length > 3 && suburbMatches.length < 3) {
+                  if (val.length > 3) {
                     setStreetSearching(true);
                     const streetResults = await geocodeAddress(val, city);
                     streetResults.forEach(r => suggestions.push({...r, type:"street"}));
