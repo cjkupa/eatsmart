@@ -291,6 +291,7 @@ export default function EatSmart() {
     const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
+        {spot.photoRef && <img src={"https://eatsmart-production-7bcf.up.railway.app/api/photo?ref="+spot.photoRef} alt={spot.name} style={{width:"100%",height:150,objectFit:"cover",borderRadius:"16px 16px 0 0"}} onError={function(e){e.target.style.display="none";}} />}
         <div style={{padding:"14px 14px 8px"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
             <div style={{width:50,height:50,borderRadius:10,background:"#e83a2a",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:26}}>{spot.emoji}</div>
