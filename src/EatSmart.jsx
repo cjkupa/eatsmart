@@ -142,26 +142,21 @@ function searchLocations(query) {
 }
 
 async function geocodeAddress(query, city) {
-  const searches = [
-    query + ", " + city + ", New Zealand",
-    query + ", New Zealand"
-  ];
-  for (const q of searches) {
-    const url = "https://nominatim.openstreetmap.org/search?q=" + encodeURIComponent(q) + "&format=json&limit=5&countrycodes=nz&addressdetails=1";
-    try {
-      const res = await fetch(url, { headers: { "Accept-Language": "en", "User-Agent": "EatSmartNZ/1.0" } });
-      const data = await res.json();
-      if (data && data.length > 0) {
-        return data.slice(0,5).map(d => ({
-          label: d.display_name.replace(", New Zealand","").split(",").slice(0,3).join(","),
-          lat: parseFloat(d.lat),
-          lon: parseFloat(d.lon),
-          suburb: d.address?.suburb || d.address?.neighbourhood || d.address?.town || d.address?.village || "",
-          city: d.address?.city || d.address?.town || city
-        }));
-      }
-    } catch(e) {}
-  }
+  try {
+    const url = "https://eatsmart-production-7bcf.up.railway.app/api/geocode?q=" + encodeURIComponent(query + " " + city);
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.results && data.results.length > 0) {
+      return data.results.slice(0,5).map(r => ({
+        label: r.formatted_address.replace(", New Zealand",""),
+        lat: r.geometry.location.lat,
+        lon: r.geometry.location.lng,
+        suburb: r.address_components.find(c => c.types.includes("sublocality") || c.types.includes("neighborhood"))?.long_name || "",
+        city: r.address_components.find(c => c.types.includes("locality"))?.long_name || city,
+        type: "street"
+      }));
+    }
+  } catch(e) {}
   return [];
 }
 

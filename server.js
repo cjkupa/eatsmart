@@ -20,4 +20,16 @@ app.get('/api/photo', async (req, res) => {
   }
 });
 
+app.get('/api/geocode', async (req, res) => {
+  const { q } = req.query;
+  const url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(q + ', New Zealand') + '&key=' + GOOGLE_API_KEY + '&components=country:NZ';
+  try {
+    const r = await fetch(url);
+    const data = await r.json();
+    res.json(data);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 const PORT = process.env.PORT || 3001; app.listen(PORT, '0.0.0.0', () => console.log('Server running on port ' + PORT));
