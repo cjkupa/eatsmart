@@ -269,7 +269,10 @@ export default function EatSmart() {
   const handleSearch = useCallback(async () => {
     setLoading(true); setError(null); setSearched(true); setResults([]);
     try {
-      const coords = customCoords || await geocodeSuburb(suburb, city);
+      let coords = customCoords;
+      if (!coords) {
+        coords = await geocodeSuburb(suburb, city);
+      }
       if (!coords) { setError("Couldn't find " + suburb + ", " + city + ". Try a nearby suburb or street."); setLoading(false); return; }
       setSearchCoords(coords);
       const radii = suburb === "All Suburbs" ? [5000, 8000] : [1500, 2500, 4000];
