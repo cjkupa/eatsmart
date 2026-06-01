@@ -111,7 +111,7 @@ function formatRestaurant(place, index) {
 
 export default function EatSmart() {
   const cities = Object.keys(NZ_CITIES);
-  const [budget, setBudget] = useState(() => Number(localStorage.getItem("es_budget")) || 30);
+  const [budget, setBudget] = useState(null);
   const [city, setCity] = useState(() => localStorage.getItem("es_city") || "Auckland");
   const [suburb, setSuburb] = useState(() => localStorage.getItem("es_suburb") || "Remuera");
   const [cuisine, setCuisine] = useState("Any");
@@ -275,7 +275,6 @@ export default function EatSmart() {
   const topRatedSpots = [...results].filter(r => r.rating).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, resultLimit);
 
   const SpotCard = ({ spot }) => {
-    const meal = getMealSuggestion(spot.cuisine, budget);
     const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
@@ -311,7 +310,7 @@ export default function EatSmart() {
           <div style={{background:"#eafaf1",border:"1px solid #a9dfbf",borderRadius:12,padding:"8px 12px",marginBottom:10}}>
             <div style={{fontWeight:700,fontSize:14,color:"#27ae60"}}>{meal.emoji} {meal.dish}</div>
             <div style={{fontSize:12,color:"#888",marginTop:2}}>Est. price: {meal.typical}</div>
-            <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{display:"inline-block",marginTop:6,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"4px 12px",fontSize:12,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit"}}>💰 Submit real price</button>
+            <button onClick={() => { setPriceModal(spot); setPriceForm({ dish: "", price: "", date: new Date().toISOString().split('T')[0] }); }} style={{display:"inline-block",marginTop:8,background:"#e83a2a",color:"#fff",borderRadius:20,padding:"6px 16px",fontSize:13,fontWeight:700,border:"none",cursor:"pointer",fontFamily:"inherit"}}>💰 What did you pay here?</button>
           </div>
         ) : (
           <div style={{background:"#fff3f3",border:"1px solid #f5c6c6",borderRadius:10,padding:"6px 10px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -343,7 +342,7 @@ export default function EatSmart() {
             <img src="/logo.png" alt="EatSmart" style={{width:48,height:48,borderRadius:12,marginRight:10,boxShadow:"0 2px 8px rgba(0,0,0,0.2)"}} />
             <div><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span></div>
           </div>
-          <p style={S.tagline}>Find great food near you — on any budget</p>
+          <p style={S.tagline}>Find great local restaurants near you</p>
           <div style={S.wave} />
         </header>
         <div style={S.card}>
@@ -371,7 +370,7 @@ export default function EatSmart() {
         <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
           <div style={{fontSize:72,marginBottom:16}}>🍽️</div>
           <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:8}}>What are you hungry for?</div>
-          <div style={{fontSize:14,color:"#aaa",lineHeight:1.6}}>Set your budget, pick your suburb,<br/>and find great food nearby.</div>
+          <div style={{fontSize:14,color:"#aaa",lineHeight:1.6}}>Pick your suburb and find great local restaurants nearby.</div>
           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
             {["🐟 Fish & Chips","☕ Cafe","🍔 Burgers","🍕 Pizza","🍛 Indian"].map(c => (
               <span key={c} style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:20,padding:"8px 16px",fontSize:13,fontWeight:500,color:"#555",boxShadow:"0 2px 6px rgba(0,0,0,0.05)"}}>{c}</span>
