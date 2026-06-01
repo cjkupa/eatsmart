@@ -14,7 +14,8 @@ app.get('/api/places', async (req, res) => {
   const { lat, lng, radius, cuisine } = req.query;
   let url;
   if (cuisine && cuisine !== 'Any') {
-    url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(cuisine + ' restaurant')}&location=${lat},${lng}&radius=${radius || 2000}&key=${GOOGLE_API_KEY}`;
+    const searchQuery = cuisine.toLowerCase() === "fish & chips" ? "fish and chip shop" : cuisine + " restaurant";
+    url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&location=${lat},${lng}&radius=${radius || 5000}&key=${GOOGLE_API_KEY}`;
   } else {
     url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius || 2000}&type=restaurant&key=${GOOGLE_API_KEY}`;
   }
