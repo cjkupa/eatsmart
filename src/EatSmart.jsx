@@ -603,7 +603,7 @@ export default function EatSmart() {
 }
 
 const S = {
-  page:{fontFamily:"'Poppins',sans-serif",background:"#faf9f7",minHeight:"100vh",maxWidth:480,margin:"0 auto",paddingBottom:100},
+  page:{overflowX:"hidden",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",minHeight:"100vh",maxWidth:480,margin:"0 auto",paddingBottom:100},
   header:{background:"linear-gradient(135deg, #e83a2a 0%, #c0392b 60%, #a93226 100%)",padding:"28px 24px 48px",position:"relative",overflow:"hidden"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
