@@ -441,7 +441,7 @@ export default function EatSmart() {
                   setLocationSuggestions(suburbMatches.map(s => ({label:s, city, suburb:s, type:"suburb"})));
                 }}
                 onFocus={() => { setLocationSearch(""); setLocationSuggestions([]); }}
-                onBlur={() => setTimeout(() => setLocationSuggestions([]), 200)}
+                onBlur={() => { setTimeout(() => { setLocationSuggestions([]); if (locationSearch && locationSearch.length > 2) { const isSuburb = (NZ_CITIES[city] || []).some(s => s.toLowerCase() === locationSearch.toLowerCase()); if (!isSuburb) { setSuburb(locationSearch); localStorage.setItem("es_suburb", locationSearch); } setLocationSearch(null); } }, 250); }}
               />
               {locationSuggestions.length > 0 && (
                 <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.12)",zIndex:100,maxHeight:240,overflowY:"auto",marginTop:4}}>
