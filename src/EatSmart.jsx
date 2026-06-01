@@ -64,10 +64,6 @@ async function geocodeSuburb(suburb, city) {
   if (results.length > 0) return { lat: results[0].lat, lon: results[0].lon };
   return null;
 }
-    } catch (e) {}
-  }
-  return null;
-}
 
 async function searchRestaurants(lat, lon, radiusMeters, cuisineType) {
   const url = `https://eatsmart-production-7bcf.up.railway.app/api/places?lat=${lat}&lng=${lon}&radius=${radiusMeters}&cuisine=${encodeURIComponent(cuisineType || "Any")}`;
