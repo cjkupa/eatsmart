@@ -297,7 +297,6 @@ export default function EatSmart() {
         from_email: contactForm.email || 'No email provided',
         message: contactForm.message,
       });
-      });
       setContactSuccess(true);
       setTimeout(() => { setContactModal(false); setContactSuccess(false); setContactForm({ name: "", email: "", message: "" }); setActiveTab("search"); }, 2000);
     } catch(e) { alert("Failed to send. Please email us at eatsmartappnz@gmail.com"); }
