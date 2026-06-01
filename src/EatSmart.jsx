@@ -398,7 +398,7 @@ export default function EatSmart() {
             <img src="/logo.png" alt="EatSmart" style={{width:48,height:48,borderRadius:12,marginRight:10,boxShadow:"0 2px 8px rgba(0,0,0,0.2)"}} />
             <div><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span></div>
           </div>
-          <p style={S.tagline}>Find great local restaurants near you</p>
+          <p style={S.tagline}>Find great food near you</p>
           <div style={S.wave} />
         </header>
         <div style={S.card}>
@@ -478,7 +478,7 @@ export default function EatSmart() {
             
   
           </div>
-          <button style={{...S.cta, opacity: loading ? 0.7 : 1}} onClick={handleSearch} disabled={loading}>{loading ? "Searching…" : "Find somewhere to eat →"}</button>
+          <button style={{...S.cta, opacity: loading ? 0.7 : 1}} onClick={handleSearch} disabled={loading}>{loading ? "Searching…" : "Search nearby food →"}</button>
         </div>
       </div>
 
@@ -487,7 +487,7 @@ export default function EatSmart() {
         <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
           <div style={{fontSize:72,marginBottom:16}}>🍽️</div>
           <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:8}}>Find great food near you</div>
-          <div style={{fontSize:14,color:"#aaa",lineHeight:1.6}}>Pick your suburb and discover cafes, restaurants, takeaways and more nearby.</div>
+          <div style={{fontSize:14,color:"#aaa",lineHeight:1.6}}>Search by suburb, street or address to find cafes, restaurants and takeaways nearby.</div>
           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
             {["🐟 Fish & Chips","☕ Cafe","🍔 Burgers","🍕 Pizza","🍛 Indian"].map(c => (
               <span key={c} style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:20,padding:"8px 16px",fontSize:13,fontWeight:500,color:"#555",boxShadow:"0 2px 6px rgba(0,0,0,0.05)"}}>{c}</span>
