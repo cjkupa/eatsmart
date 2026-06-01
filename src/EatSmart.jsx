@@ -86,8 +86,10 @@ async function searchRestaurants(lat, lon, radiusMeters) {
 }
 
 function formatRestaurant(place, index) {
-  const name = place.name || "Unnamed Restaurant";
   const types = place.types || [];
+  const excludedTypes = ["lodging","motel","hotel","motor_lodge","rv_park","campground","real_estate_agency","car_rental","gas_station","convenience_store","grocery_or_supermarket","supermarket","pharmacy","bank","atm","hospital","doctor","dentist"];
+  if (types.some(t => excludedTypes.includes(t)) && !types.includes("restaurant") && !types.includes("food")) return null;
+  const name = place.name || "Unnamed Restaurant";
   const cuisine = types.length > 0 ? types[0].replace(/_/g, " ") : "restaurant";
   const addr = place.vicinity || null;
   const website = place.website || null;
@@ -199,7 +201,7 @@ export default function EatSmart() {
       let spots = []; let usedRadius = 800;
       for (const r of radii) {
         const elements = await searchRestaurants(coords.lat, coords.lon, r);
-        spots = elements.map((el, i) => formatRestaurant(el, i));
+        spots = elements.map((el, i) => formatRestaurant(el, i)).filter(Boolean);
         if (spots.length > 0) { usedRadius = r; break; }
       }
       setSearchRadius(usedRadius);
