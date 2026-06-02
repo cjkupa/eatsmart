@@ -393,7 +393,7 @@ export default function EatSmart() {
       <div ref={searchRef}>
         <header style={S.header}>
           <div style={S.logo}>
-            <img src="/logo.png" alt="EatSmart" style={{width:48,height:48,borderRadius:12,marginRight:10,boxShadow:"0 2px 8px rgba(0,0,0,0.2)"}} />
+            <img src="/logo.png" alt="EatSmart" style={{width:56,height:56,borderRadius:14,marginRight:12,boxShadow:"0 4px 12px rgba(0,0,0,0.25)"}} />
             <div><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span></div>
           </div>
           <p style={S.tagline}>Find great food near you</p>
@@ -611,7 +611,7 @@ const S = {
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
   logoSmart:{fontWeight:900,fontSize:36,color:"#ffd97d",letterSpacing:-1.5},
   logoIcon:{fontSize:28,marginLeft:6},
-  tagline:{color:"rgba(255,255,255,0.88)",fontSize:14,margin:0},
+  tagline:{color:"rgba(255,255,255,0.9)",fontSize:15,margin:"4px 0 0",fontWeight:500},
   wave:{position:"absolute",bottom:-2,left:0,right:0,height:36,background:"#faf9f7",borderRadius:"50% 50% 0 0 / 100% 100% 0 0"},
   card:{background:"#fff",borderRadius:24,margin:"0 16px",padding:"22px 18px",boxShadow:"0 8px 32px rgba(200,50,40,0.10)",marginTop:-18,position:"relative",zIndex:2,display:"flex",flexDirection:"column",gap:12},
   row:{display:"flex",gap:10,alignItems:"flex-start"},
