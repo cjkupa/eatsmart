@@ -467,9 +467,24 @@ export default function EatSmart() {
               )}
             </div>
           </div>
-          <div style={S.row}>
-            
-  
+<div style={S.row}>
+            <div style={{flex:1,position:"relative"}}>
+              <div style={{fontSize:11,fontWeight:600,color:"#aaa",marginBottom:3,paddingLeft:2}}>SUBURB / STREET</div>
+              <input
+                style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"11px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222",textAlign:"left"}}
+                placeholder="Suburb or street..."
+                value={locationSearch !== null ? locationSearch : suburb}
+                onChange={e => { const val = e.target.value; setLocationSearch(val); const q = val.toLowerCase(); setLocationSuggestions((NZ_CITIES[city]||[]).filter(s=>s.toLowerCase().startsWith(q)).slice(0,15).map(s=>({label:s,city,suburb:s,type:"suburb"}))); }}
+                onFocus={() => { setLocationSearch(""); setLocationSuggestions([]); }}
+                onBlur={() => { setTimeout(() => { setLocationSuggestions([]); if (locationSearch && locationSearch.length > 2) { const isSuburb = (NZ_CITIES[city]||[]).some(s=>s.toLowerCase()===locationSearch.toLowerCase()); if (!isSuburb) { setSuburb(locationSearch); localStorage.setItem("es_suburb",locationSearch); } setLocationSearch(null); } }, 250); }}
+              />
+              {locationSuggestions.length > 0 && (
+                <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.12)",zIndex:100,maxHeight:240,overflowY:"auto",marginTop:4,width:"100%",boxSizing:"border-box"}}>
+                  <div onMouseDown={() => { setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs"); setLocationSearch(null); setLocationSuggestions([]); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#e83a2a",fontWeight:600}}>All Suburbs in {city}</div>
+                  {locationSuggestions.map((s,i) => (<div key={i} onMouseDown={() => { setSuburb(s.suburb); localStorage.setItem("es_suburb",s.suburb); setLocationSearch(null); setLocationSuggestions([]); setSearched(false); setResults([]); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333"}}>{s.label}</div>))}
+                </div>
+              )}
+            </div>
           </div>
           <button style={{...S.cta, opacity: loading ? 0.7 : 1}} onClick={handleSearch} disabled={loading}>{loading ? "Searching…" : "Find food nearby →"}</button>
         </div>
@@ -638,7 +653,7 @@ export default function EatSmart() {
           { id: "search", emoji: "🏠", label: "Home" },
           { id: "opennow", emoji: "🕐", label: "Open Now" },
           { id: "saved", emoji: "❤️", label: "Saved" },
-          { id: "contact", emoji: "➕", label: "Add Spot" },
+          { id: "contact", emoji: "✉️", label: "Get in touch" },
         ].map(tab => (
           <button key={tab.id} style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}} onClick={() => handleTabPress(tab.id)}>
             <span style={{fontSize:22}}>{tab.emoji}</span>
