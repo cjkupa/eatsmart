@@ -421,7 +421,6 @@ export default function EatSmart() {
                 </div>
               )}
             </div>
-            </div>
             <div style={{flex:1,position:"relative"}}>
               <div style={{fontSize:11,fontWeight:600,color:"#aaa",marginBottom:3,paddingLeft:2}}>SUBURB / STREET</div>
               <input
