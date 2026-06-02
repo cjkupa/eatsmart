@@ -333,13 +333,7 @@ export default function EatSmart() {
 
   function handleTabPress(tabId) {
     setActiveTab(tabId);
-    if (tabId === "search") {
-      searchRef.current?.scrollIntoView({ behavior: "smooth" });
-    } else if (tabId === "opennow") {
-      openNowRef.current?.scrollIntoView({ behavior: "smooth" });
-    } else if (tabId === "saved") {
-      savedRef.current?.scrollIntoView({ behavior: "smooth" });
-    } else if (tabId === "contact") {
+    if (tabId === "contact") {
       setContactModal(true);
     }
   }
