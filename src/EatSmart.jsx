@@ -440,7 +440,7 @@ export default function EatSmart() {
                         setResults([]);
                       }
                     }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333",textAlign:"left"}}>
-                      {s.type === "street" ? "🗺️ " : "📍 "}{s.label}
+                      {s.label}
                     </div>
                   ))}
                 </div>
