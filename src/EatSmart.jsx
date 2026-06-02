@@ -358,13 +358,13 @@ export default function EatSmart() {
             <div style={{flex:1}}>
               <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
                 <div style={{fontWeight:700,fontSize:15,color:"#1a1a1a"}}>{spot.name}</div>
-                {featured && <span style={{background:"#ffd97d",color:"#a06000",borderRadius:20,padding:"1px 7px",fontSize:10,fontWeight:700}}>Featured</span>}
+                {featured && <span style={{background:"#ffd97d",color:"#7a4800",borderRadius:20,padding:"3px 10px",fontSize:11,fontWeight:800,boxShadow:"0 2px 6px rgba(255,180,0,0.3)"}}>⭐ Featured</span>}
               </div>
               <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:2}}>
                 {spot.rating && <span style={{fontWeight:800,fontSize:14,color:"#e67e22"}}>⭐ {spot.rating}</span>}
                 {spot.ratingCount && <span style={{fontSize:12,color:"#bbb"}}>({spot.ratingCount})</span>}
                 {spot.priceLevel !== null && spot.priceLevel !== undefined && <span style={{fontWeight:800,fontSize:14,color:"#27ae60"}}>{"$".repeat(spot.priceLevel + 1)}</span>}
-                {spot.isOpen && <span style={{fontWeight:600,fontSize:12,color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a"}}>{spot.isOpen}</span>}
+                {spot.isOpen && <span style={{fontWeight:700,fontSize:12,background:spot.isOpen.includes("Open") ? "#f0faf4" : "#fff3f3",color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a",padding:"2px 8px",borderRadius:8}}>{spot.isOpen.includes("Open") ? "✅ Open" : "❌ Closed"}</span>}
               </div>
               {spot.address && <div style={{fontSize:12,color:"#999",marginTop:4}}>{spot.address}</div>}
               {featured && featured.signatureDish && <div style={{fontSize:12,color:"#a06000",marginTop:4,fontWeight:600}}>{featured.signatureDish}</div>}
@@ -497,7 +497,7 @@ export default function EatSmart() {
       {!loading && results.length > 0 && (
         <>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 16px 4px"}}>
-            <span style={{fontSize:17,color:"#222"}}><strong>{results.length} spots</strong> near you</span>
+            <span style={{fontSize:20,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#555"}}>spots near you</span></span>
             <span style={{fontSize:13,color:"#aaa"}}>📍 {suburb}, {city}</span>
           </div>
           <div style={{textAlign:"center",fontSize:12,color:"#bbb",marginBottom:8}}>Within {searchRadius >= 1000 ? (searchRadius/1000).toFixed(1)+"km" : searchRadius+"m"} of {suburb}</div>
@@ -507,7 +507,7 @@ export default function EatSmart() {
               <button key={n} onClick={() => setResultLimit(n)} style={{background: resultLimit===n ? "#e83a2a" : "#fff", color: resultLimit===n ? "#fff" : "#888", border:"1.5px solid", borderColor: resultLimit===n ? "#e83a2a" : "#ede8e3", borderRadius:20, padding:"4px 14px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit"}}>{n}</button>
             ))}
           </div>
-          <div style={{textAlign:"center",fontSize:11,color:"#bbb",paddingBottom:8}}>Powered by Google Places</div>
+          <div style={{textAlign:"center",fontSize:10,color:"#ddd",paddingBottom:6}}>Powered by Google Places</div>
           {results.slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
         </>
       )}
