@@ -346,7 +346,7 @@ export default function EatSmart() {
     const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
-        {spot.photoRef && <img src={"https://eatsmart-production-7bcf.up.railway.app/api/photo?ref="+spot.photoRef} alt={spot.name} style={{width:"100%",height:150,objectFit:"cover",borderRadius:"16px 16px 0 0"}} onError={function(e){e.target.style.display="none";}} />}
+        {spot.photoRef && <img src={"https://eatsmart-production-7bcf.up.railway.app/api/photo?ref="+spot.photoRef} alt={spot.name} style={{width:"100%",height:110,objectFit:"cover",borderRadius:"16px 16px 0 0"}} onError={function(e){e.target.style.display="none";}} />}
         <div style={{padding:"14px 14px 8px"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
             <div style={{width:50,height:50,borderRadius:10,background:"#e83a2a",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:26}}>{spot.emoji}</div>
@@ -470,7 +470,7 @@ export default function EatSmart() {
             
   
           </div>
-          <button style={{...S.cta, opacity: loading ? 0.7 : 1}} onClick={handleSearch} disabled={loading}>{loading ? "Searching…" : "Search nearby food →"}</button>
+          <button style={{...S.cta, opacity: loading ? 0.7 : 1}} onClick={handleSearch} disabled={loading}>{loading ? "Searching…" : "Find food nearby →"}</button>
         </div>
       </div>
 
@@ -498,7 +498,7 @@ export default function EatSmart() {
             <div style={S.resultsHeader}><span style={S.resultsCount}><strong>{results.length} spots</strong> near you</span><span style={S.resultsLocation}>📍 {suburb}, {city}</span></div>
             <div style={S.radiusBadge}>🔍 Within {searchRadius >= 1000 ? (searchRadius/1000).toFixed(1)+"km" : searchRadius+"m"} of {suburb}</div>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
-              <span style={{fontSize:13,color:"#888"}}>Show:</span>
+              <span style={{fontSize:13,color:"#888"}}>Show spots:</span>
               {[5,10,20].map(n => (
                 <button key={n} onClick={() => setResultLimit(n)} style={{background: resultLimit===n ? "#e83a2a" : "#fff", color: resultLimit===n ? "#fff" : "#888", border:"1.5px solid", borderColor: resultLimit===n ? "#e83a2a" : "#ede8e3", borderRadius:20, padding:"4px 14px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit"}}>{n}</button>
               ))}
