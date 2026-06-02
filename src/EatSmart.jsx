@@ -421,31 +421,6 @@ export default function EatSmart() {
                 </div>
               )}
             </div>
-                  {streetSearching && <div style={{padding:"11px 16px",fontSize:13,color:"#aaa"}}>Searching streets...</div>}
-                  {locationSuggestions.map((s,i) => (
-                    <div key={i} onMouseDown={() => {
-                      if (s.type === "street") {
-                        setCustomCoords({lat: s.lat, lon: s.lon});
-                        setLocationSearch(s.label);
-                        setLocationSuggestions([]);
-                        setSearched(false);
-                        setResults([]);
-                      } else {
-                        setSuburb(s.suburb);
-                        setCustomCoords(null);
-                        localStorage.setItem("es_suburb",s.suburb);
-                        setLocationSearch(null);
-                        setLocationSuggestions([]);
-                        setSearched(false);
-                        setResults([]);
-                      }
-                    }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333",textAlign:"left"}}>
-                      {s.label}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
           <div style={S.row}>
             <div style={{flex:1,position:"relative"}}>
