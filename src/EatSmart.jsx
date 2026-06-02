@@ -452,15 +452,6 @@ export default function EatSmart() {
           <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:8}}>Find great food near you</div>
           <div style={{fontSize:14,color:"#aaa",lineHeight:1.6}}>Search by suburb, street or address to find cafes, restaurants and takeaways nearby.</div>
           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
-            )} placeholder="so we can reply to you" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
-                  </div>
-                  <div>
-                    <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>Message</label>
-                    <textarea value={contactForm.message} onChange={e => setContactForm(p => ({...p, message: e.target.value}))} placeholder="Tell us what's on your mind..." rows={4} style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",resize:"none"}} />
-                  </div>
-                  <button onClick={handleContactSubmit} disabled={contactSubmitting || !contactForm.message} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:14,padding:"16px",fontSize:16,fontWeight:700,cursor:"pointer",fontFamily:"inherit",opacity: contactSubmitting || !contactForm.message ? 0.6 : 1}}>
-                    {contactSubmitting ? "Sending…" : "Send Message 🙌"}
-                  </button>
                   <a href="mailto:eatsmartappnz@gmail.com" style={{textAlign:"center",fontSize:13,color:"#aaa",textDecoration:"none"}}>or email us at eatsmartappnz@gmail.com</a>
                 </div>
               </>
