@@ -347,6 +347,7 @@ export default function EatSmart() {
   const suburbs = NZ_CITIES[city] || [];
   const openSpots = results.filter(r => r.isOpen && r.isOpen.includes("Open"));
   const savedSpots = results.filter(r => saved[r.id]);
+  const savedSpots = results.filter(r => saved[r.id]);
   const topRatedSpots = [...results].filter(r => r.rating).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, resultLimit);
 
   const SpotCard = ({ spot }) => {
@@ -510,7 +511,9 @@ export default function EatSmart() {
             ))}
           </div>
           <div style={{textAlign:"center",fontSize:10,color:"#ddd",paddingBottom:6}}>Powered by Google Places</div>
-          {results.slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
+          {activeTab === "opennow" && openSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
+          {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet — tap the Save button on any restaurant!</div>}
+          {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : results).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
         </>
       )}
       {/* PRICE SUBMISSION MODAL */}
