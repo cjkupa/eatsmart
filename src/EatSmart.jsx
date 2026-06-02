@@ -163,7 +163,7 @@ export default function EatSmart() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searched, setSearched] = useState(false);
-  const [saved, setSaved] = useState({});
+  const [saved, setSaved] = useState(() => { try { return JSON.parse(localStorage.getItem("es_saved") || "{}"); } catch(e) { return {}; } });
   const [locating, setLocating] = useState(false);
   const [searchRadius, setSearchRadius] = useState(800);
   const [typeMode, setTypeMode] = useState(false);
@@ -297,7 +297,7 @@ export default function EatSmart() {
     setLoading(false);
   }, [suburb, city]);
 
-  function toggleSave(id) { setSaved(prev => ({ ...prev, [id]: !prev[id] })); }
+  function toggleSave(id) { setSaved(prev => { const next = { ...prev, [id]: !prev[id] }; if (!next[id]) delete next[id]; localStorage.setItem("es_saved", JSON.stringify(next)); return next; }); }
 
   async function handleContactSubmit() {
     if (!contactForm.message) return;
