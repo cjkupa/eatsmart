@@ -456,6 +456,27 @@ export default function EatSmart() {
         </div>
       )}
 
+      {/* RESULTS */}
+      {loading && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>Searching...</div>}
+      {error && <div style={{margin:"16px",padding:"14px 16px",background:"#fff3f3",border:"1.5px solid #f5c6c6",borderRadius:14,color:"#e83a2a",fontSize:14}}>{error}</div>}
+      {!loading && searched && results.length === 0 && !error && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>No restaurants found near {suburb}. Try a nearby suburb.</div>}
+      {!loading && results.length > 0 && (
+        <>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 16px 4px"}}>
+            <span style={{fontSize:17,color:"#222"}}><strong>{results.length} spots</strong> near you</span>
+            <span style={{fontSize:13,color:"#aaa"}}>📍 {suburb}, {city}</span>
+          </div>
+          <div style={{textAlign:"center",fontSize:12,color:"#bbb",marginBottom:8}}>Within {searchRadius >= 1000 ? (searchRadius/1000).toFixed(1)+"km" : searchRadius+"m"} of {suburb}</div>
+          <div style={{display:"flex",alignItems:"center",gap:8,padding:"0 16px 12px"}}>
+            <span style={{fontSize:13,color:"#888"}}>Show spots:</span>
+            {[5,10,20].map(n => (
+              <button key={n} onClick={() => setResultLimit(n)} style={{background: resultLimit===n ? "#e83a2a" : "#fff", color: resultLimit===n ? "#fff" : "#888", border:"1.5px solid", borderColor: resultLimit===n ? "#e83a2a" : "#ede8e3", borderRadius:20, padding:"4px 14px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit"}}>{n}</button>
+            ))}
+          </div>
+          <div style={{textAlign:"center",fontSize:11,color:"#bbb",paddingBottom:8}}>Powered by Google Places</div>
+          {results.slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
+        </>
+      )}
       {/* PRICE SUBMISSION MODAL */}
       {priceModal && (
         <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
