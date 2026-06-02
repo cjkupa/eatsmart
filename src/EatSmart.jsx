@@ -447,7 +447,7 @@ export default function EatSmart() {
       {/* HERO EMPTY STATE */}
       {!searched && (
         <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
-          <div style={{fontSize:72,marginBottom:16}}>🍽️</div>
+          <div style={{fontSize:72,marginBottom:16}}>🍴</div>
           <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:8}}>Find great food near you</div>
           <div style={{fontSize:14,color:"#aaa",lineHeight:1.6}}>Search by suburb, street or address to find cafes, restaurants and takeaways nearby.</div>
           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
