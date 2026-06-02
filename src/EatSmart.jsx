@@ -421,26 +421,6 @@ export default function EatSmart() {
                 </div>
               )}
             </div>
-            <div style={{flex:1,position:"relative"}}>
-              <input
-                style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"13px 14px 13px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222",textAlign:"left"}}
-                placeholder="Suburb or street address..."
-                value={locationSearch !== null ? locationSearch : suburb}
-                onChange={e => {
-                  const val = e.target.value;
-                  setLocationSearch(val);
-                  const q = val.toLowerCase();
-                  const suburbMatches = (NZ_CITIES[city] || []).filter(s => s.toLowerCase().startsWith(q)).slice(0,10);
-                  setLocationSuggestions(suburbMatches.map(s => ({label:s, city, suburb:s, type:"suburb"})));
-                }}
-                onFocus={() => { setLocationSearch(""); setLocationSuggestions([]); }}
-                onBlur={() => { setTimeout(() => { setLocationSuggestions([]); if (locationSearch && locationSearch.length > 2) { const isSuburb = (NZ_CITIES[city] || []).some(s => s.toLowerCase() === locationSearch.toLowerCase()); if (!isSuburb) { setSuburb(locationSearch); localStorage.setItem("es_suburb", locationSearch); } setLocationSearch(null); } }, 250); }}
-              />
-              {locationSuggestions.length > 0 && (
-                <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.12)",zIndex:100,maxHeight:240,overflowY:"auto",marginTop:4}}>
-                  <div onMouseDown={() => { setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs"); setLocationSearch(null); setLocationSuggestions([]); setSearched(false); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#e83a2a",fontWeight:600,textAlign:"left"}}>
-                    📍 All Suburbs in {city}
-                  </div>
                   {streetSearching && <div style={{padding:"11px 16px",fontSize:13,color:"#aaa"}}>Searching streets...</div>}
                   {locationSuggestions.map((s,i) => (
                     <div key={i} onMouseDown={() => {
@@ -497,97 +477,7 @@ export default function EatSmart() {
           <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:8}}>Find great food near you</div>
           <div style={{fontSize:14,color:"#aaa",lineHeight:1.6}}>Search by suburb, street or address to find cafes, restaurants and takeaways nearby.</div>
           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
-            {["🐟 Fish & Chips","☕ Cafe","🍔 Burgers","🍕 Pizza","🍛 Indian"].map(c => (
-              <span key={c} style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:20,padding:"8px 16px",fontSize:13,fontWeight:500,color:"#555",boxShadow:"0 2px 6px rgba(0,0,0,0.05)"}}>{c}</span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* SEARCH RESULTS */}
-      {searched && (
-        <div style={S.results}>
-          {loading && <div style={S.loadingWrap}><div style={S.spinner}/><p style={S.loadingText}>Finding restaurants in {suburb}, {city}…</p></div>}
-          {error && <div style={S.errorBox}>⚠️ {error}</div>}
-          {!loading && !error && results.length === 0 && <div style={S.emptyBox}>😕 No restaurants found near {suburb}. Try a nearby suburb.</div>}
-          {!loading && results.length > 0 && <>
-            <div style={S.resultsHeader}><span style={S.resultsCount}><strong>{results.length} spots</strong> near you</span><span style={S.resultsLocation}>📍 {suburb}, {city}</span></div>
-            <div style={S.radiusBadge}>🔍 Within {searchRadius >= 1000 ? (searchRadius/1000).toFixed(1)+"km" : searchRadius+"m"} of {suburb}</div>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
-              <span style={{fontSize:13,color:"#888"}}>Show spots:</span>
-              {[5,10,20].map(n => (
-                <button key={n} onClick={() => setResultLimit(n)} style={{background: resultLimit===n ? "#e83a2a" : "#fff", color: resultLimit===n ? "#fff" : "#888", border:"1.5px solid", borderColor: resultLimit===n ? "#e83a2a" : "#ede8e3", borderRadius:20, padding:"4px 14px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit"}}>{n}</button>
-              ))}
-            </div>
-          </>}
-          {!loading && results.slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
-          {!loading && results.length > resultLimit && (
-            <div style={{textAlign:"center",padding:"8px 0 16px"}}>
-              <button onClick={() => setResultLimit(r => Math.min(r + 5, 20))} style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:20,padding:"10px 24px",fontSize:14,fontWeight:600,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit"}}>Show more results ↓</button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* OPEN NOW SECTION */}
-      <div ref={openNowRef} style={{...S.results, paddingTop:24, borderTop:"2px solid #f0ebe6", marginTop:8, display: activeTab === "opennow" ? "block" : "none"}}>
-        <div style={{fontWeight:800,fontSize:20,color:"#1a1a1a",marginBottom:4}}>🕐 Open Right Now</div>
-        <div style={{fontSize:13,color:"#aaa",marginBottom:16}}>{suburb}, {city}</div>
-        {!searched
-          ? <div style={S.emptyBox}>🔍 Do a search first to see what's open!</div>
-          : openSpots.length === 0
-          ? <div style={S.emptyBox}>😕 No confirmed open places in your last search.</div>
-          : openSpots.map(spot => <SpotCard key={spot.id} spot={spot} />)
-        }
-      </div>
-
-      {/* SAVED SECTION */}
-      <div ref={savedRef} style={{...S.results, paddingTop:24, borderTop:"2px solid #f0ebe6", marginTop:8, display: activeTab === "saved" ? "block" : "none"}}>
-        <div style={{fontWeight:800,fontSize:20,color:"#1a1a1a",marginBottom:16}}>❤️ Saved Places</div>
-        {savedSpots.length === 0
-          ? <div style={S.emptyBox}>Heart a restaurant to save it here!</div>
-          : savedSpots.map(spot => <SpotCard key={spot.id} spot={spot} />)
-        }
-      </div>
-
-
-
-      {/* FOOTER */}
-      <div style={{textAlign:"center",padding:"24px 16px 8px",borderTop:"1px solid #f0ebe6",marginTop:16}}>
-
-        <div style={{background:"#f8f8f8",border:"1.5px solid #ede8e3",borderRadius:16,padding:"16px",marginBottom:12}}>
-          <p style={{fontSize:14,fontWeight:700,color:"#333",margin:"0 0 4px"}}>✉️ Missing a restaurant?</p>
-          <p style={{fontSize:12,color:"#888",margin:"0 0 10px"}}>Let us know and we'll get it added!</p>
-          <a href="mailto:eatsmartapp@gmail.com" style={{display:"inline-block",background:"#333",color:"#fff",borderRadius:20,padding:"8px 20px",fontSize:13,fontWeight:700,textDecoration:"none"}}>Get in touch →</a>
-        </div>
-        <p style={{fontSize:11,color:"#ccc",marginTop:12}}>© 2025 EatSmart NZ · eatsmart.co.nz</p>
-      </div>
-
-      {/* CONTACT MODAL */}
-      {contactModal && (
-        <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
-          <div style={{background:"#fff",borderRadius:24,padding:"24px",width:"100%",maxWidth:420,boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}>
-            {contactSuccess ? (
-              <div style={{textAlign:"center",padding:"20px 0"}}>
-                <div style={{fontSize:48,marginBottom:12}}>🙌</div>
-                <div style={{fontWeight:800,fontSize:20,color:"#27ae60"}}>Message sent!</div>
-                <div style={{fontSize:14,color:"#888",marginTop:8}}>Thanks for getting in touch — we'll get back to you soon!</div>
-              </div>
-            ) : (
-              <>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-                  <div style={{fontWeight:800,fontSize:18,color:"#1a1a1a"}}>✉️ Get in Touch</div>
-                  <button onClick={() => { setContactModal(false); setActiveTab("search"); }} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#aaa"}}>✕</button>
-                </div>
-                <p style={{fontSize:13,color:"#888",marginBottom:16}}>Missing a restaurant? Found a bug? Have an idea? We'd love to hear from you!</p>
-                <div style={{display:"flex",flexDirection:"column",gap:12}}>
-                  <div>
-                    <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>Your name (optional)</label>
-                    <input value={contactForm.name} onChange={e => setContactForm(p => ({...p, name: e.target.value}))} placeholder="e.g. Sarah" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
-                  </div>
-                  <div>
-                    <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>Your email (optional)</label>
-                    <input type="email" value={contactForm.email} onChange={e => setContactForm(p => ({...p, email: e.target.value}))} placeholder="so we can reply to you" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
+            )} placeholder="so we can reply to you" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
                   </div>
                   <div>
                     <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>Message</label>
