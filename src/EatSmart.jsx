@@ -394,6 +394,7 @@ export default function EatSmart() {
             <div><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span></div>
           </div>
           <p style={S.tagline}>Find great food near you</p>
+          <p style={{color:"rgba(255,255,255,0.7)",fontSize:12,margin:"4px 0 0",textAlign:"center"}}>Cafes, restaurants and takeaways — filter by budget</p>
           <div style={S.wave} />
         </header>
         <div style={S.card}>
