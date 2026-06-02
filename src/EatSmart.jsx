@@ -156,6 +156,7 @@ export default function EatSmart() {
   const [city, setCity] = useState(() => localStorage.getItem("es_city") || "Auckland");
   const [suburb, setSuburb] = useState(() => localStorage.getItem("es_suburb") || "Remuera");
   const [cuisine, setCuisine] = useState("Any");
+  const [priceFilter, setPriceFilter] = useState("Any");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -285,7 +286,12 @@ export default function EatSmart() {
         if (spots.length > 0) { usedRadius = r; break; }
       }
       setSearchRadius(usedRadius);
-      setResults(spots.slice(0, 20));
+      const priceMap = {"Any": null, "$": 0, "$": 1, "$$": 2, "$$": 3};
+      const pLevel = priceMap[priceFilter];
+      const filteredByPrice = pLevel !== null
+        ? spots.filter(s => s.priceLevel === pLevel)
+        : spots;
+      setResults((filteredByPrice.length > 0 ? filteredByPrice : spots).slice(0, 20));
     } catch(e) { setError("Something went wrong. Please try again."); }
     setLoading(false);
   }, [suburb, city]);
@@ -437,6 +443,38 @@ export default function EatSmart() {
                   {locationSuggestions.map((s,i) => (<div key={i} onMouseDown={() => { setSuburb(s.suburb); localStorage.setItem("es_suburb",s.suburb); setLocationSearch(null); setLocationSuggestions([]); setSearched(false); setResults([]); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333"}}>{s.label}</div>))}
                 </div>
               )}
+            </div>
+          </div>
+          <div style={{marginBottom:12}}>
+            <div style={{fontSize:11,fontWeight:600,color:"#aaa",marginBottom:6,paddingLeft:2}}>BUDGET GUIDE</div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {[
+                {label:"Any", desc:""},
+                {label:"$", desc:"Under $15"},
+                {label:"$", desc:"$15–35"},
+                {label:"$$", desc:"$35–60"},
+                {label:"$$", desc:"$60+"}
+              ].map(p => (
+                <button key={p.label} onClick={() => setPriceFilter(p.label)} style={{
+                  background: priceFilter===p.label ? "#e83a2a" : "#fff",
+                  color: priceFilter===p.label ? "#fff" : "#555",
+                  border:"1.5px solid",
+                  borderColor: priceFilter===p.label ? "#e83a2a" : "#ede8e3",
+                  borderRadius:10,
+                  padding:"6px 12px",
+                  fontSize:13,
+                  fontWeight:600,
+                  cursor:"pointer",
+                  fontFamily:"inherit",
+                  display:"flex",
+                  flexDirection:"column",
+                  alignItems:"center",
+                  gap:1
+                }}>
+                  <span>{p.label}</span>
+                  {p.desc && <span style={{fontSize:9,fontWeight:400,opacity:0.8}}>{p.desc}</span>}
+                </button>
+              ))}
             </div>
           </div>
           <button style={{...S.cta, opacity: loading ? 0.7 : 1}} onClick={handleSearch} disabled={loading}>{loading ? "Searching…" : "Find food nearby →"}</button>
