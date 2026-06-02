@@ -273,7 +273,7 @@ export default function EatSmart() {
           coords = { lat: streetResults[0].lat, lon: streetResults[0].lon };
         }
       }
-      if (!coords) { setError("Couldn't find that location. Try a suburb name or street address."); setLoading(false); return; }
+      if (!coords) { setError('Could not find ' + suburb + ' in ' + city + '. Try a different suburb or street.'); setLoading(false); return; }
       setSearchCoords(coords);
       const isStreetSearch = suburb && !Object.values(NZ_CITIES).flat().includes(suburb) && suburb !== "All Suburbs";
       const radii = suburb === "All Suburbs" ? [5000, 8000] : isStreetSearch ? [300, 600, 1000] : [1500, 2500, 4000];
