@@ -365,6 +365,7 @@ export default function EatSmart() {
               <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:2}}>
                 {spot.rating && <span style={{fontWeight:800,fontSize:14,color:"#e67e22"}}>⭐ {spot.rating}</span>}
                 {spot.ratingCount && <span style={{fontSize:12,color:"#bbb"}}>({spot.ratingCount})</span>}
+                <span style={{background:"#fff5f4",border:"1px solid #ffd5d0",borderRadius:6,padding:"2px 6px",fontSize:10,fontWeight:600,color:"#e83a2a",whiteSpace:"nowrap"}}>{spot.cuisine}</span>
                 {spot.priceLevel !== null && spot.priceLevel !== undefined && <span style={{fontWeight:800,fontSize:14,color:"#27ae60"}}>{"$".repeat(spot.priceLevel + 1)}</span>}
                 {spot.isOpen && <span style={{fontWeight:700,fontSize:12,background:spot.isOpen.includes("Open") ? "#f0faf4" : "#fff3f3",color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a",padding:"2px 8px",borderRadius:8}}>{spot.isOpen.includes("Open") ? "✅ Open" : "❌ Closed"}</span>}
               </div>
