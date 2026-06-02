@@ -638,7 +638,7 @@ export default function EatSmart() {
           { id: "search", emoji: "🏠", label: "Home" },
           { id: "opennow", emoji: "🕐", label: "Open Now" },
           { id: "saved", emoji: "❤️", label: "Saved" },
-          { id: "contact", emoji: "✉️", label: "Contact" },
+          { id: "contact", emoji: "➕", label: "Add Spot" },
         ].map(tab => (
           <button key={tab.id} style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}} onClick={() => handleTabPress(tab.id)}>
             <span style={{fontSize:22}}>{tab.emoji}</span>
@@ -660,7 +660,7 @@ const S = {
   tagline:{color:"rgba(255,255,255,0.88)",fontSize:14,margin:0},
   wave:{position:"absolute",bottom:-2,left:0,right:0,height:36,background:"#faf9f7",borderRadius:"50% 50% 0 0 / 100% 100% 0 0"},
   card:{background:"#fff",borderRadius:24,margin:"0 16px",padding:"22px 18px",boxShadow:"0 8px 32px rgba(200,50,40,0.10)",marginTop:-18,position:"relative",zIndex:2,display:"flex",flexDirection:"column",gap:12},
-  row:{display:"flex",gap:10},
+  row:{display:"flex",gap:10,alignItems:"flex-start"},
   locateBtn:{flex:1,display:"flex",alignItems:"center",gap:8,background:"#fff5f4",border:"1.5px solid #ffd5d0",borderRadius:14,padding:"14px 16px",cursor:"pointer",fontSize:15},
   typeBtn:{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:14,padding:"14px 18px",cursor:"pointer",fontSize:15,color:"#999",fontFamily:"inherit"},
   selectWrap:{flex:1,position:"relative"},
