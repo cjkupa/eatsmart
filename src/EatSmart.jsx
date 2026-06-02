@@ -484,7 +484,7 @@ export default function EatSmart() {
         <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
           <div style={{fontSize:72,marginBottom:16}}>🍴</div>
           <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:6}}>Ready to eat?</div>
-          <div style={{fontSize:14,color:"#888",marginBottom:8}}>Search by city, suburb or street to find food near you</div>
+          <div style={{fontSize:14,color:"#888",marginBottom:8}}>Search by city, suburb or street and by budget</div>
           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
           </div>
         </div>
@@ -574,7 +574,7 @@ export default function EatSmart() {
 
 const S = {
   page:{overflowX:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",minHeight:"100vh",maxWidth:480,margin:"0 auto",paddingBottom:100},
-  header:{background:"#e83a2a",padding:"28px 24px 48px",position:"relative",overflow:"hidden"},
+  header:{background:"#e83a2a",padding:"16px 20px 40px",position:"relative",overflow:"hidden"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
   logoSmart:{fontWeight:900,fontSize:36,color:"#ffd97d",letterSpacing:-1.5},
