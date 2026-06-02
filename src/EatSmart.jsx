@@ -338,8 +338,10 @@ export default function EatSmart() {
     }
     if (tabId === "search" || activeTab !== tabId) {
       setActiveTab(tabId);
+      if (tabId === "search") window.scrollTo({top:0,behavior:"smooth"});
     } else {
       setActiveTab("search");
+      window.scrollTo({top:0,behavior:"smooth"});
     }
   }
 
