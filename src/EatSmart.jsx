@@ -92,7 +92,9 @@ function formatRestaurant(place, index) {
   if (excludedNameWords.some(w => nameLower.includes(w))) return null;
 
   const name = place.name || "Unnamed Restaurant";
-  const cuisine = types.length > 0 ? types[0].replace(/_/g, " ") : "restaurant";
+  const cmap={"meal_delivery":"Takeaway","meal_takeaway":"Takeaway","fast_food_restaurant":"Fast Food","american_restaurant":"American","chinese_restaurant":"Chinese","indian_restaurant":"Indian","italian_restaurant":"Italian","japanese_restaurant":"Japanese","korean_restaurant":"Korean","mexican_restaurant":"Mexican","thai_restaurant":"Thai","vietnamese_restaurant":"Vietnamese","french_restaurant":"French","mediterranean_restaurant":"Mediterranean","seafood_restaurant":"Seafood","steak_house":"Steakhouse","sushi_restaurant":"Sushi","pizza_restaurant":"Pizza","hamburger_restaurant":"Burgers","cafe":"Cafe","bakery":"Bakery","bar":"Bar","restaurant":"Restaurant"};
+  const ct=types.find(t=>cmap[t]);
+  const cuisine=ct?cmap[ct]:types.length>0?types[0].replace(/_/g," "):"Restaurant";
   const addr = place.vicinity || null;
   const website = place.website || null;
   const phone = place.formatted_phone_number || null;
