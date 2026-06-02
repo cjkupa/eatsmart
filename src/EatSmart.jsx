@@ -346,17 +346,17 @@ export default function EatSmart() {
     const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
-        {spot.photoRef && <img src={"https://eatsmart-production-7bcf.up.railway.app/api/photo?ref="+spot.photoRef} alt={spot.name} style={{width:"100%",height:110,objectFit:"cover",borderRadius:"16px 16px 0 0"}} onError={function(e){e.target.style.display="none";}} />}
+        {spot.photoRef && <img src={"https://eatsmart-production-7bcf.up.railway.app/api/photo?ref="+spot.photoRef} alt={spot.name} style={{width:"100%",height:90,objectFit:"cover",borderRadius:"16px 16px 0 0"}} onError={function(e){e.target.style.display="none";}} />}
         <div style={{padding:"14px 14px 8px"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-            <div style={{width:50,height:50,borderRadius:10,background:"#e83a2a",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:26}}>{spot.emoji}</div>
+            <div style={{background:"#fff5f4",border:"1px solid #ffd5d0",borderRadius:8,padding:"3px 8px",fontSize:11,fontWeight:700,color:"#e83a2a",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
             <div style={{flex:1}}>
               <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
                 <div style={{fontWeight:700,fontSize:15,color:"#1a1a1a"}}>{spot.name}</div>
                 {featured && <span style={{background:"#ffd97d",color:"#a06000",borderRadius:20,padding:"1px 7px",fontSize:10,fontWeight:700}}>Featured</span>}
               </div>
               <div style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#888",flexWrap:"wrap"}}>
-                {spot.rating && <span style={{fontWeight:700,color:"#e67e22"}}>{spot.rating} stars</span>}
+                {spot.rating && <span style={{fontWeight:700,color:"#e67e22"}}>⭐ {spot.rating}</span>}
                 {spot.ratingCount && <span>({spot.ratingCount})</span>}
                 <span style={{color:"#ccc"}}>|</span>
                 <span>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
@@ -398,8 +398,9 @@ export default function EatSmart() {
 
           <div style={S.row}>
             <div style={{flex:1,position:"relative"}}>
+              <div style={{fontSize:11,fontWeight:600,color:"#aaa",marginBottom:3,paddingLeft:2}}>CITY</div>
               <input
-                style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"13px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222",textAlign:"left"}}
+                style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"11px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222",textAlign:"left"}}
                 placeholder="Search city..."
                 value={citySearch !== null ? citySearch : city}
                 onChange={e => {
