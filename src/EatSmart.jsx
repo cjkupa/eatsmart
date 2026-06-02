@@ -332,9 +332,14 @@ export default function EatSmart() {
   }
 
   function handleTabPress(tabId) {
-    setActiveTab(tabId);
     if (tabId === "contact") {
       setContactModal(true);
+      return;
+    }
+    if (activeTab === tabId) {
+      setActiveTab("search");
+    } else {
+      setActiveTab(tabId);
     }
   }
 
