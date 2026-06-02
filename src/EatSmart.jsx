@@ -396,7 +396,7 @@ export default function EatSmart() {
             <img src="/logo.png" alt="EatSmart" style={{width:56,height:56,borderRadius:14,marginRight:12,boxShadow:"0 4px 12px rgba(0,0,0,0.25)"}} />
             <div><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span></div>
           </div>
-          <p style={S.tagline}>Find great food near you</p>
+          <p style={S.tagline}>Eat out smarter near you</p>
           <p style={{color:"rgba(255,255,255,0.75)",fontSize:12,margin:"4px 0 0",textAlign:"center"}}>Restaurants, Cafes, Takeaways & more</p>
           <div style={S.wave} />
         </header>
@@ -450,17 +450,17 @@ export default function EatSmart() {
             <div style={{fontSize:11,fontWeight:600,color:"#aaa",marginBottom:6,paddingLeft:2}}>BUDGET GUIDE</div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
               {[
-                {label:"Any", desc:"All budgets"},
+                {label:"Any", desc:"All prices"},
                 {label:"$", desc:"Under $15"},
-                {label:"$$", desc:"$15-35"},
-                {label:"$$$", desc:"$35-60"},
-                {label:"$$$$", desc:"$60+"}
+                {label:"$", desc:"$15 to $35"},
+                {label:"$$", desc:"$35 to $60"},
+                {label:"$$", desc:"$60 plus"}
               ].map(p => (
                 <button key={p.label} onClick={() => setPriceFilter(p.label)} style={{
-                  background: priceFilter === p.label ? "#e83a2a" : "#fff",
+                  background: priceFilter === p.label ? "#d63020" : "#fff",
                   color: priceFilter === p.label ? "#fff" : "#555",
                   border:"1.5px solid",
-                  borderColor: priceFilter === p.label ? "#e83a2a" : "#ede8e3",
+                  borderColor: priceFilter === p.label ? "#d63020" : "#ede8e3",
                   borderRadius:10,
                   padding:"6px 12px",
                   fontSize:13,
@@ -510,7 +510,7 @@ export default function EatSmart() {
               <button key={n} onClick={() => setResultLimit(n)} style={{background: resultLimit===n ? "#e83a2a" : "#fff", color: resultLimit===n ? "#fff" : "#888", border:"1.5px solid", borderColor: resultLimit===n ? "#e83a2a" : "#ede8e3", borderRadius:20, padding:"4px 14px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit"}}>{n}</button>
             ))}
           </div>
-          <div style={{textAlign:"center",fontSize:10,color:"#ddd",paddingBottom:6}}>Powered by Google Places</div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px",fontSize:11,color:"#bbb"}}><span>Powered by Google Places</span><span>{openSpots.length} open now</span></div>
           {activeTab === "opennow" && openSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
           {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet — tap the Save button on any restaurant!</div>}
           {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : results).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
@@ -589,10 +589,10 @@ export default function EatSmart() {
       {/* BOTTOM NAV */}
       <nav style={S.bottomNav}>
         {[
-          { id: "search", emoji: "🏠", label: "Home" },
-          { id: "opennow", emoji: "🕐", label: "Open Now" },
-          { id: "saved", emoji: "❤️", label: "Saved" },
-          { id: "contact", emoji: "✉️", label: "Get in touch" },
+          { id: "search", emoji: "⌂", label: "Home" },
+          { id: "opennow", emoji: "◉", label: "Open Now" },
+          { id: "saved", emoji: "♡", label: "Saved" },
+          { id: "contact", emoji: "✎", label: "Get in touch" },
         ].map(tab => (
           <button key={tab.id} style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}} onClick={() => handleTabPress(tab.id)}>
             <span style={{fontSize:22}}>{tab.emoji}</span>
@@ -606,7 +606,7 @@ export default function EatSmart() {
 
 const S = {
   page:{overflowX:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",minHeight:"100vh",maxWidth:480,margin:"0 auto",paddingBottom:100},
-  header:{background:"#e83a2a",padding:"16px 20px 40px",position:"relative",overflow:"hidden"},
+  header:{background:"#e83a2a",padding:"12px 20px 32px",position:"relative",overflow:"hidden"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
   logoSmart:{fontWeight:900,fontSize:36,color:"#ffd97d",letterSpacing:-1.5},
