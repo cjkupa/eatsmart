@@ -361,14 +361,11 @@ export default function EatSmart() {
                 <div style={{fontWeight:700,fontSize:15,color:"#1a1a1a"}}>{spot.name}</div>
                 {featured && <span style={{background:"#ffd97d",color:"#a06000",borderRadius:20,padding:"1px 7px",fontSize:10,fontWeight:700}}>Featured</span>}
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:5,fontSize:12,color:"#888",flexWrap:"wrap"}}>
-                {spot.rating && <span style={{fontWeight:700,color:"#e67e22"}}>⭐ {spot.rating}</span>}
-                {spot.ratingCount && <span>({spot.ratingCount})</span>}
-                <span style={{color:"#ccc"}}>|</span>
-                <span>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
-                {spot.priceLevel !== null && spot.priceLevel !== undefined && <><span style={{color:"#ccc"}}>|</span><span style={{color:"#27ae60",fontWeight:700}}>{"$".repeat(spot.priceLevel + 1)}</span></>}
-                {spot.isOpen && <span style={{color:"#ccc"}}>|</span>}
-                {spot.isOpen && <span style={{fontWeight:600,color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a"}}>{spot.isOpen}</span>}
+              <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:2}}>
+                {spot.rating && <span style={{fontWeight:800,fontSize:14,color:"#e67e22"}}>⭐ {spot.rating}</span>}
+                {spot.ratingCount && <span style={{fontSize:12,color:"#bbb"}}>({spot.ratingCount})</span>}
+                {spot.priceLevel !== null && spot.priceLevel !== undefined && <span style={{fontWeight:800,fontSize:14,color:"#27ae60"}}>{"$".repeat(spot.priceLevel + 1)}</span>}
+                {spot.isOpen && <span style={{fontWeight:600,fontSize:12,color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a"}}>{spot.isOpen}</span>}
               </div>
               {spot.address && <div style={{fontSize:12,color:"#999",marginTop:4}}>{spot.address}</div>}
               {featured && featured.signatureDish && <div style={{fontSize:12,color:"#a06000",marginTop:4,fontWeight:600}}>{featured.signatureDish}</div>}
