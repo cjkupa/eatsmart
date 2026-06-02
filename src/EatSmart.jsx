@@ -280,8 +280,8 @@ export default function EatSmart() {
       if (suburb === "All Suburbs") setResultLimit(20);
       let spots = []; let usedRadius = 800;
       for (const r of radii) {
-        const elements = await searchRestaurants(coords.lat, coords.lon, r, cuisine);
-        spots = elements.map((el, i) => formatRestaurant(el, i)).filter(Boolean);
+        const elements = await searchRestaurants(coords.lat, coords.lon, r, cuisine); console.log("Elements:", elements.length, "radius:", r);
+        spots = elements.map((el, i) => formatRestaurant(el, i)).filter(Boolean); console.log("Spots after filter:", spots.length);
         if (spots.length > 0) { usedRadius = r; break; }
       }
       setSearchRadius(usedRadius);
