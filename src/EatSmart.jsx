@@ -452,13 +452,6 @@ export default function EatSmart() {
           <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:8}}>Find great food near you</div>
           <div style={{fontSize:14,color:"#aaa",lineHeight:1.6}}>Search by suburb, street or address to find cafes, restaurants and takeaways nearby.</div>
           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
-                  <a href="mailto:eatsmartappnz@gmail.com" style={{textAlign:"center",fontSize:13,color:"#aaa",textDecoration:"none"}}>or email us at eatsmartappnz@gmail.com</a>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* PRICE SUBMISSION MODAL */}
       {priceModal && (
