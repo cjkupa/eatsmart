@@ -336,10 +336,10 @@ export default function EatSmart() {
       setContactModal(true);
       return;
     }
-    if (activeTab === tabId) {
-      setActiveTab("search");
-    } else {
+    if (tabId === "search" || activeTab !== tabId) {
       setActiveTab(tabId);
+    } else {
+      setActiveTab("search");
     }
   }
 
