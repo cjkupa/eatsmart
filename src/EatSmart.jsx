@@ -404,7 +404,7 @@ export default function EatSmart() {
 
           <div style={S.row}>
             <div style={{flex:1,position:"relative"}}>
-              <div style={{fontSize:11,fontWeight:600,color:"#aaa",marginBottom:3,textAlign:"left",paddingLeft:4}}>CITY</div>
+              <div style={{fontSize:11,fontWeight:600,color:"#aaa",marginBottom:3,textAlign:"left",paddingLeft:8}}>CITY</div>
               <input
                 style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"11px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222",textAlign:"left"}}
                 placeholder="Search city..."
@@ -428,7 +428,7 @@ export default function EatSmart() {
               )}
             </div>
             <div style={{flex:1,position:"relative"}}>
-              <div style={{fontSize:11,fontWeight:600,color:"#aaa",marginBottom:3,textAlign:"left",paddingLeft:4}}>SUBURB / STREET</div>
+              <div style={{fontSize:11,fontWeight:600,color:"#aaa",marginBottom:3,textAlign:"left",paddingLeft:8}}>SUBURB / STREET</div>
               <input
                 style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"11px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222",textAlign:"left"}}
                 placeholder="Suburb or street..."
