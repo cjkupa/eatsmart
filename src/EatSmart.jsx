@@ -366,6 +366,7 @@ export default function EatSmart() {
                 {spot.ratingCount && <span>({spot.ratingCount})</span>}
                 <span style={{color:"#ccc"}}>|</span>
                 <span>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
+                {spot.priceLevel !== null && spot.priceLevel !== undefined && <><span style={{color:"#ccc"}}>|</span><span style={{color:"#27ae60",fontWeight:700}}>{"$".repeat(spot.priceLevel + 1)}</span></>}
                 {spot.isOpen && <span style={{color:"#ccc"}}>|</span>}
                 {spot.isOpen && <span style={{fontWeight:600,color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a"}}>{spot.isOpen}</span>}
               </div>
@@ -456,10 +457,10 @@ export default function EatSmart() {
                 {label:"$$", desc:"$60+"}
               ].map(p => (
                 <button key={p.label} onClick={() => setPriceFilter(p.label)} style={{
-                  background: priceFilter===p.label ? "#e83a2a" : "#fff",
-                  color: priceFilter===p.label ? "#fff" : "#555",
+                  background: priceFilter === p.label ? "#e83a2a" : "#fff",
+                  color: priceFilter === p.label ? "#fff" : "#555",
                   border:"1.5px solid",
-                  borderColor: priceFilter===p.label ? "#e83a2a" : "#ede8e3",
+                  borderColor: priceFilter === p.label ? "#e83a2a" : "#ede8e3",
                   borderRadius:10,
                   padding:"6px 12px",
                   fontSize:13,
