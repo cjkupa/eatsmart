@@ -394,6 +394,7 @@ export default function EatSmart() {
             <div><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span></div>
           </div>
           <p style={S.tagline}>Find great food near you</p>
+          <p style={{color:"rgba(255,255,255,0.75)",fontSize:12,margin:"4px 0 0",textAlign:"center"}}>Restaurants, Cafes, Takeaways & more</p>
           <div style={S.wave} />
         </header>
         <div style={S.card}>
@@ -483,8 +484,7 @@ export default function EatSmart() {
         <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
           <div style={{fontSize:72,marginBottom:16}}>🍴</div>
           <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:6}}>Ready to eat?</div>
-          <div style={{fontSize:14,color:"#888",marginBottom:8}}>Search by city, suburb or street — filter by budget</div>
-          <div style={{fontSize:14,color:"#aaa",lineHeight:1.6}}>Search by suburb or street to find food near you.</div>
+          <div style={{fontSize:14,color:"#888",marginBottom:8}}>Search by city, suburb or street to find food near you</div>
           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
           </div>
         </div>
