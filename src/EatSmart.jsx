@@ -341,7 +341,6 @@ export default function EatSmart() {
   const suburbs = NZ_CITIES[city] || [];
   const openSpots = results.filter(r => r.isOpen && r.isOpen.includes("Open"));
   const savedSpots = results.filter(r => saved[r.id]);
-  const savedSpots = results.filter(r => saved[r.id]);
   const topRatedSpots = [...results].filter(r => r.rating).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, resultLimit);
 
   const SpotCard = ({ spot }) => {
