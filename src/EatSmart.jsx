@@ -287,7 +287,6 @@ export default function EatSmart() {
       }
       setSearchRadius(usedRadius);
       const pLevel = priceFilter === "Any" ? null : ["$","$$","$$$","$$$$"].indexOf(priceFilter);
-      const pLevel = priceMap[priceFilter];
       const filteredByPrice = pLevel !== null
         ? spots.filter(s => s.priceLevel === pLevel)
         : spots;
