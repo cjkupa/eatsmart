@@ -365,7 +365,6 @@ export default function EatSmart() {
               <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:2}}>
                 {spot.rating && <span style={{fontWeight:800,fontSize:14,color:"#e67e22"}}>⭐ {spot.rating}</span>}
                 {spot.ratingCount && <span style={{fontSize:12,color:"#bbb"}}>({spot.ratingCount})</span>}
-                <span style={{background:"#fff5f4",border:"1px solid #ffd5d0",borderRadius:6,padding:"2px 6px",fontSize:10,fontWeight:600,color:"#e83a2a",whiteSpace:"nowrap"}}>{spot.cuisine}</span>
                 {spot.priceLevel !== null && spot.priceLevel !== undefined && <span style={{fontWeight:800,fontSize:14,color:"#27ae60"}}>{"$".repeat(spot.priceLevel + 1)}</span>}
                 {spot.isOpen && <span style={{fontWeight:700,fontSize:12,background:spot.isOpen.includes("Open") ? "#f0faf4" : "#fff3f3",color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a",padding:"2px 8px",borderRadius:8}}>{spot.isOpen.includes("Open") ? "✅ Open" : "❌ Closed"}</span>}
               </div>
@@ -380,7 +379,7 @@ export default function EatSmart() {
             : spot.phone
             ? <a href={"tel:"+spot.phone} style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>Call</a>
             : <button style={S.openBtn}>Looks good?</button>}
-          <a href={"https://www.google.com/maps/search/" + encodeURIComponent(spot.name + " " + (spot.address || ""))} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center",background:"#f0f7ff",color:"#1a73e8"}}>Maps</a>
+          <a href={"https://www.google.com/maps/search/" + encodeURIComponent(spot.name + " " + (spot.address || ""))} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center",background:"#f0f7ff",border:"1.5px solid #bbd4f8",color:"#1a73e8"}}>Maps</a>
           <button style={{...S.saveBtn, background: saved[spot.id] ? "#fde8e8" : "#fef2f2"}} onClick={() => toggleSave(spot.id)}>{saved[spot.id] ? "🩷 Saved" : "🤍 Save"}</button>
         </div>
       </div>
@@ -614,8 +613,8 @@ const S = {
   tagRow:{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14},
   tag:{background:"#f2f2f2",borderRadius:20,padding:"5px 12px",fontSize:12,color:"#555",fontWeight:500},
   actionRow:{display:"flex",gap:10},
-  openBtn:{flex:1,background:"#f0faf4",border:"none",borderRadius:10,padding:"9px",fontSize:13,fontWeight:600,color:"#27ae60",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center"},
-  saveBtn:{flex:1,border:"none",borderRadius:10,padding:"9px",fontSize:13,fontWeight:600,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit"},
+  openBtn:{flex:1,background:"#f0faf4",border:"1.5px solid #a9dfbf",borderRadius:10,padding:"10px",fontSize:13,fontWeight:700,color:"#27ae60",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center"},
+  saveBtn:{flex:1,border:"1.5px solid #ffd5d0",borderRadius:10,padding:"10px",fontSize:13,fontWeight:700,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit",background:"#fff5f4"},
   bottomNav:{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:"#fff",borderTop:"1px solid #f0ebe6",display:"flex",justifyContent:"space-around",padding:"8px 0 20px",zIndex:100,boxShadow:"0 -4px 20px rgba(200,50,40,0.08)"},
   navBtn:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",background:"none",border:"none",cursor:"pointer",color:"#aaa",fontFamily:"inherit",padding:"4px 0"},
   navBtnActive:{color:"#e83a2a"},
