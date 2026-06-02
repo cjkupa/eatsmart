@@ -257,7 +257,7 @@ export default function EatSmart() {
   }
 
   const handleSearch = useCallback(async () => {
-    setLoading(true); setError(null); setSearched(true); setResults([]); if (showInstallPrompt) { setShowInstallPrompt(false); localStorage.setItem("es_install_dismissed","1"); }
+    setLoading(true); setError(null); setSearched(true); setResults([]);
     try {
       let coords = customCoords;
       if (!coords) {
