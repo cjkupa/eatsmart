@@ -170,6 +170,7 @@ export default function EatSmart() {
   const [locationSearch, setLocationSearch] = useState(null);
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [citySearch, setCitySearch] = useState(null);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(() => !localStorage.getItem("es_install_dismissed"));
   const [citySuggestions, setCitySuggestions] = useState([]);
   const [customCoords, setCustomCoords] = useState(null);
   const [streetSearching, setStreetSearching] = useState(false);
@@ -256,7 +257,7 @@ export default function EatSmart() {
   }
 
   const handleSearch = useCallback(async () => {
-    setLoading(true); setError(null); setSearched(true); setResults([]);
+    setLoading(true); setError(null); setSearched(true); setResults([]); if (showInstallPrompt) { setShowInstallPrompt(false); localStorage.setItem("es_install_dismissed","1"); }
     try {
       let coords = customCoords;
       if (!coords) {
@@ -511,6 +512,16 @@ export default function EatSmart() {
             ))}
           </div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px",fontSize:11,color:"#bbb"}}><span>Powered by Google Places</span><span>{openSpots.length} open now</span></div>
+          {showInstallPrompt && (
+            <div style={{margin:"0 16px 12px",background:"#fff9ee",border:"1.5px solid #ffd97d",borderRadius:14,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div>
+                <div style={{fontSize:13,fontWeight:700,color:"#a06000"}}>Add to home screen</div>
+                <div style={{fontSize:11,color:"#888",marginTop:2}}>Works like an app — no download needed!</div>
+              </div>
+              <button onClick={() => { setShowInstallPrompt(false); localStorage.setItem("es_install_dismissed","1"); }} style={{background:"none",border:"none",fontSize:18,cursor:"pointer",color:"#aaa",padding:"4px"}}>x</button>
+            </div>
+          )}
+
           {activeTab === "opennow" && openSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
           {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet — tap the Save button on any restaurant!</div>}
           {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : results).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
