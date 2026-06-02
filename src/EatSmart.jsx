@@ -446,10 +446,10 @@ export default function EatSmart() {
             <div style={{fontSize:11,fontWeight:600,color:"#aaa",marginBottom:6,paddingLeft:2}}>BUDGET GUIDE</div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
               {[
-                {label:"Any", desc:""},
+                {label:"Any", desc:"All budgets"},
                 {label:"$", desc:"Under $15"},
-                {label:"$", desc:"$15–35"},
-                {label:"$$", desc:"$35–60"},
+                {label:"$", desc:"$15-35"},
+                {label:"$$", desc:"$35-60"},
                 {label:"$$", desc:"$60+"}
               ].map(p => (
                 <button key={p.label} onClick={() => setPriceFilter(p.label)} style={{
