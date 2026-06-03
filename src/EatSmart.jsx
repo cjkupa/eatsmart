@@ -448,7 +448,8 @@ export default function EatSmart() {
                       const googleSuggestions = (data.predictions || []).slice(0,5).map(p => {
                         const label = p.description.replace(', New Zealand','');
                         const mainText = (p.structured_formatting && p.structured_formatting.main_text) || '';
-                        const isSuburb = allSuburbs.includes(mainText.toLowerCase());
+                        const types = p.types || [];
+                        const isSuburb = types.includes("sublocality") || types.includes("locality") || types.includes("neighborhood") || types.includes("administrative_area_level_2");
                         return { label, type: isSuburb ? 'suburb' : 'street', placeId: p.place_id, suburb: isSuburb ? mainText : null };
                       });
                       setLocationSuggestions([...suburbMatches, ...googleSuggestions].slice(0,10));
