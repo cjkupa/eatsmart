@@ -463,7 +463,7 @@ export default function EatSmart() {
                   border:"1.5px solid",
                   borderColor: priceFilter === p.label ? "#d63020" : "#ede8e3",
                   borderRadius:10,
-                  padding:"5px 10px",
+                  padding:"5px 0",flex:"1",
                   fontSize:13,
                   fontWeight:600,
                   cursor:"pointer",
