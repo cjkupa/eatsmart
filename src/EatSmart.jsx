@@ -449,7 +449,7 @@ export default function EatSmart() {
           </div>
           <div style={{marginBottom:12}}>
             <div style={{fontSize:11,fontWeight:600,color:"#aaa",marginBottom:6,paddingLeft:2}}>BUDGET GUIDE</div>
-            <div style={{display:"flex",gap:6,flexWrap:"nowrap",justifyContent:"space-between"}}>
+            <div style={{display:"flex",gap:4,flexWrap:"nowrap",justifyContent:"space-between"}}>
               {[
                 {label:"Any", desc:"All prices"},
                 {label:"$", desc:"<$15"},
