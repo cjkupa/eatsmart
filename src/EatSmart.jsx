@@ -368,7 +368,7 @@ export default function EatSmart() {
     const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
-        {spot.photoRef && <img src={"https://eatsmart-production-7bcf.up.railway.app/api/photo?ref="+spot.photoRef} alt={spot.name} style={{width:"100%",height:90,objectFit:"cover",borderRadius:"16px 16px 0 0"}} onError={function(e){e.target.style.display="none";}} />}
+        {spot.photoRef && <a href={"https://www.google.com/maps/search/"+encodeURIComponent(spot.name+" "+(spot.address||""))} target="_blank" rel="noopener noreferrer"><img src={"https://eatsmart-production-7bcf.up.railway.app/api/photo?ref="+spot.photoRef} alt={spot.name} style={{width:"100%",height:90,objectFit:"cover",borderRadius:"16px 16px 0 0",display:"block",cursor:"pointer"}} onError={function(e){e.target.parentElement.style.display="none";}} /></a>}
         <div style={{padding:"14px 14px 8px"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
             <div style={{background:"#fff5f4",border:"1px solid #ffd5d0",borderRadius:8,padding:"3px 8px",fontSize:11,fontWeight:700,color:"#e83a2a",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
@@ -407,7 +407,7 @@ export default function EatSmart() {
       <div ref={searchRef}>
         <header style={S.header}>
           <div style={S.logo}>
-            <img src="/logo.png" alt="EatSmart" style={{width:56,height:56,borderRadius:14,marginRight:12,boxShadow:"0 4px 12px rgba(0,0,0,0.25)"}} />
+            <img src="/logo.png" alt="EatSmart" style={{width:44,height:44,borderRadius:11,marginRight:10,boxShadow:"0 3px 8px rgba(0,0,0,0.2)"}} />
             <div><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span></div>
           </div>
           <p style={S.tagline}>Eat out smarter near you</p>
@@ -485,7 +485,7 @@ export default function EatSmart() {
             <div style={{fontSize:11,color:"#bbb",marginBottom:6,paddingLeft:2}}>POPULAR CITIES</div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
               {["Auckland","Wellington","Christchurch","Hamilton","Tauranga","Dunedin","Napier","Hastings","Whangarei"].map(c => (
-                <button key={c} onMouseDown={() => { handleCityChange(c); setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs"); }} style={{background:city===c?"#e83a2a":"#f8f7f5",color:city===c?"#fff":"#555",border:"1.5px solid",borderColor:city===c?"#e83a2a":"#ede8e3",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c}</button>
+                <button key={c} onMouseDown={() => { handleCityChange(c); setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs"); }} style={{background:city===c?"#e83a2a":"#f8f7f5",color:city===c?"#fff":"#555",border:"1.5px solid",borderColor:city===c?"#e83a2a":"#ede8e3",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c}</button>
               ))}
             </div>
           </div>
@@ -495,13 +495,13 @@ export default function EatSmart() {
             <div style={{fontSize:11,color:"#bbb",marginBottom:6,paddingLeft:2}}>CUISINE</div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
               {[{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🍔",l:"Burgers"},{e:"🍕",l:"Pizza"},{e:"🍛",l:"Indian"},{e:"🍣",l:"Sushi"},{e:"🌮",l:"Mexican"},{e:"🍜",l:"Chinese"},{e:"🥗",l:"Vegetarian"}].map(c => (
-                <button key={c.l} onClick={() => setCuisineFilter(cuisineFilter===c.l?"":c.l)} style={{background:cuisineFilter===c.l?"#e83a2a":"#f8f7f5",color:cuisineFilter===c.l?"#fff":"#555",border:"1.5px solid",borderColor:cuisineFilter===c.l?"#e83a2a":"#ede8e3",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
+                <button key={c.l} onClick={() => setCuisineFilter(cuisineFilter===c.l?"":c.l)} style={{background:cuisineFilter===c.l?"#e83a2a":"#f8f7f5",color:cuisineFilter===c.l?"#fff":"#555",border:"1.5px solid",borderColor:cuisineFilter===c.l?"#e83a2a":"#ede8e3",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
               ))}
             </div>
           </div>
 
-          {/* Budget guide */}
-          <div style={{marginBottom:12}}>
+          {/* Budget guide - show always but compact */}
+          <div style={{marginBottom:10}}>
             <div style={{fontSize:11,color:"#bbb",marginBottom:6,paddingLeft:2}}>BUDGET</div>
             <div style={{display:"flex",gap:4,flexWrap:"nowrap",justifyContent:"space-between"}}>
               {[{label:"Any",desc:"All prices"},{label:"$",desc:"<$15"},{label:"$$",desc:"$15-35"},{label:"$$$",desc:"$35-60"},{label:"$$$$",desc:">$60"}].map(p => (
@@ -566,7 +566,9 @@ export default function EatSmart() {
 
           {activeTab === "opennow" && openSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
           {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet — tap the Save button on any restaurant!</div>}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,padding:"0 16px"}}>
           {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : results).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
+          </div>
         </>
       )}
       {/* CONTACT MODAL */}
@@ -643,7 +645,7 @@ export default function EatSmart() {
       <nav style={S.bottomNav}>
         {[
           { id: "search", emoji: "⌂", label: "Home" },
-          { id: "opennow", emoji: "◉", label: "Open Now" },
+          { id: "opennow", emoji: "🟢", label: "Open Now" },
           { id: "saved", emoji: "♡", label: "Saved" },
           { id: "contact", emoji: "✎", label: "Feedback" },
         ].map(tab => (
@@ -659,7 +661,7 @@ export default function EatSmart() {
 
 const S = {
   page:{overflowX:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",minHeight:"100vh",maxWidth:480,margin:"0 auto",paddingBottom:100},
-  header:{background:"#e83a2a",padding:"12px 20px 32px",position:"relative",overflow:"hidden"},
+  header:{background:"#e83a2a",padding:"10px 16px 28px",position:"relative",overflow:"hidden"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
   logoSmart:{fontWeight:900,fontSize:36,color:"#ffd97d",letterSpacing:-1.5},
