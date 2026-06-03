@@ -435,7 +435,28 @@ export default function EatSmart() {
                 style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"11px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222",textAlign:"left"}}
                 placeholder="Suburb or street..."
                 value={locationSearch !== null ? locationSearch : suburb}
-                onChange={e => { const val = e.target.value; setLocationSearch(val); const q = val.toLowerCase(); setLocationSuggestions((NZ_CITIES[city]||[]).filter(s=>s.toLowerCase().startsWith(q)).slice(0,15).map(s=>({label:s,city,suburb:s,type:"suburb"}))); }}
+                onChange={async e => {
+                  const val = e.target.value;
+                  setLocationSearch(val);
+                  const q = val.toLowerCase();
+                  const suburbMatches = (NZ_CITIES[city]||[]).filter(s=>s.toLowerCase().startsWith(q)).slice(0,5).map(s=>({label:s,city,suburb:s,type:"suburb"}));
+                  if (val.length > 2) {
+                    try {
+                      const res = await fetch('https://eatsmart-production-7bcf.up.railway.app/api/autocomplete?q=' + encodeURIComponent(val + ' ' + city));
+                      const data = await res.json();
+                      const googleSuggestions = (data.predictions || []).slice(0,5).map(p => ({
+                        label: p.description.replace(', New Zealand',''),
+                        type: 'street',
+                        placeId: p.place_id
+                      }));
+                      setLocationSuggestions([...suburbMatches, ...googleSuggestions].slice(0,10));
+                    } catch(e) {
+                      setLocationSuggestions(suburbMatches);
+                    }
+                  } else {
+                    setLocationSuggestions(suburbMatches);
+                  }
+                }}
                 onFocus={() => { setLocationSearch(""); setLocationSuggestions([]); }}
                 onBlur={() => { setTimeout(() => { setLocationSuggestions([]); if (locationSearch && locationSearch.length > 2) { const isSuburb = (NZ_CITIES[city]||[]).some(s=>s.toLowerCase()===locationSearch.toLowerCase()); if (!isSuburb) { setSuburb(locationSearch); localStorage.setItem("es_suburb",locationSearch); } setLocationSearch(null); } }, 250); }}
               />

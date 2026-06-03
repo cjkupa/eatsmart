@@ -32,4 +32,17 @@ app.get('/api/geocode', async (req, res) => {
   }
 });
 
+app.get('/api/autocomplete', async (req, res) => {
+  const { q, lat, lng } = req.query;
+  const location = lat && lng ? `&location=${lat},${lng}&radius=50000` : '';
+  const url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=' + encodeURIComponent(q) + '&components=country:nz&types=geocode' + location + '&key=' + GOOGLE_API_KEY;
+  try {
+    const r = await fetch(url);
+    const data = await r.json();
+    res.json(data);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 const PORT = process.env.PORT || 3001; app.listen(PORT, '0.0.0.0', () => console.log('Server running on port ' + PORT));
