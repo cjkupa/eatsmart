@@ -434,7 +434,7 @@ export default function EatSmart() {
               <input
                 style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:14,padding:"11px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222",textAlign:"left"}}
                 placeholder="Suburb or street..."
-                value={locationSearch !== null ? locationSearch : suburb}
+                value={locationSearch !== null ? locationSearch : (suburb === "All Suburbs" ? "" : suburb)}
                 onChange={async e => {
                   const val = e.target.value;
                   setLocationSearch(val);
