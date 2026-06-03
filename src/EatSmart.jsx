@@ -444,11 +444,13 @@ export default function EatSmart() {
                     try {
                       const res = await fetch('https://eatsmart-production-7bcf.up.railway.app/api/autocomplete?q=' + encodeURIComponent(val + ' ' + city));
                       const data = await res.json();
-                      const googleSuggestions = (data.predictions || []).slice(0,5).map(p => ({
-                        label: p.description.replace(', New Zealand',''),
-                        type: 'street',
-                        placeId: p.place_id
-                      }));
+                      const allSuburbs = Object.values(NZ_CITIES).flat().map(s => s.toLowerCase());
+                      const googleSuggestions = (data.predictions || []).slice(0,5).map(p => {
+                        const label = p.description.replace(', New Zealand','');
+                        const mainText = (p.structured_formatting && p.structured_formatting.main_text) || '';
+                        const isSuburb = allSuburbs.includes(mainText.toLowerCase());
+                        return { label, type: isSuburb ? 'suburb' : 'street', placeId: p.place_id, suburb: isSuburb ? mainText : null };
+                      });
                       setLocationSuggestions([...suburbMatches, ...googleSuggestions].slice(0,10));
                     } catch(e) {
                       setLocationSuggestions(suburbMatches);
