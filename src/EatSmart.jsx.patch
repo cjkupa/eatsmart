@@ -1,4 +1,0 @@
---- find this in EatSmart.jsx ---
-<span style={S.badge}>✅ In budget</span>
---- replace with ---
-{(() => { const meal = getMealSuggestion(spot.cuisine, budget); return meal.canAfford ? <span style={S.badge}>✅ {meal.dish} (~{meal.typical})</span> : <span style={{...S.badge, background:"#fff3f3", color:"#c0392b", border:"1px solid #f5c6c6"}}>⚠️ Tight budget — expect ~{meal.typical}</span>; })()}
