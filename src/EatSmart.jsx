@@ -291,7 +291,7 @@ export default function EatSmart() {
       setSearchRadius(usedRadius);
       const pLevel = priceFilter === "Any" ? null : ["$","$$","$$$","$$$$"].indexOf(priceFilter);
       const filteredByPrice = pLevel !== null
-        ? spots.filter(s => s.priceLevel === pLevel)
+        ? spots.filter(s => pLevel === 0 ? (s.priceLevel === 0 || s.priceLevel === null) : s.priceLevel === pLevel)
         : spots;
       setResults((filteredByPrice.length > 0 ? filteredByPrice : spots).slice(0, 20));
     } catch(e) { setError("Something went wrong. Please try again."); }
