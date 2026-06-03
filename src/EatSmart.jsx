@@ -159,6 +159,7 @@ export default function EatSmart() {
   const [suburb, setSuburb] = useState(() => localStorage.getItem("es_suburb") || "Remuera");
   const [cuisine, setCuisine] = useState("Any");
   const [priceFilter, setPriceFilter] = useState("Any");
+  const [sortBy, setSortBy] = useState("rating");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -293,7 +294,17 @@ export default function EatSmart() {
       const filteredByPrice = pLevel !== null
         ? spots.filter(s => pLevel === 0 ? (s.priceLevel === 0 || s.priceLevel === null) : s.priceLevel === pLevel)
         : spots;
-      setResults((filteredByPrice.length > 0 ? filteredByPrice : spots).slice(0, 20));
+      const toShow = filteredByPrice.length > 0 ? filteredByPrice : spots;
+      const sorted = [...toShow].sort((a, b) => {
+        if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
+        if (sortBy === "nearest" && searchCoords) {
+          const distA = Math.pow(a.lat - searchCoords.lat, 2) + Math.pow(a.lng - searchCoords.lon, 2);
+          const distB = Math.pow(b.lat - searchCoords.lat, 2) + Math.pow(b.lng - searchCoords.lon, 2);
+          return distA - distB;
+        }
+        return 0;
+      });
+      setResults(sorted.slice(0, 20));
     } catch(e) { setError("Something went wrong. Please try again."); }
     setLoading(false);
   }, [suburb, city]);
@@ -540,7 +551,14 @@ export default function EatSmart() {
       {!loading && searched && results.length === 0 && !error && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>No restaurants found near {suburb}. Try a nearby suburb.</div>}
       {!loading && results.length > 0 && (
         <>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 16px 4px"}}>
+          <div style={{display:"flex",justifyContent:"flex-end",gap:6,padding:"8px 16px 0"}}>
+            {["rating","nearest"].map(s => (
+              <button key={s} onClick={() => setSortBy(s)} style={{background:sortBy===s?"#e83a2a":"#fff",color:sortBy===s?"#fff":"#888",border:"1.5px solid",borderColor:sortBy===s?"#e83a2a":"#ede8e3",borderRadius:20,padding:"4px 12px",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>
+                {s === "rating" ? "⭐ Best rated" : "📍 Nearest"}
+              </button>
+            ))}
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 16px 4px"}}>
             <span style={{fontSize:20,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#555"}}>spots near you</span></span>
             <span style={{fontSize:13,color:"#aaa"}}>📍 {suburb}, {city}</span>
           </div>
