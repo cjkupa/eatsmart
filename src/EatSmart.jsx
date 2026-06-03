@@ -477,7 +477,7 @@ export default function EatSmart() {
                       setLocationSuggestions([]);
                       setSearched(false);
                       setResults([]);
-                    }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:s.type==="street"?"#1a73e8":"#333",display:"flex",alignItems:"center",gap:6}}>
+                    }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:s.type==="street"?"#1a73e8":"#333",display:"flex",alignItems:"center",gap:6,textAlign:"left"}}>
                       {s.type === "street" ? "🗺️ " : "📍 "}{s.label}
                     </div>
                   ))}
