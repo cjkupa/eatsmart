@@ -463,7 +463,24 @@ export default function EatSmart() {
               {locationSuggestions.length > 0 && (
                 <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.12)",zIndex:100,maxHeight:240,overflowY:"auto",marginTop:4,width:"100%",boxSizing:"border-box"}}>
                   <div onMouseDown={() => { setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs"); setLocationSearch(null); setLocationSuggestions([]); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#e83a2a",fontWeight:600}}>All Suburbs in {city}</div>
-                  {locationSuggestions.map((s,i) => (<div key={i} onMouseDown={() => { setSuburb(s.suburb); localStorage.setItem("es_suburb",s.suburb); setLocationSearch(null); setLocationSuggestions([]); setSearched(false); setResults([]); }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333"}}>{s.label}</div>))}
+                  {locationSuggestions.map((s,i) => (
+                    <div key={i} onMouseDown={async () => {
+                      if (s.type === "street" && s.placeId) {
+                        const r = await geocodeAddress(s.label, city);
+                        if (r.length > 0) setCustomCoords({lat: r[0].lat, lon: r[0].lon});
+                        setLocationSearch(s.label);
+                      } else {
+                        setSuburb(s.suburb || s.label);
+                        setCustomCoords(null);
+                        localStorage.setItem("es_suburb", s.suburb || s.label);
+                      }
+                      setLocationSuggestions([]);
+                      setSearched(false);
+                      setResults([]);
+                    }} style={{padding:"11px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:s.type==="street"?"#1a73e8":"#333",display:"flex",alignItems:"center",gap:6}}>
+                      {s.type === "street" ? "🗺️ " : "📍 "}{s.label}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
