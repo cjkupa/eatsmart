@@ -159,6 +159,8 @@ export default function EatSmart() {
   const [suburb, setSuburb] = useState(() => localStorage.getItem("es_suburb") || "Remuera");
   const [cuisine, setCuisine] = useState("Any");
   const [priceFilter, setPriceFilter] = useState("Any");
+  const [cuisineFilter, setCuisineFilter] = useState("");
+  const [smartSearch, setSmartSearch] = useState("");
   const [sortBy, setSortBy] = useState("rating");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
