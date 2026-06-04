@@ -615,7 +615,10 @@ export default function EatSmart() {
 
           {recentSearches.length > 0 && (
             <div style={{marginBottom:24}}>
-              <div style={{fontSize:11,color:"#bbb",fontWeight:700,letterSpacing:0.5,marginBottom:10,paddingLeft:4}}>RECENT SEARCHES</div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10,paddingLeft:4}}>
+                <span style={{fontSize:11,color:"#bbb",fontWeight:700,letterSpacing:0.5}}>RECENT SEARCHES</span>
+                <button onClick={()=>{setRecentSearches([]);localStorage.setItem("es_recent","[]");}} style={{background:"none",border:"none",color:"#e83a2a",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",padding:"2px 4px"}}>Clear</button>
+              </div>
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 {recentSearches.map((r,i) => (
                   <button key={i} onClick={()=>applyRecent(r)} style={{display:"flex",alignItems:"center",gap:10,background:"#fff",border:"1.5px solid #f0ebe6",borderRadius:14,padding:"12px 14px",cursor:"pointer",fontFamily:"inherit",textAlign:"left",width:"100%",boxShadow:"0 1px 4px rgba(0,0,0,0.04)"}}>
@@ -758,7 +761,7 @@ export default function EatSmart() {
         ].map(tab => (
           <button key={tab.id} style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}} onClick={() => handleTabPress(tab.id)}>
             <span style={{fontSize:22}}>{tab.emoji}</span>
-            <span style={{fontSize:11,marginTop:2,fontWeight: activeTab === tab.id ? 700 : 400}}>{tab.label}</span>
+            <span style={{fontSize:11,marginTop:2,fontWeight: activeTab === tab.id ? 700 : 600}}>{tab.label}</span>
           </button>
         ))}
       </nav>
@@ -809,7 +812,7 @@ const S = {
   openBtn:{flex:1,background:"#f0faf4",border:"1.5px solid #a9dfbf",borderRadius:8,padding:"7px 4px",fontSize:11,fontWeight:700,color:"#27ae60",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center"},
   saveBtn:{flex:1,background:"#fff5f4",border:"1.5px solid #ffd5d0",borderRadius:8,padding:"7px 4px",fontSize:11,fontWeight:700,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit"},
   bottomNav:{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:"#fff",borderTop:"1px solid #f0ebe6",display:"flex",justifyContent:"space-around",padding:"8px 0 20px",zIndex:100,boxShadow:"0 -4px 20px rgba(200,50,40,0.08)"},
-  navBtn:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",background:"none",border:"none",cursor:"pointer",color:"#aaa",fontFamily:"inherit",padding:"4px 0"},
+  navBtn:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",background:"none",border:"none",cursor:"pointer",color:"#6b6b6b",fontFamily:"inherit",padding:"4px 0",fontWeight:600},
   navBtnActive:{color:"#e83a2a"},
   perPerson:{fontSize:10,color:"#aaa",marginTop:3,textAlign:"center"},
 };
