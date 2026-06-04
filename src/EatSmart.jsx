@@ -706,7 +706,7 @@ export default function EatSmart() {
 
 const S = {
   page:{overflow:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",maxWidth:480,margin:"0 auto",paddingBottom:100,width:"100%"},
-  header:{background:"#e83a2a",padding:"12px 16px 20px",position:"relative",borderRadius:"0 0 24px 24px"},
+  header:{background:"#e83a2a",padding:"12px 16px 16px",position:"relative"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
   logoSmart:{fontWeight:900,fontSize:36,color:"#ffd97d",letterSpacing:-1.5},
