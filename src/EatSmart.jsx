@@ -416,8 +416,8 @@ export default function EatSmart() {
   }
 
   const suburbs = NZ_CITIES[city] || [];
-  const hasActiveFilters = Boolean(cuisineFilter) || priceFilter !== "Any" || resultLimit !== 10 || openNowOnly;
-  const showFilterPanel = searchFocused || hasActiveFilters;
+  const hasActiveFilters = Boolean(cuisineFilter) || priceFilter !== "Any" || openNowOnly;
+  const showFilterPanel = searchFocused;
   const searchDisplay = locationSearch !== null ? locationSearch : (customCoords ? suburb : (suburb === "All Suburbs" ? city : suburb));
   const openSpots = results.filter(r => r.isOpen && r.isOpen.includes("Open"));
   const savedSpots = results.filter(r => saved[r.id]);
