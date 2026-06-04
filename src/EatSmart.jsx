@@ -496,7 +496,15 @@ export default function EatSmart() {
           <div style={S.wave} />
         </header>
         <div style={S.card}>
-          <div style={{display:"flex",alignItems:"center",background:"#fff",border:"2px solid",borderColor:searchFocused?"#e83a2a":"#ede8e3",borderRadius:14,padding:"6px 6px 6px 12px",gap:6,minHeight:52,position:"relative"}}>
+          <div style={{display:"flex",alignItems:"center",background:"#fff",border:"2px solid",borderColor:searchFocused?"#e83a2a":"#ede8e3",borderRadius:14,padding:"6px 6px 6px 8px",gap:6,minHeight:52,position:"relative"}}>
+            {(city || (suburb && suburb !== "All Suburbs") || cuisineFilters.length > 0 || priceFilter !== "Any") && (
+              <div style={{display:"flex",gap:5,alignItems:"center",overflowX:"auto",flexShrink:1,maxWidth:"55%",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
+                {city && <button onMouseDown={e=>{e.preventDefault();setSearchFocused(true);setLocationSearch("");}} title="Tap to change city" style={{background:"#fff",color:"#e83a2a",border:"1.5px solid #e83a2a",borderRadius:20,padding:"4px 9px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:3,whiteSpace:"nowrap",flexShrink:0}}>📍{city}<span style={{fontSize:10,opacity:0.7}}>⌄</span></button>}
+                {suburb && suburb !== "All Suburbs" && <button onMouseDown={e=>{e.preventDefault();setSuburb("All Suburbs");setCustomCoords(null);localStorage.setItem("es_suburb","All Suburbs");}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"4px 9px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:3,whiteSpace:"nowrap",flexShrink:0}}>{suburb}<span style={{fontSize:13,opacity:0.85}}>×</span></button>}
+                {cuisineFilters.map(cf => <button key={cf} onMouseDown={e=>{e.preventDefault();setCuisineFilters(prev=>prev.filter(x=>x!==cf));}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"4px 9px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:3,whiteSpace:"nowrap",flexShrink:0}}>{cf}<span style={{fontSize:13,opacity:0.85}}>×</span></button>)}
+                {priceFilter !== "Any" && <button onMouseDown={e=>{e.preventDefault();setPriceFilter("Any");}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"4px 9px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:3,whiteSpace:"nowrap",flexShrink:0}}>{priceFilter}<span style={{fontSize:13,opacity:0.85}}>×</span></button>}
+              </div>
+            )}
             <input
               style={{flex:1,border:"none",outline:"none",fontSize:15,fontFamily:"inherit",color:"#222",background:"transparent",minWidth:60}}
               placeholder={city ? "Suburb or street..." : "City, suburb, cuisine..."}
@@ -574,23 +582,6 @@ export default function EatSmart() {
         </div>
       </div>
 
-      {/* ACTIVE FILTER CHIPS */}
-      {(city || cuisineFilters.length > 0 || (suburb && suburb !== "All Suburbs") || priceFilter !== "Any") && (
-        <div style={{display:"flex",gap:6,flexWrap:"wrap",padding:"8px 16px 4px",alignItems:"center"}}>
-          {/* City — pinned anchor: tap to change, no x */}
-          {city && <button onClick={()=>{setSearchFocused(true);setLocationSearch("");}} title="Tap to change city" style={{background:"#fff",color:"#e83a2a",border:"1.5px solid #e83a2a",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:5}}>
-            📍 {city} <span style={{fontSize:11,opacity:0.7}}>⌄</span>
-          </button>}
-          {/* Suburb — removable */}
-          {suburb && suburb !== "All Suburbs" && <button onClick={()=>{setSuburb("All Suburbs");setCustomCoords(null);localStorage.setItem("es_suburb","All Suburbs");}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>
-            {suburb} <span style={{fontSize:14,opacity:0.8}}>×</span>
-          </button>}
-          {/* Cuisines — removable, multi */}
-          {cuisineFilters.map(cf => <button key={cf} onClick={()=>setCuisineFilters(prev=>prev.filter(x=>x!==cf))} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>{cf} <span style={{fontSize:14,opacity:0.8}}>×</span></button>)}
-          {/* Price — removable */}
-          {priceFilter !== "Any" && <button onClick={()=>setPriceFilter("Any")} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>{priceFilter} <span style={{fontSize:14,opacity:0.8}}>×</span></button>}
-        </div>
-      )}
       {/* HERO EMPTY STATE */}
       {!searched && (
         <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
