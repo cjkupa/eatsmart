@@ -598,7 +598,6 @@ export default function EatSmart() {
           </div>
         </div>
       )}
-      )}
 
       {/* RESULTS */}
       {loading && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>Searching...</div>}
