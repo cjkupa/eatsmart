@@ -537,7 +537,7 @@ export default function EatSmart() {
                     else{if(s.city&&s.city!==city)handleCityChange(s.city);setSuburb(s.suburb||s.label);setCustomCoords(null);localStorage.setItem("es_suburb",s.suburb||s.label);}
                     setLocationSuggestions([]);setSearchFocused(false);
                   }} style={{padding:"10px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:s.type==="street"?"#1a73e8":s.type==="city"?"#e83a2a":"#333",display:"flex",alignItems:"center",gap:8}}>
-                    {s.type==="street"?"🛣️":s.type==="city"?"🏙️":"📍"} {s.label}
+                    {s.type==="street"?"🛣":s.type==="city"?"🏙":"📍"} {s.label}
                   </div>
                 ))}
               </div>
@@ -708,7 +708,7 @@ export default function EatSmart() {
         {[
           { id: "search", emoji: "🔍", label: "Search" },
           { id: "opennow", emoji: "🟢", label: "Open Now" },
-          { id: "saved", emoji: "❤️", label: "Saved" },
+          { id: "saved", emoji: "❤", label: "Saved" },
           { id: "contact", emoji: "💬", label: "Feedback" },
         ].map(tab => (
           <button key={tab.id} style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}} onClick={() => handleTabPress(tab.id)}>
