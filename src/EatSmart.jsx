@@ -179,7 +179,7 @@ export default function EatSmart() {
   const [suburb, setSuburb] = useState(() => localStorage.getItem("es_suburb") || "Remuera");
   const [cuisine, setCuisine] = useState("Any");
   const [priceFilter, setPriceFilter] = useState("Any");
-  const [cuisineFilter, setCuisineFilter] = useState("");
+  const [cuisineFilters, setCuisineFilters] = useState([]); const cuisineFilter = cuisineFilters[0] || "";  const setCuisineFilter = (v) => setCuisineFilters(v ? [v] : []);
   const [searchFocused, setSearchFocused] = useState(false);
   const [smartSearch, setSmartSearch] = useState("");
   const [sortBy, setSortBy] = useState("rating");
@@ -341,7 +341,7 @@ export default function EatSmart() {
       if (suburb === "All Suburbs") setResultLimit(20);
       let spots = []; let usedRadius = 800;
       for (const r of radii) {
-        const selectedCuisine = cuisineFilter || cuisine || "Any";
+        const selectedCuisine = cuisineFilters.length > 0 ? cuisineFilters[0] : (cuisine || "Any");
         const elements = await searchRestaurants(coords.lat, coords.lon, r, selectedCuisine); console.log("Elements:", elements.length, "radius:", r);
         spots = elements.map((el, i) => formatRestaurant(el, i)).filter(Boolean); console.log("Spots after filter:", spots.length);
         if (spots.length > 0) { usedRadius = r; break; }
@@ -424,7 +424,7 @@ export default function EatSmart() {
   }
 
   const suburbs = NZ_CITIES[city] || [];
-  const hasActiveFilters = Boolean(cuisineFilter) || priceFilter !== "Any" || openNowOnly;
+  const hasActiveFilters = cuisineFilters.length > 0 || priceFilter !== "Any" || openNowOnly;
   const showFilterPanel = searchFocused;
   const searchDisplay = locationSearch !== null ? locationSearch : (customCoords ? suburb : (suburb === "All Suburbs" ? city : suburb));
   const sortedResults = [...results].sort((a, b) => {
@@ -554,7 +554,7 @@ export default function EatSmart() {
               <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CUISINE</div>
               <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
                 {[{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🍔",l:"Burgers"},{e:"🍕",l:"Pizza"},{e:"🍛",l:"Indian"},{e:"🍣",l:"Sushi"},{e:"🍜",l:"Chinese"},{e:"🥗",l:"Healthy"}].map(c=>(
-                  <button key={c.l} onMouseDown={e=>{e.preventDefault();setCuisineFilter(cuisineFilter===c.l?"":c.l);setSearchFocused(false);}} style={{background:cuisineFilter===c.l?"#e83a2a":"#fff",color:cuisineFilter===c.l?"#fff":"#555",border:"1.5px solid",borderColor:cuisineFilter===c.l?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
+                  <button key={c.l} onMouseDown={e=>{e.preventDefault();setCuisineFilters(prev => prev.includes(c.l) ? prev.filter(x=>x!==c.l) : [...prev, c.l]);setSearchFocused(false);}} style={{background:cuisineFilter===c.l?"#e83a2a":"#fff",color:cuisineFilter===c.l?"#fff":"#555",border:"1.5px solid",borderColor:cuisineFilter===c.l?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
                 ))}
               </div>
               <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>BUDGET</div>
@@ -580,9 +580,7 @@ export default function EatSmart() {
           {suburb && suburb !== "All Suburbs" && <button onClick={()=>{setSuburb("All Suburbs");setCustomCoords(null);localStorage.setItem("es_suburb","All Suburbs");}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>
             {suburb} <span style={{fontSize:14,opacity:0.8}}>×</span>
           </button>}
-          {cuisineFilter && <button onClick={()=>setCuisineFilter("")} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>
-            {cuisineFilter} <span style={{fontSize:14,opacity:0.8}}>×</span>
-          </button>}
+          {cuisineFilters.map(cf => <button key={cf} onClick={()=>setCuisineFilters(prev=>prev.filter(x=>x!==cf))} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>{cf} <span style={{fontSize:14,opacity:0.8}}>×</span></button>)}
         </div>
       )}
       {/* HERO EMPTY STATE */}
