@@ -774,6 +774,14 @@ styleEl.textContent = "@keyframes spin { to { transform: rotate(360deg); } }";
 document.head.appendChild(styleEl);
       {/* HERO EMPTY STATE */}
       {!searched && (
+        <div style={{textAlign:"center",padding:"40px 20px 20px"}}>
+          <div style={{fontSize:48,marginBottom:12}}>🍴</div>
+          <div style={{fontWeight:800,fontSize:20,color:"#1a1a1a",marginBottom:6}}>Ready to eat?</div>
+          <div style={{fontSize:13,color:"#888"}}>Search by city, suburb or street</div>
+        </div>
+      )}
+      {/* HERO EMPTY STATE */}
+      {!searched && (
         <div style={{padding:"12px 0 8px"}}>
           {[
             {label:"Restaurants",emoji:"🍽️",spots:[
