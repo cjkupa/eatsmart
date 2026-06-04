@@ -571,6 +571,20 @@ export default function EatSmart() {
         </div>
       </div>
 
+      {/* ACTIVE FILTER CHIPS */}
+      {(city || cuisineFilter || suburb !== "All Suburbs") && (
+        <div style={{display:"flex",gap:6,flexWrap:"wrap",padding:"8px 16px 4px"}}>
+          {city && <button onMouseDown={e=>{e.preventDefault();}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"default",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>
+            {city}
+          </button>}
+          {suburb && suburb !== "All Suburbs" && <button onClick={()=>{setSuburb("All Suburbs");setCustomCoords(null);localStorage.setItem("es_suburb","All Suburbs");}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>
+            {suburb} <span style={{fontSize:14,opacity:0.8}}>×</span>
+          </button>}
+          {cuisineFilter && <button onClick={()=>setCuisineFilter("")} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>
+            {cuisineFilter} <span style={{fontSize:14,opacity:0.8}}>×</span>
+          </button>}
+        </div>
+      )}
       {/* HERO EMPTY STATE */}
       {!searched && (
         <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
