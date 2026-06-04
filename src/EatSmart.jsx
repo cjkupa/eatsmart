@@ -540,6 +540,7 @@ export default function EatSmart() {
                       setCustomCoords(null);
                       localStorage.setItem("es_suburb", s.suburb || s.label);
                     }
+                    setLocationSearch(null);
                     setLocationSuggestions([]);
                     setSearched(false);
                     setResults([]);
