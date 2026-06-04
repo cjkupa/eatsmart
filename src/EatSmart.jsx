@@ -282,6 +282,7 @@ export default function EatSmart() {
 
   const handleSearch = useCallback(async () => {
     setLoading(true); setError(null); setSearched(true); setResults([]);
+    console.log("SEARCH START - suburb:", suburb, "city:", city, "locationSearch:", locationSearch, "customCoords:", customCoords);
     try {
       let coords = customCoords;
       let resolvedLabel = suburb;
