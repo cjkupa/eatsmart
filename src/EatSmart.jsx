@@ -553,6 +553,7 @@ export default function EatSmart() {
             </div>
           )}
         </div>
+      </div>
 
       {/* HERO EMPTY STATE */}
       {!searched && (
