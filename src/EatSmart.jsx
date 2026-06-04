@@ -772,3 +772,57 @@ const S = {
 const styleEl = document.createElement("style");
 styleEl.textContent = "@keyframes spin { to { transform: rotate(360deg); } }";
 document.head.appendChild(styleEl);
+      {/* HERO EMPTY STATE */}
+      {!searched && (
+        <div style={{padding:"12px 0 8px"}}>
+          {[
+            {label:"Restaurants",emoji:"🍽️",spots:[
+              {name:"Jarks Restaurant",city:"Hastings",dish:"Ribeye steak"},
+              {name:"Ortega Fish Shack",city:"Wellington",dish:"Fresh catch"},
+              {name:"Capitol Restaurant",city:"Wellington",dish:"NZ cuisine"},
+              {name:"5th Street",city:"Christchurch",dish:"Wood-fired pizza"},
+              {name:"Napoli",city:"Wellington",dish:"Italian"},
+              {name:"Harbourside",city:"Tauranga",dish:"Seafood platter"}
+            ]},
+            {label:"Cafes",emoji:"☕",spots:[
+              {name:"Beach Babylon",city:"Wellington",dish:"Eggs benedict"},
+              {name:"FRANKS Newtown",city:"Wellington",dish:"Best flat white"},
+              {name:"Urban Eatery",city:"Wellington",dish:"All day breakfast"},
+              {name:"Village Bakery",city:"Wellington",dish:"Fresh bakes"},
+              {name:"wildbean cafe",city:"Wellington",dish:"Quick coffee"},
+              {name:"Thyme Square",city:"Hamilton",dish:"Brunch"}
+            ]},
+            {label:"Takeaways",emoji:"🥡",spots:[
+              {name:"BurgerFuel",city:"Auckland",dish:"Craft burgers"},
+              {name:"Kinnari Thai",city:"Hamilton",dish:"Pad thai"},
+              {name:"Tawa Fish Supply",city:"Wellington",dish:"Fish & chips"},
+              {name:"Supremo Takeouts",city:"Wellington",dish:"Local faves"},
+              {name:"Indian Flavours",city:"Wellington",dish:"Curry"},
+              {name:"Dominos Pizza",city:"Wellington",dish:"Pizza delivery"}
+            ]},
+            {label:"Bars",emoji:"🍺",spots:[
+              {name:"Gothenburg",city:"Hamilton",dish:"Craft beer"},
+              {name:"Sprig Fern Tawa",city:"Wellington",dish:"Local ales"},
+              {name:"The Borough",city:"Wellington",dish:"Bar food"},
+              {name:"Madame Social",city:"Napier",dish:"Cocktails"},
+              {name:"OTT In The City",city:"Hastings",dish:"Bar bites"},
+              {name:"Craft and Social",city:"Hastings",dish:"Tapas"}
+            ]}
+          ].map((cat,ci) => (
+            <div key={ci} style={{marginBottom:16}}>
+              <div style={{fontSize:13,fontWeight:700,color:"#333",padding:"0 16px 8px"}}>{cat.emoji} {cat.label}</div>
+              <div style={{display:"flex",gap:10,overflowX:"auto",padding:"0 16px 4px",scrollbarWidth:"none"}}>
+                {cat.spots.map((f,i) => (
+                  <div key={i} style={{flexShrink:0,width:120,borderRadius:12,overflow:"hidden",boxShadow:"0 2px 8px rgba(0,0,0,0.08)",background:"#fff",cursor:"pointer"}} onClick={()=>{handleCityChange(f.city);setSuburb(f.city);localStorage.setItem("es_suburb",f.city);}}>
+                    <div style={{height:70,background:"#e83a2a",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}}>{cat.emoji}</div>
+                    <div style={{padding:"6px 8px"}}>
+                      <div style={{fontSize:11,fontWeight:700,color:"#1a1a1a",lineHeight:1.3,marginBottom:1}}>{f.name}</div>
+                      <div style={{fontSize:10,color:"#888"}}>{f.dish}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
