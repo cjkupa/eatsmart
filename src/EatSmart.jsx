@@ -436,7 +436,6 @@ export default function EatSmart() {
     const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
-        {spot.photoRef && <a href={"https://www.google.com/maps/search/"+encodeURIComponent(spot.name+" "+(spot.address||""))} target="_blank" rel="noopener noreferrer"><img src={`${API_BASE_URL}/api/photo?ref=${encodeURIComponent(spot.photoRef)}`} alt={spot.name} style={{width:"100%",height:90,objectFit:"cover",borderRadius:"16px 16px 0 0",display:"block",cursor:"pointer"}} onError={function(e){e.target.parentElement.style.display="none";}} /></a>}
         <div style={{padding:"14px 14px 8px"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
             <div style={{background:"#fff5f4",border:"1px solid #ffd5d0",borderRadius:8,padding:"3px 8px",fontSize:11,fontWeight:700,color:"#e83a2a",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
@@ -456,6 +455,7 @@ export default function EatSmart() {
             </div>
           </div>
         </div>
+        {spot.photoRef && <a href={"https://www.google.com/maps/search/"+encodeURIComponent(spot.name+" "+(spot.address||""))} target="_blank" rel="noopener noreferrer"><img src={`${API_BASE_URL}/api/photo?ref=${encodeURIComponent(spot.photoRef)}`} alt={spot.name} style={{width:"100%",height:90,objectFit:"cover",borderRadius:"16px 16px 0 0",display:"block",cursor:"pointer"}} onError={function(e){e.target.parentElement.style.display="none";}} /></a>}
         <div style={{...S.actionRow, padding:"8px 14px 12px"}}>
           {spot.website
             ? <a href={spot.website} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>Website</a>
