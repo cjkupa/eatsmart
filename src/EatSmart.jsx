@@ -470,8 +470,8 @@ export default function EatSmart() {
             : spot.phone
             ? <a href={"tel:"+spot.phone} style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>Call</a>
             : <button style={S.openBtn}>Looks good?</button>}
-          <a href={"https://www.google.com/maps/search/" + encodeURIComponent(spot.name + " " + (spot.address || ""))} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center",color:"#1a73e8",border:"1.5px solid #bbd4f8"}}>Maps</a>
-          <button style={S.saveBtn} onClick={() => setPriceModal(spot)}>Add price</button>
+          <a href={"https://www.google.com/maps/search/" + encodeURIComponent(spot.name + " " + (spot.address || ""))} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center",color:"#1a73e8",background:"#f0f5ff",border:"1.5px solid #bbd4f8"}}>Maps</a>
+          <button style={{...S.saveBtn,background:"#fffbf0",border:"1.5px solid #fde68a",color:"#b45309"}} onClick={() => setPriceModal(spot)}>Add price</button>
           <button style={{...S.saveBtn, background: saved[spot.id] ? "#fde8e8" : "#fef2f2"}} onClick={() => toggleSave(spot.id)}>{saved[spot.id] ? "🩷 Saved" : "🤍 Save"}</button>
         </div>
       </div>
@@ -744,8 +744,8 @@ const S = {
   tagRow:{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14},
   tag:{background:"#f2f2f2",borderRadius:20,padding:"5px 12px",fontSize:12,color:"#555",fontWeight:500},
   actionRow:{display:"flex",gap:10},
-  openBtn:{flex:1,background:"#fff",border:"1.5px solid #e8e8e8",borderRadius:8,padding:"7px 4px",fontSize:11,fontWeight:600,color:"#444",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center"},
-  saveBtn:{flex:1,background:"#fff",border:"1.5px solid #ffd5d0",borderRadius:8,padding:"7px 4px",fontSize:11,fontWeight:600,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit"},
+  openBtn:{flex:1,background:"#f0faf4",border:"1.5px solid #a9dfbf",borderRadius:8,padding:"7px 4px",fontSize:11,fontWeight:700,color:"#27ae60",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center"},
+  saveBtn:{flex:1,background:"#fff5f4",border:"1.5px solid #ffd5d0",borderRadius:8,padding:"7px 4px",fontSize:11,fontWeight:700,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit"},
   bottomNav:{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:"#fff",borderTop:"1px solid #f0ebe6",display:"flex",justifyContent:"space-around",padding:"8px 0 20px",zIndex:100,boxShadow:"0 -4px 20px rgba(200,50,40,0.08)"},
   navBtn:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",background:"none",border:"none",cursor:"pointer",color:"#aaa",fontFamily:"inherit",padding:"4px 0"},
   navBtnActive:{color:"#e83a2a"},
