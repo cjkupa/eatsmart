@@ -598,7 +598,7 @@ export default function EatSmart() {
             </div>
           )}
 
-          <button style={{...S.cta, opacity: loading ? 0.7 : 1}} onMouseDown={e => { if (locationSearch) { setSuburb(locationSearch); localStorage.setItem("es_suburb", locationSearch); } }} onClick={handleSearch} disabled={loading}>{loading ? "Searching…" : "Find food nearby →"}</button>
+
         </div>
 
       </div>
