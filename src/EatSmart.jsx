@@ -650,7 +650,7 @@ export default function EatSmart() {
 
           {activeTab === "opennow" && openSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
           {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet — tap the Save button on any restaurant!</div>}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,padding:"0 16px"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,padding:"0 16px",overflowX:"hidden"}}>
           {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : results).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
           </div>
         </>
@@ -744,7 +744,7 @@ export default function EatSmart() {
 }
 
 const S = {
-  page:{overflowX:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",minHeight:"100vh",maxWidth:480,margin:"0 auto",paddingBottom:100},
+  page:{overflow:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",minHeight:"100vh",maxWidth:480,margin:"0 auto",paddingBottom:100},
   header:{background:"#e83a2a",padding:"10px 16px 28px",position:"relative",overflow:"hidden"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
