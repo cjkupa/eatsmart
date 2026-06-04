@@ -691,8 +691,8 @@ export default function EatSmart() {
         {[
           { id: "search", emoji: "🔍", label: "Search" },
           { id: "opennow", emoji: "🟢", label: "Open Now" },
-          { id: "saved", emoji: "♡", label: "Saved" },
-          { id: "contact", emoji: "✎", label: "Feedback" },
+          { id: "saved", emoji: "❤️", label: "Saved" },
+          { id: "contact", emoji: "💬", label: "Feedback" },
         ].map(tab => (
           <button key={tab.id} style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}} onClick={() => handleTabPress(tab.id)}>
             <span style={{fontSize:22}}>{tab.emoji}</span>
