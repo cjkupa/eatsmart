@@ -572,23 +572,16 @@ export default function EatSmart() {
       {!loading && searched && results.length === 0 && !error && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>No restaurants found near {suburb}. Try a nearby suburb.</div>}
       {!loading && results.length > 0 && (
         <>
-          <div style={{display:"flex",justifyContent:"flex-end",gap:6,padding:"8px 16px 0"}}>
-            {["rating","nearest"].map(s => (
-              <button key={s} onClick={() => setSortBy(s)} style={{background:sortBy===s?"#e83a2a":"#fff",color:sortBy===s?"#fff":"#888",border:"1.5px solid",borderColor:sortBy===s?"#e83a2a":"#ede8e3",borderRadius:20,padding:"4px 12px",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>
-                {s === "rating" ? "⭐ Best rated" : "📍 Nearest"}
-              </button>
-            ))}
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 16px 8px"}}>
+            <span style={{fontSize:17,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#888",fontSize:14}}>spots near you</span></span>
+            <div style={{display:"flex",gap:4}}>
+              {["rating","nearest"].map(s => (
+                <button key={s} onClick={() => setSortBy(s)} style={{background:sortBy===s?"#e83a2a":"#f5f5f5",color:sortBy===s?"#fff":"#888",border:"none",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>
+                  {s==="rating"?"Top rated":"Nearest"}
+                </button>
+              ))}
+            </div>
           </div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 16px 4px"}}>
-            <span style={{fontSize:20,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#555"}}>spots near you</span></span>
-            <span style={{fontSize:13,color:"#aaa"}}>📍 {suburb}, {city}</span>
-          </div>
-          <div style={{textAlign:"center",fontSize:12,color:"#bbb",marginBottom:8}}>Within {searchRadius >= 1000 ? (searchRadius/1000).toFixed(1)+"km" : searchRadius+"m"} of {suburb}</div>
-          <div style={{display:"flex",alignItems:"center",gap:8,padding:"0 16px 12px"}}>
-            <span style={{fontSize:13,color:"#888"}}>Show spots:</span>
-            {[5,10,20,30].map(n => (
-              <button key={n} onClick={() => setResultLimit(n)} style={{background: resultLimit===n ? "#e83a2a" : "#fff", color: resultLimit===n ? "#fff" : "#888", border:"1.5px solid", borderColor: resultLimit===n ? "#e83a2a" : "#ede8e3", borderRadius:20, padding:"4px 14px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit"}}>{n}</button>
-            ))}
           </div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px",fontSize:11,color:"#bbb"}}><span>Powered by Google Places</span><span>{openSpots.length} open now</span></div>
           {showInstallPrompt && (
