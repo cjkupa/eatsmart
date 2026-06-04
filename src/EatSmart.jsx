@@ -475,12 +475,11 @@ export default function EatSmart() {
       {/* SEARCH SECTION */}
       <div ref={searchRef}>
         <header style={S.header}>
-          <div style={S.logo}>
-            <img src="/logo.png" alt="EatSmart" style={{width:44,height:44,borderRadius:11,marginRight:10,boxShadow:"0 3px 8px rgba(0,0,0,0.2)"}} />
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:4}}>
+            <img src="/logo.png" alt="EatSmart" style={{width:36,height:36,borderRadius:9}} />
             <div><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span></div>
           </div>
-          <p style={S.tagline}>Eat out smarter near you</p>
-          <p style={{color:"rgba(255,255,255,0.75)",fontSize:12,margin:"4px 0 0",textAlign:"center"}}>Restaurants, Cafes, Takeaways & more</p>
+          <p style={{color:"rgba(255,255,255,0.85)",fontSize:13,margin:"0",textAlign:"center",fontWeight:400}}>Find great food near you</p>
           <div style={S.wave} />
         </header>
         <div style={S.card}>
@@ -699,7 +698,7 @@ export default function EatSmart() {
 
 const S = {
   page:{overflow:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",maxWidth:480,margin:"0 auto",paddingBottom:100,width:"100%"},
-  header:{background:"#e83a2a",padding:"10px 16px 28px",position:"relative",overflow:"hidden"},
+  header:{background:"#e83a2a",padding:"10px 16px 24px",position:"relative",overflow:"hidden"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
   logoSmart:{fontWeight:900,fontSize:36,color:"#ffd97d",letterSpacing:-1.5},
