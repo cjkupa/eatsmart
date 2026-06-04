@@ -47,7 +47,7 @@ const NZ_CITIES = {
 };
 
 const CUISINES = ["Any","Fish & Chips","NZ Modern","Cafe","Bakery","Pub Food","Burgers","Pizza","Takeaway","Italian","Japanese","Sushi","Chinese","Indian","Thai","Mexican","Korean","Mediterranean","American","French","Vietnamese","Middle Eastern","Seafood","Vegetarian","Turkish","Greek"];
-const CUISINE_EMOJI = {"italian":"🍝","japanese":"🍣","chinese":"🥢","indian":"🍛","thai":"🌶","mexican":"🌮","korean":"🍱","mediterranean":"🥗","american":"🍔","french":"🥐","vietnamese":"🍜","seafood":"🐟","vegetarian":"🥦","cafe":"☕","pizza":"🍕","burger":"🍔","default":"🍴"};
+const CUISINE_EMOJI = {"italian":"🍝","japanese":"🍣","chinese":"🥢","indian":"🍛","thai":"🌶️","mexican":"🌮","korean":"🍱","mediterranean":"🥗","american":"🍔","french":"🥐","vietnamese":"🍜","seafood":"🐟","vegetarian":"🥦","cafe":"☕","pizza":"🍕","burger":"🍔","default":"🍽️"};
 
 function getCuisineEmoji(cuisine) {
   if (!cuisine) return CUISINE_EMOJI.default;
@@ -537,7 +537,7 @@ export default function EatSmart() {
                     else{if(s.city&&s.city!==city)handleCityChange(s.city);setSuburb(s.suburb||s.label);setCustomCoords(null);localStorage.setItem("es_suburb",s.suburb||s.label);}
                     setLocationSuggestions([]);setSearchFocused(false);
                   }} style={{padding:"10px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:s.type==="street"?"#1a73e8":s.type==="city"?"#e83a2a":"#333",display:"flex",alignItems:"center",gap:8}}>
-                    {s.type==="street"?"🛣":s.type==="city"?"🏙":"📍"} {s.label}
+                    {s.type==="street"?"🛣️":s.type==="city"?"🏙️":"📍"} {s.label}
                   </div>
                 ))}
               </div>
@@ -571,6 +571,16 @@ export default function EatSmart() {
         </div>
       </div>
 
+      {/* HERO EMPTY STATE */}
+      {!searched && (
+        <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
+          <div style={{fontSize:72,marginBottom:16}}>🍴</div>
+          <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:6}}>Ready to eat?</div>
+          <div style={{fontSize:14,color:"#888",marginBottom:8}}>Search by city, suburb or street and by budget</div>
+          <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
+          </div>
+        </div>
+      )}
 
       {/* RESULTS */}
       {loading && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>Searching...</div>}
@@ -649,7 +659,7 @@ export default function EatSmart() {
                   <div style={{fontWeight:800,fontSize:18,color:"#1a1a1a"}}>💰 Submit Real Price</div>
                   <button onClick={() => setPriceModal(null)} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#aaa"}}>✕</button>
                 </div>
-                {priceModal.name && <div style={{background:"#faf9f7",borderRadius:12,padding:"10px 14px",marginBottom:16,fontWeight:600,fontSize:15,color:"#333"}}>🍴 {priceModal.name}</div>}
+                {priceModal.name && <div style={{background:"#faf9f7",borderRadius:12,padding:"10px 14px",marginBottom:16,fontWeight:600,fontSize:15,color:"#333"}}>🍽️ {priceModal.name}</div>}
                 <div style={{display:"flex",flexDirection:"column",gap:12}}>
                   <div>
                     <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>What did you order?</label>
@@ -681,7 +691,7 @@ export default function EatSmart() {
         {[
           { id: "search", emoji: "🔍", label: "Search" },
           { id: "opennow", emoji: "🟢", label: "Open Now" },
-          { id: "saved", emoji: "❤", label: "Saved" },
+          { id: "saved", emoji: "❤️", label: "Saved" },
           { id: "contact", emoji: "💬", label: "Feedback" },
         ].map(tab => (
           <button key={tab.id} style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}} onClick={() => handleTabPress(tab.id)}>
@@ -744,113 +754,4 @@ const S = {
 
 const styleEl = document.createElement("style");
 styleEl.textContent = "@keyframes spin { to { transform: rotate(360deg); } }";
-      {/* HERO EMPTY STATE */}
-      {!searched && (
-        <div style={{textAlign:"center",padding:"40px 20px 20px"}}>
-          <div style={{fontSize:48,marginBottom:12}}>🍴</div>
-          <div style={{fontWeight:800,fontSize:20,color:"#1a1a1a",marginBottom:6}}>Ready to eat?</div>
-          <div style={{fontSize:13,color:"#888"}}>Search by city, suburb or street</div>
-        </div>
-      )}
-      {/* RESULTS */}
-      {loading && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>Searching...</div>}
-      {error && <div style={{margin:"16px",padding:"14px 16px",background:"#fff3f3",border:"1.5px solid #f5c6c6",borderRadius:14,color:"#e83a2a",fontSize:14}}>{error}</div>}
-      {!loading && searched && results.length === 0 && !error && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>No restaurants found near {suburb}. Try a nearby suburb.</div>}
-      {!loading && results.length > 0 && (
-        <>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 16px 8px"}}>
-            <span style={{fontSize:17,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#888",fontSize:14}}>spots near you</span></span>
-            <div style={{display:"flex",gap:4}}>
-              {["rating","nearest"].map(s => (
-                <button key={s} onClick={() => setSortBy(s)} style={{background:sortBy===s?"#e83a2a":"#f5f5f5",color:sortBy===s?"#fff":"#888",border:"none",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>
-                  {s==="rating"?"Top rated":"Nearest"}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px",fontSize:11,color:"#bbb"}}><span>Powered by Google Places</span><span>{openSpots.length} open now</span></div>
-          {showInstallPrompt && (
-            <div style={{margin:"0 16px 12px",background:"#fff9ee",border:"1.5px solid #ffd97d",borderRadius:14,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <div>
-                <div style={{fontSize:13,fontWeight:700,color:"#a06000"}}>Add to home screen</div>
-                <div style={{fontSize:11,color:"#888",marginTop:2}}>Works like an app — no download needed!</div>
-              </div>
-              <button onClick={() => { setShowInstallPrompt(false); localStorage.setItem("es_install_dismissed","1"); }} style={{background:"none",border:"none",fontSize:18,cursor:"pointer",color:"#aaa",padding:"4px"}}>x</button>
-            </div>
-          )}
-          {activeTab === "opennow" && openSpots.length === 0 && searched && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
-          {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet!</div>}
-          <div style={{display:"flex",flexDirection:"column",gap:10,padding:"0 16px"}}>
-          {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : sortedResults).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
-          </div>
-        </>
-      )}
-      {/* CONTACT MODAL */}
-      {contactModal && (
-        <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
-          <div style={{background:"#fff",borderRadius:24,padding:"24px",width:"100%",maxWidth:420,boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}>
-            {contactSuccess ? (
-              <div style={{textAlign:"center",padding:"20px 0"}}>
-                <div style={{fontSize:48,marginBottom:12}}>Thanks!</div>
-                <div style={{fontWeight:800,fontSize:20,color:"#27ae60"}}>Message sent!</div>
-              </div>
-            ) : (
-              <>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-                  <div style={{fontWeight:800,fontSize:18,color:"#1a1a1a"}}>Get in touch</div>
-                  <button onClick={() => setContactModal(false)} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#aaa"}}>x</button>
-                </div>
-                <div style={{display:"flex",flexDirection:"column",gap:12}}>
-                  <input value={contactForm.name} onChange={e => setContactForm(p => ({...p, name: e.target.value}))} placeholder="Your name" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
-                  <input value={contactForm.email} onChange={e => setContactForm(p => ({...p, email: e.target.value}))} placeholder="Your email" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
-                  <textarea value={contactForm.message} onChange={e => setContactForm(p => ({...p, message: e.target.value}))} placeholder="Tell us what's on your mind..." rows={4} style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",resize:"none"}} />
-                  <button onClick={handleContactSubmit} disabled={contactSubmitting || !contactForm.message} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:14,padding:"16px",fontSize:16,fontWeight:700,cursor:"pointer",fontFamily:"inherit",opacity:contactSubmitting || !contactForm.message ? 0.6 : 1}}>{contactSubmitting ? "Sending..." : "Send message"}</button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-      {/* PRICE SUBMISSION MODAL */}
-      {priceModal && (
-        <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
-          <div style={{background:"#fff",borderRadius:24,padding:"24px",width:"100%",maxWidth:420,boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}>
-            {submitSuccess ? (
-              <div style={{textAlign:"center",padding:"20px 0"}}>
-                <div style={{fontSize:48,marginBottom:12}}>Thanks!</div>
-                <div style={{fontWeight:800,fontSize:20,color:"#27ae60"}}>Price submitted!</div>
-              </div>
-            ) : (
-              <>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-                  <div style={{fontWeight:800,fontSize:18,color:"#1a1a1a"}}>Submit Real Price</div>
-                  <button onClick={() => setPriceModal(null)} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#aaa"}}>x</button>
-                </div>
-                {priceModal.name && <div style={{background:"#faf9f7",borderRadius:12,padding:"10px 14px",marginBottom:16,fontWeight:600,fontSize:15,color:"#333"}}>{priceModal.name}</div>}
-                <div style={{display:"flex",flexDirection:"column",gap:12}}>
-                  <input value={priceForm.dish} onChange={e => setPriceForm(p => ({...p, dish: e.target.value}))} placeholder="e.g. 2 pieces fish + chips" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
-                  <input type="number" value={priceForm.price} onChange={e => setPriceForm(p => ({...p, price: e.target.value}))} placeholder="Price e.g. 14" style={{width:"100%",border:"1.5px solid #ede8e3",borderRadius:12,padding:"12px 14px",fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}} />
-                  <button onClick={handlePriceSubmit} disabled={submitting || !priceForm.dish || !priceForm.price} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:14,padding:"16px",fontSize:16,fontWeight:700,cursor:"pointer",fontFamily:"inherit",opacity: submitting || !priceForm.dish || !priceForm.price ? 0.6 : 1}}>{submitting ? "Submitting..." : "Submit Price"}</button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-      {/* BOTTOM NAV */}
-      <nav style={S.bottomNav}>
-        {[
-          { id: "search", emoji: "🔍", label: "Search" },
-          { id: "opennow", emoji: "🟢", label: "Open Now" },
-          { id: "saved", emoji: "❤️", label: "Saved" },
-          { id: "contact", emoji: "💬", label: "Feedback" },
-        ].map(tab => (
-          <button key={tab.id} style={{...S.navBtn, ...(activeTab === tab.id ? S.navBtnActive : {})}} onClick={() => handleTabPress(tab.id)}>
-            <span style={{fontSize:22}}>{tab.emoji}</span>
-            <span style={{fontSize:11,marginTop:2,fontWeight: activeTab === tab.id ? 700 : 400}}>{tab.label}</span>
-          </button>
-        ))}
-      </nav>
-    </div>
-  );
-}
+document.head.appendChild(styleEl);
