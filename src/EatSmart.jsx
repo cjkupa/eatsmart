@@ -587,7 +587,7 @@ export default function EatSmart() {
               {name:"Gothenburg",city:"Hamilton",emoji:"🍺",dish:"Craft beer"},
               {name:"FRANKS Newtown",city:"Wellington",emoji:"☕",dish:"Best flat white"}
             ].map((f,i) => (
-              <div key={i} style={{flexShrink:0,width:130,borderRadius:12,overflow:"hidden",boxShadow:"0 2px 8px rgba(0,0,0,0.08)",background:"#fff",cursor:"pointer"}} onClick={()=>{handleCityChange(f.city);setSuburb(f.city);localStorage.setItem("es_suburb",f.city);}}>
+              <div key={i} style={{flexShrink:0,width:130,borderRadius:12,overflow:"hidden",boxShadow:"0 2px 8px rgba(0,0,0,0.08)",background:"#fff",cursor:"pointer"}} onClick={()=>{ window.open("https://www.google.com/maps/search/"+encodeURIComponent(f.name+" "+f.city+", New Zealand"), "_blank"); }}>
                 <div style={{height:80,background:"#e83a2a",display:"flex",alignItems:"center",justifyContent:"center",fontSize:32}}>{f.emoji}</div>
                 <div style={{padding:"7px 9px"}}>
                   <div style={{fontSize:11,fontWeight:700,color:"#1a1a1a",lineHeight:1.3,marginBottom:2}}>{f.name}</div>
