@@ -446,7 +446,7 @@ export default function EatSmart() {
       <div style={S.spotCard}>
         <div style={{padding:"10px 12px 6px"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-            <div style={{background:"#f0f0f0",border:"1px solid #ddd",borderRadius:20,padding:"3px 9px",fontSize:11,fontWeight:700,color:"#555",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
+            <div style={{background:"#e83a2a",border:"none",borderRadius:20,padding:"3px 9px",fontSize:11,fontWeight:700,color:"#fff",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
             <div style={{flex:1}}>
               <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
                 <div style={{fontWeight:700,fontSize:15,color:"#1a1a1a"}}>{spot.name}</div>
@@ -487,7 +487,7 @@ export default function EatSmart() {
             <img src="/logo.png" alt="EatSmart" style={{width:48,height:48,borderRadius:12,boxShadow:"0 4px 12px rgba(0,0,0,0.25)"}} />
             <div><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span></div>
           </div>
-          <p style={{color:"rgba(255,255,255,0.85)",fontSize:13,margin:"0",textAlign:"center",fontWeight:400,padding:"0 20px"}}>Find great food near you</p>
+          <p style={{color:"rgba(255,255,255,0.9)",fontSize:13,margin:"6px 0 0",textAlign:"center",fontWeight:500,padding:"0 20px"}}>Find great food near you</p>
           <div style={S.wave} />
         </header>
         <div style={S.card}>
@@ -548,13 +548,13 @@ export default function EatSmart() {
               <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CITIES</div>
               <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
                 {["Auckland","Wellington","Christchurch","Hamilton","Tauranga","Napier","Hastings","Whangarei","Dunedin"].map(c=>(
-                  <button key={c} onMouseDown={e=>{e.preventDefault();handleCityChange(c);setSuburb("All Suburbs");setSearchFocused(false);}} style={{background:city===c?"#e83a2a":"#f5f5f5",color:city===c?"#fff":"#555",border:"none",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c}</button>
+                  <button key={c} onMouseDown={e=>{e.preventDefault();handleCityChange(c);setSuburb("All Suburbs");setSearchFocused(false);}} style={{background:city===c?"#e83a2a":"#fff",color:city===c?"#fff":"#555",border:"1.5px solid",borderColor:city===c?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c}</button>
                 ))}
               </div>
               <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CUISINE</div>
               <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
                 {[{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🍔",l:"Burgers"},{e:"🍕",l:"Pizza"},{e:"🍛",l:"Indian"},{e:"🍣",l:"Sushi"},{e:"🍜",l:"Chinese"},{e:"🥗",l:"Healthy"}].map(c=>(
-                  <button key={c.l} onMouseDown={e=>{e.preventDefault();setCuisineFilter(cuisineFilter===c.l?"":c.l);setSearchFocused(false);}} style={{background:cuisineFilter===c.l?"#e83a2a":"#f5f5f5",color:cuisineFilter===c.l?"#fff":"#555",border:"none",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
+                  <button key={c.l} onMouseDown={e=>{e.preventDefault();setCuisineFilter(cuisineFilter===c.l?"":c.l);setSearchFocused(false);}} style={{background:cuisineFilter===c.l?"#e83a2a":"#fff",color:cuisineFilter===c.l?"#fff":"#555",border:"1.5px solid",borderColor:cuisineFilter===c.l?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
                 ))}
               </div>
               <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>BUDGET</div>
@@ -706,7 +706,7 @@ export default function EatSmart() {
 
 const S = {
   page:{overflow:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",maxWidth:480,margin:"0 auto",paddingBottom:100,width:"100%"},
-  header:{background:"#e83a2a",padding:"12px 16px 16px",position:"relative",borderRadius:"0 0 20px 20px"},
+  header:{background:"#e83a2a",padding:"12px 16px 20px",position:"relative",borderRadius:"0 0 24px 24px"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
   logoSmart:{fontWeight:900,fontSize:36,color:"#ffd97d",letterSpacing:-1.5},
