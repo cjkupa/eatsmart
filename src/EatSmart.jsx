@@ -681,7 +681,7 @@ export default function EatSmart() {
       {/* BOTTOM NAV */}
       <nav style={S.bottomNav}>
         {[
-          { id: "search", emoji: "⌂", label: "Home" },
+          { id: "search", emoji: "🔍", label: "Search" },
           { id: "opennow", emoji: "🟢", label: "Open Now" },
           { id: "saved", emoji: "♡", label: "Saved" },
           { id: "contact", emoji: "✎", label: "Feedback" },
@@ -698,7 +698,7 @@ export default function EatSmart() {
 
 const S = {
   page:{overflow:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",maxWidth:480,margin:"0 auto",paddingBottom:100,width:"100%"},
-  header:{background:"#e83a2a",padding:"10px 16px 24px",position:"relative",overflow:"hidden"},
+  header:{background:"#e83a2a",padding:"10px 16px 30px",position:"relative",overflow:"hidden"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
   logoSmart:{fontWeight:900,fontSize:36,color:"#ffd97d",letterSpacing:-1.5},
