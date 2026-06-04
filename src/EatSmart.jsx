@@ -582,7 +582,6 @@ export default function EatSmart() {
               ))}
             </div>
           </div>
-          </div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px",fontSize:11,color:"#bbb"}}><span>Powered by Google Places</span><span>{openSpots.length} open now</span></div>
           {showInstallPrompt && (
             <div style={{margin:"0 16px 12px",background:"#fff9ee",border:"1.5px solid #ffd97d",borderRadius:14,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
