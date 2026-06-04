@@ -697,7 +697,7 @@ export default function EatSmart() {
 }
 
 const S = {
-  page:{overflow:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",minHeight:"100vh",maxWidth:480,margin:"0 auto",paddingBottom:100},
+  page:{overflow:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",maxWidth:480,margin:"0 auto",paddingBottom:100,width:"100%"},
   header:{background:"#e83a2a",padding:"10px 16px 28px",position:"relative",overflow:"hidden"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
