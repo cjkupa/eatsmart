@@ -436,9 +436,9 @@ export default function EatSmart() {
     const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
-        <div style={{padding:"14px 14px 8px"}}>
+        <div style={{padding:"10px 12px 6px"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-            <div style={{background:"#fff5f4",border:"1px solid #ffd5d0",borderRadius:8,padding:"3px 8px",fontSize:11,fontWeight:700,color:"#e83a2a",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
+            <div style={{background:"#f5f5f5",border:"none",borderRadius:6,padding:"2px 7px",fontSize:10,fontWeight:600,color:"#888",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
             <div style={{flex:1}}>
               <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
                 <div style={{fontWeight:700,fontSize:15,color:"#1a1a1a"}}>{spot.name}</div>
@@ -448,21 +448,21 @@ export default function EatSmart() {
                 {spot.rating && <span style={{fontWeight:800,fontSize:14,color:"#e67e22"}}>⭐ {spot.rating}</span>}
                 {spot.ratingCount && <span style={{fontSize:12,color:"#bbb"}}>({spot.ratingCount})</span>}
                 {spot.priceLevel !== null && spot.priceLevel !== undefined && <span style={{fontWeight:800,fontSize:14,color:"#27ae60"}}>{"$".repeat(spot.priceLevel + 1)}</span>}
-                {spot.isOpen && <span style={{fontWeight:700,fontSize:12,background:spot.isOpen.includes("Open") ? "#f0faf4" : "#fff3f3",color:spot.isOpen.includes("Open") ? "#27ae60" : "#e83a2a",padding:"2px 8px",borderRadius:8}}>{spot.isOpen.includes("Open") ? "✅ Open" : "❌ Closed"}</span>}
+                {spot.isOpen && <span style={{fontWeight:600,fontSize:11,color:spot.isOpen.includes("Open")?"#27ae60":"#ccc"}}>● {spot.isOpen.includes("Open")?"Open":"Closed"}</span>}
               </div>
               {spot.address && <div style={{fontSize:12,color:"#999",marginTop:4,textAlign:"left"}}>{spot.address}</div>}
               {featured && featured.signatureDish && <div style={{fontSize:12,color:"#a06000",marginTop:4,fontWeight:600}}>{featured.signatureDish}</div>}
             </div>
           </div>
         </div>
-        {spot.photoRef && <a href={"https://www.google.com/maps/search/"+encodeURIComponent(spot.name+" "+(spot.address||""))} target="_blank" rel="noopener noreferrer"><img src={`${API_BASE_URL}/api/photo?ref=${encodeURIComponent(spot.photoRef)}`} alt={spot.name} style={{width:"100%",height:90,objectFit:"cover",borderRadius:"16px 16px 0 0",display:"block",cursor:"pointer"}} onError={function(e){e.target.parentElement.style.display="none";}} /></a>}
+        {spot.photoRef && <a href={"https://www.google.com/maps/search/"+encodeURIComponent(spot.name+" "+(spot.address||""))} target="_blank" rel="noopener noreferrer"><img src={`${API_BASE_URL}/api/photo?ref=${encodeURIComponent(spot.photoRef)}`} alt={spot.name} style={{width:"100%",height:110,objectFit:"cover",display:"block",cursor:"pointer"}} onError={function(e){e.target.parentElement.style.display="none";}} /></a>}
         <div style={{...S.actionRow, padding:"8px 14px 12px"}}>
           {spot.website
             ? <a href={spot.website} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>Website</a>
             : spot.phone
             ? <a href={"tel:"+spot.phone} style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>Call</a>
             : <button style={S.openBtn}>Looks good?</button>}
-          <a href={"https://www.google.com/maps/search/" + encodeURIComponent(spot.name + " " + (spot.address || ""))} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center",background:"#f0f7ff",border:"1.5px solid #bbd4f8",color:"#1a73e8"}}>Maps</a>
+          <a href={"https://www.google.com/maps/search/" + encodeURIComponent(spot.name + " " + (spot.address || ""))} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center",color:"#1a73e8"}}>Maps</a>
           <button style={S.saveBtn} onClick={() => setPriceModal(spot)}>Add price</button>
           <button style={{...S.saveBtn, background: saved[spot.id] ? "#fde8e8" : "#fef2f2"}} onClick={() => toggleSave(spot.id)}>{saved[spot.id] ? "🩷 Saved" : "🤍 Save"}</button>
         </div>
@@ -737,8 +737,8 @@ const S = {
   tagRow:{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14},
   tag:{background:"#f2f2f2",borderRadius:20,padding:"5px 12px",fontSize:12,color:"#555",fontWeight:500},
   actionRow:{display:"flex",gap:10},
-  openBtn:{flex:1,background:"#f5f5f5",border:"none",borderRadius:8,padding:"7px 4px",fontSize:11,fontWeight:600,color:"#555",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center"},
-  saveBtn:{flex:1,border:"none",borderRadius:8,padding:"7px 4px",fontSize:11,fontWeight:600,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit",background:"#fff5f4"},
+  openBtn:{flex:1,background:"none",border:"none",borderRadius:8,padding:"6px 2px",fontSize:11,fontWeight:600,color:"#555",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",textDecoration:"underline",textDecorationColor:"#ddd"},
+  saveBtn:{flex:1,border:"none",borderRadius:8,padding:"6px 2px",fontSize:11,fontWeight:600,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit",background:"none"},
   bottomNav:{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:"#fff",borderTop:"1px solid #f0ebe6",display:"flex",justifyContent:"space-around",padding:"8px 0 20px",zIndex:100,boxShadow:"0 -4px 20px rgba(200,50,40,0.08)"},
   navBtn:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",background:"none",border:"none",cursor:"pointer",color:"#aaa",fontFamily:"inherit",padding:"4px 0"},
   navBtnActive:{color:"#e83a2a"},
