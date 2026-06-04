@@ -47,7 +47,7 @@ const NZ_CITIES = {
 };
 
 const CUISINES = ["Any","Fish & Chips","NZ Modern","Cafe","Bakery","Pub Food","Burgers","Pizza","Takeaway","Italian","Japanese","Sushi","Chinese","Indian","Thai","Mexican","Korean","Mediterranean","American","French","Vietnamese","Middle Eastern","Seafood","Vegetarian","Turkish","Greek"];
-const CUISINE_EMOJI = {"italian":"🍝","japanese":"🍣","chinese":"🥢","indian":"🍛","thai":"🌶️","mexican":"🌮","korean":"🍱","mediterranean":"🥗","american":"🍔","french":"🥐","vietnamese":"🍜","seafood":"🐟","vegetarian":"🥦","cafe":"☕","pizza":"🍕","burger":"🍔","default":"🍽️"};
+const CUISINE_EMOJI = {"italian":"🍝","japanese":"🍣","chinese":"🥢","indian":"🍛","thai":"🌶️","mexican":"🌮","korean":"🍱","mediterranean":"🥗","american":"🍔","french":"🥐","vietnamese":"🍜","seafood":"🐟","vegetarian":"🥦","cafe":"☕","pizza":"🍕","burger":"🍔","default":"🍴"};
 
 function getCuisineEmoji(cuisine) {
   if (!cuisine) return CUISINE_EMOJI.default;
@@ -676,7 +676,7 @@ export default function EatSmart() {
                   <div style={{fontWeight:800,fontSize:18,color:"#1a1a1a"}}>💰 Submit Real Price</div>
                   <button onClick={() => setPriceModal(null)} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#aaa"}}>✕</button>
                 </div>
-                {priceModal.name && <div style={{background:"#faf9f7",borderRadius:12,padding:"10px 14px",marginBottom:16,fontWeight:600,fontSize:15,color:"#333"}}>🍽️ {priceModal.name}</div>}
+                {priceModal.name && <div style={{background:"#faf9f7",borderRadius:12,padding:"10px 14px",marginBottom:16,fontWeight:600,fontSize:15,color:"#333"}}>🍴 {priceModal.name}</div>}
                 <div style={{display:"flex",flexDirection:"column",gap:12}}>
                   <div>
                     <label style={{fontSize:13,fontWeight:600,color:"#555",display:"block",marginBottom:4}}>What did you order?</label>
@@ -776,7 +776,7 @@ document.head.appendChild(styleEl);
       {!searched && (
         <div style={{padding:"12px 0 8px"}}>
           {[
-            {label:"Restaurants",emoji:"🍽️",spots:[
+            {label:"Restaurants",emoji:"🍴",spots:[
               {name:"Jarks Restaurant",city:"Hastings",dish:"Ribeye steak"},
               {name:"Ortega Fish Shack",city:"Wellington",dish:"Fresh catch"},
               {name:"Capitol Restaurant",city:"Wellington",dish:"NZ cuisine"},
