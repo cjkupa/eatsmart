@@ -187,6 +187,7 @@ export default function EatSmart() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searched, setSearched] = useState(false);
+  const [recentSearches, setRecentSearches] = useState(() => { try { return JSON.parse(localStorage.getItem("es_recent") || "[]"); } catch(e) { return []; } });
   const [saved, setSaved] = useState(() => { try { return JSON.parse(localStorage.getItem("es_saved") || "{}"); } catch(e) { return {}; } });
   const [locating, setLocating] = useState(false);
   const [searchRadius, setSearchRadius] = useState(800);
@@ -368,11 +369,30 @@ export default function EatSmart() {
         return 0;
       });
       setResults(sorted.slice(0, 30));
+      // Save to recent searches (dedup, keep last 3)
+      try {
+        const entry = { city, suburb, cuisines: [...cuisineFilters], price: priceFilter };
+        const key = JSON.stringify(entry);
+        setRecentSearches(prev => {
+          const next = [entry, ...prev.filter(r => JSON.stringify(r) !== key)].slice(0, 3);
+          localStorage.setItem("es_recent", JSON.stringify(next));
+          return next;
+        });
+      } catch(e) {}
     } catch(e) { setError("Error: " + e.message); console.error(e); }
     setLoading(false);
   }, [suburb, city, customCoords, locationSearch, cuisine, cuisineFilter, cuisineFilters, priceFilter, sortBy, openNowOnly]);
 
   function toggleSave(id) { setSaved(prev => { const next = { ...prev, [id]: !prev[id] }; if (!next[id]) delete next[id]; localStorage.setItem("es_saved", JSON.stringify(next)); return next; }); }
+
+  function applyRecent(r) {
+    if (r.city && r.city !== city) handleCityChange(r.city);
+    setSuburb(r.suburb); localStorage.setItem("es_suburb", r.suburb);
+    setCuisineFilters(r.cuisines || []);
+    setPriceFilter(r.price || "Any");
+    setCustomCoords(null);
+    setTimeout(() => handleSearch(), 50);
+  }
 
   async function handleContactSubmit() {
     if (!contactForm.message) return;
@@ -586,11 +606,40 @@ export default function EatSmart() {
 
       {/* HERO EMPTY STATE */}
       {!searched && (
-        <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
-          <div style={{fontSize:72,marginBottom:16}}>🍴</div>
-          <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:6}}>Ready to eat?</div>
-          <div style={{fontSize:14,color:"#888",marginBottom:8}}>Search by city, suburb or street and by budget</div>
-          <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
+        <div style={{padding:"24px 16px 20px"}}>
+          <div style={{textAlign:"center",marginBottom:24}}>
+            <div style={{fontSize:56,marginBottom:10}}>🍴</div>
+            <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:4}}>Ready to eat?</div>
+            <div style={{fontSize:14,color:"#888"}}>Search by city, suburb or street and by budget</div>
+          </div>
+
+          {recentSearches.length > 0 && (
+            <div style={{marginBottom:24}}>
+              <div style={{fontSize:11,color:"#bbb",fontWeight:700,letterSpacing:0.5,marginBottom:10,paddingLeft:4}}>RECENT SEARCHES</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {recentSearches.map((r,i) => (
+                  <button key={i} onClick={()=>applyRecent(r)} style={{display:"flex",alignItems:"center",gap:10,background:"#fff",border:"1.5px solid #f0ebe6",borderRadius:14,padding:"12px 14px",cursor:"pointer",fontFamily:"inherit",textAlign:"left",width:"100%",boxShadow:"0 1px 4px rgba(0,0,0,0.04)"}}>
+                    <span style={{fontSize:20}}>🕘</span>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontWeight:700,fontSize:14,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{r.suburb && r.suburb !== "All Suburbs" ? r.suburb : r.city}{r.suburb && r.suburb !== "All Suburbs" ? ", " + r.city : ""}</div>
+                      <div style={{fontSize:12,color:"#999",marginTop:2}}>{[...(r.cuisines||[]), r.price !== "Any" ? r.price : null].filter(Boolean).join(" · ") || "All food"}</div>
+                    </div>
+                    <span style={{color:"#e83a2a",fontSize:18,fontWeight:700}}>→</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <div style={{fontSize:11,color:"#bbb",fontWeight:700,letterSpacing:0.5,marginBottom:10,paddingLeft:4}}>QUICK PICKS</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
+              {[{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🍔",l:"Burgers"},{e:"🍕",l:"Pizza"},{e:"🍛",l:"Indian"},{e:"🍣",l:"Sushi"},{e:"🍜",l:"Chinese"},{e:"🥗",l:"Healthy"}].map(c=>(
+                <button key={c.l} onClick={()=>{setCuisineFilters([c.l]);setTimeout(()=>handleSearch(),50);}} style={{display:"flex",alignItems:"center",gap:10,background:"#fff",border:"1.5px solid #f0ebe6",borderRadius:14,padding:"14px",cursor:"pointer",fontFamily:"inherit",fontWeight:700,fontSize:14,color:"#1a1a1a",boxShadow:"0 1px 4px rgba(0,0,0,0.04)"}}>
+                  <span style={{fontSize:24}}>{c.e}</span> {c.l}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
