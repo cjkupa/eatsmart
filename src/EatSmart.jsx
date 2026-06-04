@@ -598,7 +598,6 @@ export default function EatSmart() {
                   </button>
                 ))}
               </div>
-            </div>
           )}
 
 
