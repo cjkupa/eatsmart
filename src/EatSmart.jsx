@@ -282,11 +282,10 @@ export default function EatSmart() {
 
   const handleSearch = useCallback(async () => {
     setLoading(true); setError(null); setSearched(true); setResults([]);
-    console.log("SEARCH START - suburb:", suburb, "city:", city, "locationSearch:", locationSearch, "customCoords:", customCoords);
     try {
       let coords = customCoords;
       let resolvedLabel = suburb;
-      const typedSearch = typeof locationSearch === "string" ? locationSearch.trim() : "";
+      const typedSearch = locationSearch && locationSearch.trim().length > 0 ? locationSearch.trim() : (suburb && suburb !== "All Suburbs" ? suburb : "");
 
       // Search box text wins. This lets partial searches like "victori" resolve via autocomplete.
       if (!coords && typedSearch.length > 0) {
