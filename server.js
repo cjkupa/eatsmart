@@ -14,7 +14,7 @@ if (!GOOGLE_API_KEY) {
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+  if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.includes('eatsmart.co.nz') || origin.includes('localhost')) {
     res.header('Access-Control-Allow-Origin', origin);
   }
   res.header('Vary', 'Origin');
