@@ -351,7 +351,12 @@ export default function EatSmart() {
       const filteredByPrice = pLevel !== null
         ? spots.filter(s => pLevel === 0 ? (s.priceLevel === 0 || s.priceLevel === null) : s.priceLevel === pLevel)
         : spots;
-      const toShow = filteredByPrice.length > 0 ? filteredByPrice : spots;
+      // Multi-cuisine: keep results matching ANY selected cuisine
+      const filteredByCuisine = cuisineFilters.length > 1
+        ? filteredByPrice.filter(s => cuisineFilters.some(cf => (s.cuisine||"").toLowerCase().includes(cf.toLowerCase()) || (s.rawTypes||[]).some(t => t.toLowerCase().includes(cf.toLowerCase()))))
+        : filteredByPrice;
+      const cuisineResult = filteredByCuisine.length > 0 ? filteredByCuisine : filteredByPrice;
+      const toShow = cuisineResult.length > 0 ? cuisineResult : spots;
       const filteredOpen = openNowOnly ? toShow.filter(s => s.isOpen && s.isOpen.includes("Open")) : toShow;
       const sorted = [...filteredOpen].sort((a, b) => {
         if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
@@ -365,7 +370,7 @@ export default function EatSmart() {
       setResults(sorted.slice(0, 30));
     } catch(e) { setError("Error: " + e.message); console.error(e); }
     setLoading(false);
-  }, [suburb, city, customCoords, locationSearch, cuisine, cuisineFilter, priceFilter, sortBy, openNowOnly]);
+  }, [suburb, city, customCoords, locationSearch, cuisine, cuisineFilter, cuisineFilters, priceFilter, sortBy, openNowOnly]);
 
   function toggleSave(id) { setSaved(prev => { const next = { ...prev, [id]: !prev[id] }; if (!next[id]) delete next[id]; localStorage.setItem("es_saved", JSON.stringify(next)); return next; }); }
 
@@ -492,8 +497,6 @@ export default function EatSmart() {
         </header>
         <div style={S.card}>
           <div style={{display:"flex",alignItems:"center",background:"#fff",border:"2px solid",borderColor:searchFocused?"#e83a2a":"#ede8e3",borderRadius:14,padding:"6px 6px 6px 12px",gap:6,minHeight:52,position:"relative"}}>
-            {city && <button onMouseDown={e=>{e.preventDefault();}} style={{background:"#f5f5f5",border:"1px solid #ddd",borderRadius:20,padding:"3px 10px",fontSize:12,fontWeight:600,color:"#333",cursor:"default",whiteSpace:"nowrap",flexShrink:0}}>{city}</button>}
-            {cuisineFilter && <button onMouseDown={e=>{e.preventDefault();setCuisineFilter("");}} style={{background:"#fff5f4",border:"1px solid #ffd5d0",borderRadius:20,padding:"3px 10px",fontSize:12,fontWeight:600,color:"#e83a2a",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}}>{cuisineFilter} x</button>}
             <input
               style={{flex:1,border:"none",outline:"none",fontSize:15,fontFamily:"inherit",color:"#222",background:"transparent",minWidth:60}}
               placeholder={city ? "Suburb or street..." : "City, suburb, cuisine..."}
@@ -554,7 +557,7 @@ export default function EatSmart() {
               <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CUISINE</div>
               <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
                 {[{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🍔",l:"Burgers"},{e:"🍕",l:"Pizza"},{e:"🍛",l:"Indian"},{e:"🍣",l:"Sushi"},{e:"🍜",l:"Chinese"},{e:"🥗",l:"Healthy"}].map(c=>(
-                  <button key={c.l} onMouseDown={e=>{e.preventDefault();setCuisineFilters(prev => prev.includes(c.l) ? prev.filter(x=>x!==c.l) : [...prev, c.l]);setSearchFocused(false);}} style={{background:cuisineFilter===c.l?"#e83a2a":"#fff",color:cuisineFilter===c.l?"#fff":"#555",border:"1.5px solid",borderColor:cuisineFilter===c.l?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
+                  <button key={c.l} onMouseDown={e=>{e.preventDefault();setCuisineFilters(prev => prev.includes(c.l) ? prev.filter(x=>x!==c.l) : [...prev, c.l]);}} style={{background:cuisineFilters.includes(c.l)?"#e83a2a":"#fff",color:cuisineFilters.includes(c.l)?"#fff":"#555",border:"1.5px solid",borderColor:cuisineFilters.includes(c.l)?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
                 ))}
               </div>
               <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>BUDGET</div>
@@ -572,15 +575,20 @@ export default function EatSmart() {
       </div>
 
       {/* ACTIVE FILTER CHIPS */}
-      {(city || cuisineFilter || suburb !== "All Suburbs") && (
-        <div style={{display:"flex",gap:6,flexWrap:"wrap",padding:"8px 16px 4px"}}>
-          {city && <button onClick={()=>{handleCityChange(cities[0]);setSuburb("All Suburbs");setCustomCoords(null);}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>
-            {city} <span style={{fontSize:14,opacity:0.8}}>×</span>
+      {(city || cuisineFilters.length > 0 || (suburb && suburb !== "All Suburbs") || priceFilter !== "Any") && (
+        <div style={{display:"flex",gap:6,flexWrap:"wrap",padding:"8px 16px 4px",alignItems:"center"}}>
+          {/* City — pinned anchor: tap to change, no x */}
+          {city && <button onClick={()=>{setSearchFocused(true);setLocationSearch("");}} title="Tap to change city" style={{background:"#fff",color:"#e83a2a",border:"1.5px solid #e83a2a",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:5}}>
+            📍 {city} <span style={{fontSize:11,opacity:0.7}}>⌄</span>
           </button>}
+          {/* Suburb — removable */}
           {suburb && suburb !== "All Suburbs" && <button onClick={()=>{setSuburb("All Suburbs");setCustomCoords(null);localStorage.setItem("es_suburb","All Suburbs");}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>
             {suburb} <span style={{fontSize:14,opacity:0.8}}>×</span>
           </button>}
+          {/* Cuisines — removable, multi */}
           {cuisineFilters.map(cf => <button key={cf} onClick={()=>setCuisineFilters(prev=>prev.filter(x=>x!==cf))} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>{cf} <span style={{fontSize:14,opacity:0.8}}>×</span></button>)}
+          {/* Price — removable */}
+          {priceFilter !== "Any" && <button onClick={()=>setPriceFilter("Any")} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4}}>{priceFilter} <span style={{fontSize:14,opacity:0.8}}>×</span></button>}
         </div>
       )}
       {/* HERO EMPTY STATE */}
