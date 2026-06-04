@@ -62,7 +62,7 @@ async function geocodeSuburb(suburb, city) {
     if (results.length > 0) return { lat: results[0].lat, lon: results[0].lon };
     return null;
   }
-  const results = await geocodeAddress(suburb + " " + city, city);
+  const results = await geocodeAddress(suburb.charAt(0).toUpperCase() + suburb.slice(1) + " " + city, city);
   if (results.length > 0) return { lat: results[0].lat, lon: results[0].lon };
   return null;
 }
