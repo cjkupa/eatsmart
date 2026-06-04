@@ -563,11 +563,6 @@ export default function EatSmart() {
                     <span style={{fontSize:9,opacity:0.75}}>{p.desc}</span>
                   </button>
                 ))}
-              </div>
-            </div>
-          )}
-
-        </div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
                 {["Auckland","Wellington","Christchurch","Hamilton","Tauranga","Dunedin","Napier","Hastings","Whangarei"].map(c => (
                   <button key={c} onMouseDown={e => { e.preventDefault(); handleCityChange(c); setSuburb("All Suburbs"); setCustomCoords(null); setLocationSearch(null); localStorage.setItem("es_suburb","All Suburbs"); }} style={{background:city===c?"#e83a2a":"#f8f7f5",color:city===c?"#fff":"#555",border:"1.5px solid",borderColor:city===c?"#e83a2a":"#ede8e3",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c}</button>
