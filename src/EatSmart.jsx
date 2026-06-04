@@ -510,7 +510,7 @@ export default function EatSmart() {
                 }
               }}
               onFocus={() => { setSearchFocused(true); if (locationSearch === null) setLocationSearch(""); setLocationSuggestions([]); }}
-              onBlur={() => { setTimeout(() => { setLocationSuggestions([]); setSearchFocused(false); }, 250); }}
+              onBlur={() => { setTimeout(() => { setLocationSuggestions([]); setSearchFocused(false); if (locationSearch && locationSearch.length > 1) { setSuburb(locationSearch); localStorage.setItem("es_suburb", locationSearch); } setLocationSearch(null); }, 200); }}
             />
             <span style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",fontSize:20}}>🔍</span>
             {locationSuggestions.length > 0 && (
