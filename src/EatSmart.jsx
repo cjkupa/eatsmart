@@ -650,7 +650,7 @@ export default function EatSmart() {
 
           {activeTab === "opennow" && openSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
           {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet — tap the Save button on any restaurant!</div>}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,padding:"0 16px",overflowX:"hidden"}}>
+          <div style={{display:"flex",flexDirection:"column",gap:10,padding:"0 16px"}}>
           {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : results).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
           </div>
         </>
