@@ -571,15 +571,33 @@ export default function EatSmart() {
         </div>
       </div>
 
-      {/* HERO EMPTY STATE */}
       {!searched && (
-        <div style={{textAlign:"center",padding:"40px 32px 20px"}}>
-          <div style={{fontSize:72,marginBottom:16}}>🍴</div>
-          <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:6}}>Ready to eat?</div>
-          <div style={{fontSize:14,color:"#888",marginBottom:8}}>Search by city, suburb or street and by budget</div>
-          <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:20,flexWrap:"wrap"}}>
+        <div style={{padding:"16px 0 8px"}}>
+          <div style={{fontSize:13,fontWeight:700,color:"#333",padding:"0 16px 10px"}}>Featured spots</div>
+          <div style={{display:"flex",gap:10,overflowX:"auto",padding:"0 16px 12px",scrollbarWidth:"none"}}>
+            {[
+              {name:"Jarks Restaurant",city:"Hastings",emoji:"🥩",dish:"Ribeye steak"},
+              {name:"Beach Babylon",city:"Wellington",emoji:"☕",dish:"Eggs benedict"},
+              {name:"BurgerFuel",city:"Auckland",emoji:"🍔",dish:"Burgers"},
+              {name:"Kinnari Thai",city:"Hamilton",emoji:"🍜",dish:"Pad thai"},
+              {name:"Ortega Fish Shack",city:"Wellington",emoji:"🐟",dish:"Fresh fish"},
+              {name:"5th Street",city:"Christchurch",emoji:"🍕",dish:"Wood-fired pizza"},
+              {name:"Harbourside",city:"Tauranga",emoji:"🦞",dish:"Seafood platter"},
+              {name:"Madame Social",city:"Napier",emoji:"🍷",dish:"Shared plates"},
+              {name:"Gothenburg",city:"Hamilton",emoji:"🍺",dish:"Craft beer"},
+              {name:"FRANKS Newtown",city:"Wellington",emoji:"☕",dish:"Best flat white"}
+            ].map((f,i) => (
+              <div key={i} style={{flexShrink:0,width:130,borderRadius:12,overflow:"hidden",boxShadow:"0 2px 8px rgba(0,0,0,0.08)",background:"#fff",cursor:"pointer"}} onClick={()=>{handleCityChange(f.city);setSuburb(f.city);localStorage.setItem("es_suburb",f.city);}}>
+                <div style={{height:80,background:"#e83a2a",display:"flex",alignItems:"center",justifyContent:"center",fontSize:32}}>{f.emoji}</div>
+                <div style={{padding:"7px 9px"}}>
+                  <div style={{fontSize:11,fontWeight:700,color:"#1a1a1a",lineHeight:1.3,marginBottom:2}}>{f.name}</div>
+                  <div style={{fontSize:10,color:"#888",lineHeight:1.3}}>{f.dish}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
+      )}
       )}
 
       {/* RESULTS */}
