@@ -484,7 +484,7 @@ export default function EatSmart() {
       <div ref={searchRef}>
         <header style={S.header}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:4}}>
-            <img src="/logo.png" alt="EatSmart" style={{width:36,height:36,borderRadius:9}} />
+            <img src="/logo.png" alt="EatSmart" style={{width:48,height:48,borderRadius:12,boxShadow:"0 4px 12px rgba(0,0,0,0.25)"}} />
             <div><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span></div>
           </div>
           <p style={{color:"rgba(255,255,255,0.85)",fontSize:13,margin:"0",textAlign:"center",fontWeight:400,padding:"0 20px"}}>Find great food near you</p>
