@@ -406,11 +406,19 @@ export default function EatSmart() {
       setContactModal(true);
       return;
     }
-    if (tabId === "search" || activeTab !== tabId) {
+    if (tabId === "search") {
+      setActiveTab("search");
+      setSearched(false);
+      setResults([]);
+      setError(null);
+      window.scrollTo({top:0,behavior:"smooth"});
+      setTimeout(() => setSearchFocused(true), 300);
+    } else if (activeTab !== tabId) {
       setActiveTab(tabId);
-      if (tabId === "search") window.scrollTo({top:0,behavior:"smooth"});
     } else {
       setActiveTab("search");
+      setSearched(false);
+      setResults([]);
       window.scrollTo({top:0,behavior:"smooth"});
     }
   }
