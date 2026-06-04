@@ -571,33 +571,6 @@ export default function EatSmart() {
         </div>
       </div>
 
-      {!searched && (
-        <div style={{padding:"16px 0 8px"}}>
-          <div style={{fontSize:13,fontWeight:700,color:"#333",padding:"0 16px 10px"}}>Featured spots</div>
-          <div style={{display:"flex",gap:10,overflowX:"auto",padding:"0 16px 12px",scrollbarWidth:"none"}}>
-            {[
-              {name:"Jarks Restaurant",city:"Hastings",emoji:"🥩",dish:"Ribeye steak"},
-              {name:"Beach Babylon",city:"Wellington",emoji:"☕",dish:"Eggs benedict"},
-              {name:"BurgerFuel",city:"Auckland",emoji:"🍔",dish:"Burgers"},
-              {name:"Kinnari Thai",city:"Hamilton",emoji:"🍜",dish:"Pad thai"},
-              {name:"Ortega Fish Shack",city:"Wellington",emoji:"🐟",dish:"Fresh fish"},
-              {name:"5th Street",city:"Christchurch",emoji:"🍕",dish:"Wood-fired pizza"},
-              {name:"Harbourside",city:"Tauranga",emoji:"🦞",dish:"Seafood platter"},
-              {name:"Madame Social",city:"Napier",emoji:"🍷",dish:"Shared plates"},
-              {name:"Gothenburg",city:"Hamilton",emoji:"🍺",dish:"Craft beer"},
-              {name:"FRANKS Newtown",city:"Wellington",emoji:"☕",dish:"Best flat white"}
-            ].map((f,i) => (
-              <div key={i} style={{flexShrink:0,width:130,borderRadius:12,overflow:"hidden",boxShadow:"0 2px 8px rgba(0,0,0,0.08)",background:"#fff",cursor:"pointer"}} onClick={()=>{handleCityChange(f.city);setSuburb(f.city);localStorage.setItem("es_suburb",f.city);}}>
-                <div style={{height:80,background:"#e83a2a",display:"flex",alignItems:"center",justifyContent:"center",fontSize:32}}>{f.emoji}</div>
-                <div style={{padding:"7px 9px"}}>
-                  <div style={{fontSize:11,fontWeight:700,color:"#1a1a1a",lineHeight:1.3,marginBottom:2}}>{f.name}</div>
-                  <div style={{fontSize:10,color:"#888",lineHeight:1.3}}>{f.dish}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* RESULTS */}
       {loading && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>Searching...</div>}
