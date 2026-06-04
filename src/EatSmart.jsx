@@ -438,7 +438,7 @@ export default function EatSmart() {
       <div style={S.spotCard}>
         <div style={{padding:"10px 12px 6px"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-            <div style={{background:"#f5f5f5",border:"none",borderRadius:6,padding:"2px 7px",fontSize:10,fontWeight:600,color:"#888",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
+            <div style={{background:"#f0f0f0",border:"1px solid #ddd",borderRadius:20,padding:"3px 9px",fontSize:11,fontWeight:700,color:"#555",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
             <div style={{flex:1}}>
               <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
                 <div style={{fontWeight:700,fontSize:15,color:"#1a1a1a"}}>{spot.name}</div>
