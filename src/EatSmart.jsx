@@ -475,76 +475,64 @@ export default function EatSmart() {
           <div style={S.wave} />
         </header>
         <div style={S.card}>
-          {/* Smart single search */}
-          <div style={{position:"relative",marginBottom:10}}>
+          {/* Tabelog-style search bar */}
+          <div style={{display:"flex",alignItems:"center",background:"#fff",border:"2px solid",borderColor:searchFocused?"#e83a2a":"#ede8e3",borderRadius:14,padding:"6px 6px 6px 12px",gap:6,minHeight:52,transition:"border-color 0.2s",position:"relative"}}>
+            {/* Selected city chip */}
+            {city && city !== "" && <button onMouseDown={e=>{e.preventDefault();handleCityChange(city);}} style={{background:"#f5f5f5",border:"1px solid #ddd",borderRadius:20,padding:"3px 8px 3px 10px",fontSize:12,fontWeight:600,color:"#333",cursor:"pointer",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
+              {city} <span style={{color:"#999",fontSize:14}}>×</span>
+            </button>}
+            {/* Selected cuisine chip */}
+            {cuisineFilter && <button onMouseDown={e=>{e.preventDefault();setCuisineFilter("");}} style={{background:"#fff5f4",border:"1px solid #ffd5d0",borderRadius:20,padding:"3px 8px 3px 10px",fontSize:12,fontWeight:600,color:"#e83a2a",cursor:"pointer",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
+              {cuisineFilter} <span style={{fontSize:14}}>×</span>
+            </button>}
+            {/* Text input */}
             <input
-              style={{width:"100%",border:"2px solid #ede8e3",borderRadius:14,padding:"14px 48px 14px 16px",fontSize:16,fontFamily:"inherit",outline:"none",boxSizing:"border-box",background:"#fff",color:"#222"}}
-              placeholder="Suburb, street or city..."
-              value={searchDisplay}
+              style={{flex:1,border:"none",outline:"none",fontSize:15,fontFamily:"inherit",color:"#222",background:"transparent",minWidth:80}}
+              placeholder={city ? "Suburb or street..." : "City, suburb, cuisine..."}
+              value={locationSearch !== null ? locationSearch : (suburb && suburb !== "All Suburbs" ? suburb : "")}
+              onFocus={() => { setSearchFocused(true); setLocationSearch(""); setLocationSuggestions([]); }}
+              onBlur={() => { setTimeout(() => { setLocationSuggestions([]); setSearchFocused(false); if (locationSearch && locationSearch.length > 1) { setSuburb(locationSearch); localStorage.setItem("es_suburb", locationSearch); } setLocationSearch(null); }, 200); }}
               onChange={async e => {
                 const val = e.target.value;
-                setSearchFocused(true);
-                setCustomCoords(null);
                 setLocationSearch(val);
                 const q = val.toLowerCase();
-                const suburbMatches = (NZ_CITIES[city]||[]).filter(s=>s.toLowerCase().startsWith(q)).slice(0,5).map(s=>({label:s,city,suburb:s,type:"suburb"}));
-                const cityMatches = cities.filter(c=>c.toLowerCase().startsWith(q)).slice(0,3).map(c=>({label:c + " (all suburbs)",city:c,suburb:"All Suburbs",type:"city"}));
+                const suburbMatches = (NZ_CITIES[city]||[]).filter(s=>s.toLowerCase().startsWith(q)).slice(0,4).map(s=>({label:s,city,suburb:s,type:"suburb"}));
+                const cityMatches = cities.filter(c=>c.toLowerCase().startsWith(q)).slice(0,2).map(c=>({label:c,city:c,suburb:"All Suburbs",type:"city"}));
                 if (val.length > 2) {
                   try {
-                    const res = await fetch(`${API_BASE_URL}/api/autocomplete?q=${encodeURIComponent(val)}`);
+                    const res = await fetch(API_BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(val));
                     const data = await res.json();
                     const allSuburbs2 = Object.values(NZ_CITIES).flat().map(s => s.toLowerCase());
-                    const googleSuggestions = (data.predictions || []).slice(0,5).map(p => {
+                    const googleSuggestions = (data.predictions || []).slice(0,4).map(p => {
                       const label = p.description.replace(', New Zealand','');
                       const mainText = (p.structured_formatting && p.structured_formatting.main_text) || '';
                       const types = p.types || [];
                       const isSuburb = types.includes("sublocality") || types.includes("locality") || types.includes("neighborhood") || allSuburbs2.includes(mainText.toLowerCase());
                       return { label, type: isSuburb ? 'suburb' : 'street', placeId: p.place_id, suburb: isSuburb ? mainText : null };
                     });
-                    setLocationSuggestions([...cityMatches, ...suburbMatches, ...googleSuggestions].slice(0,10));
-                  } catch(e) {
-                    setLocationSuggestions([...cityMatches, ...suburbMatches]);
-                  }
+                    setLocationSuggestions([...cityMatches, ...suburbMatches, ...googleSuggestions].slice(0,8));
+                  } catch(e) { setLocationSuggestions([...cityMatches, ...suburbMatches]); }
                 } else {
                   setLocationSuggestions([...cityMatches, ...suburbMatches]);
                 }
               }}
-              onFocus={() => { setSearchFocused(true); if (locationSearch === null) setLocationSearch(""); setLocationSuggestions([]); }}
-              onBlur={() => { setTimeout(() => { setLocationSuggestions([]); setSearchFocused(false); if (locationSearch && locationSearch.length > 1) { setSuburb(locationSearch); localStorage.setItem("es_suburb", locationSearch); } setLocationSearch(null); }, 200); }}
+              onKeyDown={e => { if (e.key === 'Enter') { if (locationSearch) { setSuburb(locationSearch); localStorage.setItem("es_suburb", locationSearch); } handleSearch(); }}}
             />
-            <span style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",fontSize:20}}>🔍</span>
+            {/* Search button */}
+            <button onMouseDown={e => { e.preventDefault(); if (locationSearch) { setSuburb(locationSearch); localStorage.setItem("es_suburb", locationSearch); } handleSearch(); }} style={{background:"#e83a2a",border:"none",borderRadius:10,padding:"10px 16px",cursor:"pointer",color:"#fff",fontWeight:700,fontSize:14,fontFamily:"inherit",flexShrink:0}}>
+              {loading ? "..." : "Search"}
+            </button>
+            {/* Autocomplete dropdown */}
             {locationSuggestions.length > 0 && (
               <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.12)",zIndex:100,maxHeight:280,overflowY:"auto",marginTop:4,width:"100%",boxSizing:"border-box"}}>
                 {locationSuggestions.map((s,i) => (
                   <div key={i} onMouseDown={async () => {
-                    if (s.type === "city") {
-                      handleCityChange(s.city);
-                      setSuburb("All Suburbs");
-                      localStorage.setItem("es_suburb","All Suburbs");
-                    } else if (s.type === "street" && s.placeId) {
-                      const r = await geocodePlace(s.placeId, city);
-                      if (r.length > 0) {
-                        setCustomCoords({lat: r[0].lat, lon: r[0].lon});
-                        const resolvedSuburb = r[0].suburb || s.label;
-                        setSuburb(resolvedSuburb);
-                        localStorage.setItem("es_suburb", resolvedSuburb);
-                        if (r[0].city && cities.includes(r[0].city)) {
-                          setCity(r[0].city);
-                          localStorage.setItem("es_city", r[0].city);
-                        }
-                      }
-                      setLocationSearch(s.label);
-                    } else {
-                      if (s.city && s.city !== city) handleCityChange(s.city);
-                      setSuburb(s.suburb || s.label);
-                      setCustomCoords(null);
-                      localStorage.setItem("es_suburb", s.suburb || s.label);
-                    }
                     setLocationSearch(null);
-                    setLocationSuggestions([]);
-                    setSearched(false);
-                    setResults([]);
-                  }} style={{padding:"10px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:s.type==="street"?"#1a73e8":s.type==="city"?"#e83a2a":"#333",display:"flex",alignItems:"center",gap:8,textAlign:"left"}}>
+                    if (s.type === "city") { handleCityChange(s.city); setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs"); }
+                    else if (s.type === "street" && s.placeId) { const r = await geocodePlace(s.placeId, city); if (r.length > 0) { setCustomCoords({lat: r[0].lat, lon: r[0].lon}); setSuburb(r[0].suburb || s.label); localStorage.setItem("es_suburb", r[0].suburb || s.label); } }
+                    else { if (s.city && s.city !== city) handleCityChange(s.city); setSuburb(s.suburb || s.label); setCustomCoords(null); localStorage.setItem("es_suburb", s.suburb || s.label); }
+                    setLocationSuggestions([]); setSearchFocused(false);
+                  }} style={{padding:"10px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:s.type==="street"?"#1a73e8":s.type==="city"?"#e83a2a":"#333",display:"flex",alignItems:"center",gap:8}}>
                     {s.type === "street" ? "🛣️" : s.type === "city" ? "🏙️" : "📍"} {s.label}
                   </div>
                 ))}
@@ -552,19 +540,34 @@ export default function EatSmart() {
             )}
           </div>
 
-          {/* Selected chips under search */}
-          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom: showFilterPanel || hasActiveFilters ? 10 : 0}}>
-            {(suburb && suburb !== "All Suburbs") && <button onMouseDown={e => { e.preventDefault(); setSuburb("All Suburbs"); setCustomCoords(null); localStorage.setItem("es_suburb", "All Suburbs"); }} style={S.selectedChip}>📍 {suburb} ×</button>}
-            {city && <button onMouseDown={e => { e.preventDefault(); setSearchFocused(true); }} style={S.selectedChip}>🏙️ {city}</button>}
-            {cuisineFilter && <button onMouseDown={e => { e.preventDefault(); setCuisineFilter(""); }} style={S.selectedChip}>🍽️ {cuisineFilter} ×</button>}
-            {priceFilter !== "Any" && <button onMouseDown={e => { e.preventDefault(); setPriceFilter("Any"); }} style={S.selectedChip}>💸 {priceFilter} ×</button>}
-            {openNowOnly && <button onMouseDown={e => { e.preventDefault(); setOpenNowOnly(false); }} style={S.selectedChip}>✅ Open now ×</button>}
-            {resultLimit !== 10 && <button onMouseDown={e => { e.preventDefault(); setResultLimit(10); }} style={S.selectedChip}>🔢 {resultLimit} ×</button>}
-          </div>
+          {/* Filter chips - only show on focus */}
+          {searchFocused && locationSuggestions.length === 0 && (
+            <div style={{paddingTop:8}}>
+              <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600,letterSpacing:0.5}}>CITIES</div>
+              <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
+                {["Auckland","Wellington","Christchurch","Hamilton","Tauranga","Napier","Hastings","Whangarei","Dunedin"].map(c => (
+                  <button key={c} onMouseDown={e=>{e.preventDefault();handleCityChange(c);setSuburb("All Suburbs");setSearchFocused(false);}} style={{background:city===c?"#e83a2a":"#f5f5f5",color:city===c?"#fff":"#555",border:"none",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c}</button>
+                ))}
+              </div>
+              <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600,letterSpacing:0.5}}>CUISINE</div>
+              <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
+                {[{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🍔",l:"Burgers"},{e:"🍕",l:"Pizza"},{e:"🍛",l:"Indian"},{e:"🍣",l:"Sushi"},{e:"🍜",l:"Chinese"},{e:"🥗",l:"Healthy"}].map(c => (
+                  <button key={c.l} onMouseDown={e=>{e.preventDefault();setCuisineFilter(cuisineFilter===c.l?"":c.l);setSearchFocused(false);}} style={{background:cuisineFilter===c.l?"#e83a2a":"#f5f5f5",color:cuisineFilter===c.l?"#fff":"#555",border:"none",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
+                ))}
+              </div>
+              <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600,letterSpacing:0.5}}>BUDGET</div>
+              <div style={{display:"flex",gap:5}}>
+                {[{label:"Any",desc:"All"},{label:"$",desc:"<$15"},{label:"$$",desc:"$15-35"},{label:"$$$",desc:"$35-60"},{label:"$$$$",desc:">$60"}].map(p => (
+                  <button key={p.label} onMouseDown={e=>{e.preventDefault();setPriceFilter(p.label);setSearchFocused(false);}} style={{flex:1,background:priceFilter===p.label?"#d63020":"#f5f5f5",color:priceFilter===p.label?"#fff":"#555",border:"none",borderRadius:10,padding:"5px 0",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"inherit",display:"flex",flexDirection:"column",alignItems:"center",gap:1}}>
+                    <span>{p.label}</span>
+                    <span style={{fontSize:9,opacity:0.75}}>{p.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-          {showFilterPanel && (
-            <div style={{background:"#fffaf8",border:"1.5px solid #f1e8e2",borderRadius:16,padding:10,marginBottom:10}}>
-              <div style={{fontSize:11,color:"#bbb",marginBottom:6,paddingLeft:2}}>POPULAR CITIES</div>
+        </div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
                 {["Auckland","Wellington","Christchurch","Hamilton","Tauranga","Dunedin","Napier","Hastings","Whangarei"].map(c => (
                   <button key={c} onMouseDown={e => { e.preventDefault(); handleCityChange(c); setSuburb("All Suburbs"); setCustomCoords(null); setLocationSearch(null); localStorage.setItem("es_suburb","All Suburbs"); }} style={{background:city===c?"#e83a2a":"#f8f7f5",color:city===c?"#fff":"#555",border:"1.5px solid",borderColor:city===c?"#e83a2a":"#ede8e3",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c}</button>
