@@ -419,7 +419,16 @@ export default function EatSmart() {
   const hasActiveFilters = Boolean(cuisineFilter) || priceFilter !== "Any" || openNowOnly;
   const showFilterPanel = searchFocused;
   const searchDisplay = locationSearch !== null ? locationSearch : (customCoords ? suburb : (suburb === "All Suburbs" ? city : suburb));
-  const openSpots = results.filter(r => r.isOpen && r.isOpen.includes("Open"));
+  const sortedResults = [...results].sort((a, b) => {
+    if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
+    if (sortBy === "nearest" && searchCoords) {
+      const distA = a.lat && a.lng ? Math.pow(a.lat - searchCoords.lat, 2) + Math.pow(a.lng - searchCoords.lon, 2) : 999;
+      const distB = b.lat && b.lng ? Math.pow(b.lat - searchCoords.lat, 2) + Math.pow(b.lng - searchCoords.lon, 2) : 999;
+      return distA - distB;
+    }
+    return 0;
+  });
+  const openSpots = sortedResults.filter(r => r.isOpen && r.isOpen.includes("Open"));
   const savedSpots = results.filter(r => saved[r.id]);
   const topRatedSpots = [...results].filter(r => r.rating).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, resultLimit);
 
@@ -596,7 +605,7 @@ export default function EatSmart() {
           {activeTab === "opennow" && openSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
           {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet — tap the Save button on any restaurant!</div>}
           <div style={{display:"flex",flexDirection:"column",gap:10,padding:"0 16px"}}>
-          {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : results).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
+          {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : sortedResults).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
           </div>
         </>
       )}
@@ -728,8 +737,8 @@ const S = {
   tagRow:{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14},
   tag:{background:"#f2f2f2",borderRadius:20,padding:"5px 12px",fontSize:12,color:"#555",fontWeight:500},
   actionRow:{display:"flex",gap:10},
-  openBtn:{flex:1,background:"#f0faf4",border:"1.5px solid #a9dfbf",borderRadius:10,padding:"10px",fontSize:13,fontWeight:700,color:"#27ae60",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center"},
-  saveBtn:{flex:1,border:"1.5px solid #ffd5d0",borderRadius:10,padding:"10px",fontSize:13,fontWeight:700,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit",background:"#fff5f4"},
+  openBtn:{flex:1,background:"#f5f5f5",border:"none",borderRadius:8,padding:"7px 4px",fontSize:11,fontWeight:600,color:"#555",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center"},
+  saveBtn:{flex:1,border:"none",borderRadius:8,padding:"7px 4px",fontSize:11,fontWeight:600,color:"#e83a2a",cursor:"pointer",fontFamily:"inherit",background:"#fff5f4"},
   bottomNav:{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:"#fff",borderTop:"1px solid #f0ebe6",display:"flex",justifyContent:"space-around",padding:"8px 0 20px",zIndex:100,boxShadow:"0 -4px 20px rgba(200,50,40,0.08)"},
   navBtn:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",background:"none",border:"none",cursor:"pointer",color:"#aaa",fontFamily:"inherit",padding:"4px 0"},
   navBtnActive:{color:"#e83a2a"},
