@@ -363,7 +363,7 @@ export default function EatSmart() {
         return 0;
       });
       setResults(sorted.slice(0, 30));
-    } catch(e) { setError("Something went wrong. Please try again."); }
+    } catch(e) { setError("Error: " + e.message); console.error(e); }
     setLoading(false);
   }, [suburb, city, customCoords, locationSearch, cuisine, cuisineFilter, priceFilter, sortBy, openNowOnly]);
 
