@@ -352,34 +352,12 @@ export default function EatSmart() {
       const filteredByPrice = pLevel !== null
         ? spots.filter(s => pLevel === 0 ? (s.priceLevel === 0 || s.priceLevel === null) : s.priceLevel === pLevel)
         : spots;
-      // Map each filter label to the Google types / name keywords that identify it
-      const CUISINE_MATCH = {
-        "Pizza":["pizza"],
-        "Sushi":["sushi","japanese"],
-        "Chinese":["chinese"],
-        "Indian":["indian"],
-        "Thai":["thai"],
-        "Burgers":["burger","hamburger"],
-        "Cafe":["cafe","coffee"],
-        "Fish & Chips":["fish","chip","takeaway","seafood"],
-        "Healthy":["salad","health","vegan","vegetarian","poke","bowl"],
-        "Italian":["italian","pizza","pasta"],
-        "Japanese":["japanese","sushi","ramen"],
-        "Korean":["korean"],
-        "Mexican":["mexican","taco","burrito"],
-        "Vietnamese":["vietnamese","pho"],
-        "Seafood":["seafood","fish"],
-        "Steakhouse":["steak"],
-      };
-      const matchesCuisine = (s, cf) => {
-        const keys = CUISINE_MATCH[cf] || [cf.toLowerCase()];
-        const hay = ((s.cuisine||"") + " " + (s.name||"") + " " + (s.rawTypes||[]).join(" ")).toLowerCase();
-        return keys.some(k => hay.includes(k));
-      };
-      const filteredByCuisine = cuisineFilters.length > 0
-        ? filteredByPrice.filter(s => cuisineFilters.some(cf => matchesCuisine(s, cf)))
+      // Multi-cuisine: keep results matching ANY selected cuisine
+      const filteredByCuisine = cuisineFilters.length > 1
+        ? filteredByPrice.filter(s => cuisineFilters.some(cf => (s.cuisine||"").toLowerCase().includes(cf.toLowerCase()) || (s.rawTypes||[]).some(t => t.toLowerCase().includes(cf.toLowerCase()))))
         : filteredByPrice;
-      const toShow = filteredByCuisine;
+      const cuisineResult = filteredByCuisine.length > 0 ? filteredByCuisine : filteredByPrice;
+      const toShow = cuisineResult.length > 0 ? cuisineResult : spots;
       const filteredOpen = openNowOnly ? toShow.filter(s => s.isOpen && s.isOpen.includes("Open")) : toShow;
       const sorted = [...filteredOpen].sort((a, b) => {
         if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
