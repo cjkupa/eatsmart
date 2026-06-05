@@ -558,6 +558,7 @@ export default function EatSmart() {
                 {suburb && suburb !== "All Suburbs" && <button onMouseDown={e=>{e.preventDefault();setSuburb("All Suburbs");setCustomCoords(null);localStorage.setItem("es_suburb","All Suburbs");}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"4px 10px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4,whiteSpace:"nowrap"}}>{suburb}<span style={{fontSize:14,opacity:0.85}}>×</span></button>}
                 {cuisineFilters.map(cf => <button key={cf} onMouseDown={e=>{e.preventDefault();setCuisineFilters(prev=>prev.filter(x=>x!==cf));}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"4px 10px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4,whiteSpace:"nowrap"}}>{cf}<span style={{fontSize:14,opacity:0.85}}>×</span></button>)}
                 {priceFilter !== "Any" && <button onMouseDown={e=>{e.preventDefault();setPriceFilter("Any");}} style={{background:"#e83a2a",color:"#fff",border:"none",borderRadius:20,padding:"4px 10px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:4,whiteSpace:"nowrap"}}>{priceFilter}<span style={{fontSize:14,opacity:0.85}}>×</span></button>}
+                {((suburb && suburb !== "All Suburbs") || cuisineFilters.length > 0 || priceFilter !== "Any") && <button onMouseDown={e=>{e.preventDefault();setSuburb("All Suburbs");localStorage.setItem("es_suburb","All Suburbs");setCuisineFilters([]);setPriceFilter("Any");setCustomCoords(null);}} style={{background:"none",border:"none",color:"#999",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",padding:"4px 6px",textDecoration:"underline",whiteSpace:"nowrap"}}>Clear all</button>}
               </div>
             )}
             {locationSuggestions.length > 0 && (
@@ -771,7 +772,7 @@ export default function EatSmart() {
 
 const S = {
   page:{overflow:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",maxWidth:480,margin:"0 auto",paddingBottom:100,width:"100%"},
-  header:{background:"#e83a2a",padding:"14px 16px 14px"},
+  header:{background:"#e83a2a",padding:"14px 16px 14px",position:"relative"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
   logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
   logoSmart:{fontWeight:900,fontSize:36,color:"#ffd97d",letterSpacing:-1.5},
