@@ -188,7 +188,6 @@ export default function EatSmart() {
   const [error, setError] = useState(null);
   const [searched, setSearched] = useState(false);
   const [recentSearches, setRecentSearches] = useState(() => { try { return JSON.parse(localStorage.getItem("es_recent") || "[]"); } catch(e) { return []; } });
-  const [debugInfo, setDebugInfo] = useState("");
   const [saved, setSaved] = useState(() => { try { return JSON.parse(localStorage.getItem("es_saved") || "{}"); } catch(e) { return {}; } });
   const [locating, setLocating] = useState(false);
   const [searchRadius, setSearchRadius] = useState(800);
@@ -381,8 +380,6 @@ export default function EatSmart() {
         ? filteredByPrice.filter(s => cuisineFilters.some(cf => matchesCuisine(s, cf)))
         : filteredByPrice;
       const toShow = filteredByCuisine;
-      // TEMP DEBUG
-      setDebugInfo(`raw:${spots.length} afterPrice:${filteredByPrice.length} afterCuisine:${filteredByCuisine.length} | tags: ${spots.slice(0,8).map(s=>s.cuisine).join(", ")} | rawTypes[0]: ${(spots[0]&&spots[0].rawTypes||[]).join(",")}`);
       const filteredOpen = openNowOnly ? toShow.filter(s => s.isOpen && s.isOpen.includes("Open")) : toShow;
       const sorted = [...filteredOpen].sort((a, b) => {
         if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
@@ -675,7 +672,6 @@ export default function EatSmart() {
       )}
 
       {/* RESULTS */}
-      {debugInfo && <div style={{margin:"8px 16px",padding:"10px 12px",background:"#fffbe6",border:"1px solid #ffe58f",borderRadius:8,fontSize:11,color:"#614700",fontFamily:"monospace",wordBreak:"break-word"}}>{debugInfo}</div>}
       {loading && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>Searching...</div>}
       {error && <div style={{margin:"16px",padding:"14px 16px",background:"#fff3f3",border:"1.5px solid #f5c6c6",borderRadius:14,color:"#e83a2a",fontSize:14}}>{error}</div>}
       {!loading && searched && results.length === 0 && !error && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>No restaurants found near {suburb}. Try a nearby suburb.</div>}
