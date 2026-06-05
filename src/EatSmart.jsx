@@ -582,16 +582,6 @@ export default function EatSmart() {
               </div>
             )}
           </div>
-          {searchFocused && locationSuggestions.length === 0 && (
-            <div style={{paddingTop:8}}>
-              <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CITIES</div>
-              <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                {["Auckland","Wellington","Christchurch","Hamilton","Tauranga","Napier","Hastings","Whangarei","Dunedin"].map(c=>(
-                  <button key={c} onMouseDown={e=>{e.preventDefault();handleCityChange(c);setSuburb("All Suburbs");setSearchFocused(false);}} style={{background:city===c?"#e83a2a":"#fff",color:city===c?"#fff":"#555",border:"1.5px solid",borderColor:city===c?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c}</button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* FILTERS BUTTON + PANEL (separate from keyboard) */}
