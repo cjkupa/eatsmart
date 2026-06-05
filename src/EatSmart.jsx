@@ -470,27 +470,27 @@ export default function EatSmart() {
     const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
-        <div style={{padding:"10px 12px 6px"}}>
-          <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-            <div style={{background:"#e83a2a",border:"none",borderRadius:20,padding:"3px 9px",fontSize:11,fontWeight:700,color:"#fff",flexShrink:0,alignSelf:"flex-start",marginTop:2}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</div>
-            <div style={{flex:1}}>
-              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
-                <div style={{fontWeight:700,fontSize:15,color:"#1a1a1a"}}>{spot.name}</div>
-                {featured && <span style={{background:"#ffd97d",color:"#7a4800",borderRadius:20,padding:"3px 10px",fontSize:11,fontWeight:800,boxShadow:"0 2px 6px rgba(255,180,0,0.3)"}}>⭐ Featured</span>}
-              </div>
-              <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:2}}>
-                {spot.rating && <span style={{fontWeight:800,fontSize:14,color:"#e67e22"}}>⭐ {spot.rating}</span>}
-                {spot.ratingCount && <span style={{fontSize:12,color:"#bbb"}}>({spot.ratingCount})</span>}
-                {spot.priceLevel !== null && spot.priceLevel !== undefined && <span style={{fontWeight:800,fontSize:14,color:"#27ae60"}}>{"$".repeat(spot.priceLevel + 1)}</span>}
-                {spot.isOpen && <span style={{fontWeight:600,fontSize:11,color:spot.isOpen.includes("Open")?"#27ae60":"#ccc"}}>● {spot.isOpen.includes("Open")?"Open":"Closed"}</span>}
-              </div>
-              {spot.address && <div style={{fontSize:12,color:"#999",marginTop:4,textAlign:"left"}}>{spot.address}</div>}
-              {featured && featured.signatureDish && <div style={{fontSize:12,color:"#a06000",marginTop:4,fontWeight:600}}>{featured.signatureDish}</div>}
+        <div style={{display:"flex",gap:12,padding:"12px 12px 8px",alignItems:"stretch"}}>
+          {spot.photoRef
+            ? <a href={"https://www.google.com/maps/search/"+encodeURIComponent(spot.name+" "+(spot.address||""))} target="_blank" rel="noopener noreferrer" style={{flexShrink:0}}><img src={`${API_BASE_URL}/api/photo?ref=${encodeURIComponent(spot.photoRef)}`} alt={spot.name} style={{width:110,height:110,objectFit:"cover",borderRadius:10,display:"block",cursor:"pointer"}} onError={function(e){e.target.parentElement.style.display="none";}} /></a>
+            : <div style={{width:110,height:110,borderRadius:10,background:"#fff0ed",display:"flex",alignItems:"center",justifyContent:"center",fontSize:44,flexShrink:0}}>{spot.emoji || "🍽️"}</div>}
+          <div style={{flex:1,minWidth:0,display:"flex",flexDirection:"column"}}>
+            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"wrap"}}>
+              <span style={{background:"#e83a2a",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700,color:"#fff",flexShrink:0}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
+              {featured && <span style={{background:"#ffd97d",color:"#7a4800",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:800}}>⭐ Featured</span>}
             </div>
+            <div style={{fontWeight:700,fontSize:15,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{spot.name}</div>
+            <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:3}}>
+              {spot.rating && <span style={{fontWeight:800,fontSize:13,color:"#e67e22"}}>⭐ {spot.rating}</span>}
+              {spot.ratingCount && <span style={{fontSize:11,color:"#bbb"}}>({spot.ratingCount})</span>}
+              {spot.priceLevel !== null && spot.priceLevel !== undefined && <span style={{fontWeight:800,fontSize:13,color:"#27ae60"}}>{"$".repeat(spot.priceLevel + 1)}</span>}
+              {spot.isOpen && <span style={{fontWeight:600,fontSize:11,color:spot.isOpen.includes("Open")?"#27ae60":"#ccc"}}>● {spot.isOpen.includes("Open")?"Open":"Closed"}</span>}
+            </div>
+            {spot.address && <div style={{fontSize:12,color:"#999",marginTop:3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>📍 {spot.address}</div>}
+            {featured && featured.signatureDish && <div style={{fontSize:11,color:"#a06000",marginTop:3,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{featured.signatureDish}</div>}
           </div>
         </div>
-        {spot.photoRef && <a href={"https://www.google.com/maps/search/"+encodeURIComponent(spot.name+" "+(spot.address||""))} target="_blank" rel="noopener noreferrer"><img src={`${API_BASE_URL}/api/photo?ref=${encodeURIComponent(spot.photoRef)}`} alt={spot.name} style={{width:"100%",height:110,objectFit:"cover",display:"block",cursor:"pointer"}} onError={function(e){e.target.parentElement.style.display="none";}} /></a>}
-        <div style={{...S.actionRow, padding:"8px 10px 10px",gap:5}}>
+        <div style={{...S.actionRow, padding:"0 10px 10px",gap:5}}>
           {spot.website
             ? <a href={spot.website} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>Website</a>
             : spot.phone
