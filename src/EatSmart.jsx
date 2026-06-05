@@ -242,10 +242,10 @@ export default function EatSmart() {
 
   function handleCityChange(newCity) {
     setCity(newCity);
-    const newSuburb = NZ_CITIES[newCity][0];
-    setSuburb(newSuburb);
+    setSuburb("All Suburbs");
+    setCustomCoords(null);
     localStorage.setItem("es_city", newCity);
-    localStorage.setItem("es_suburb", newSuburb);
+    localStorage.setItem("es_suburb", "All Suburbs");
     setSearched(false); setResults([]); setError(null);
   }
 
@@ -566,8 +566,9 @@ export default function EatSmart() {
                 {locationSuggestions.map((s,i) => (
                   <div key={i} onMouseDown={async()=>{
                     setLocationSearch(null);
-                    if(s.type==="city"){handleCityChange(s.city);setSuburb("All Suburbs");localStorage.setItem("es_suburb","All Suburbs");}
+                    if(s.type==="city"){handleCityChange(s.city);localStorage.setItem("es_suburb","All Suburbs");}
                     else if(s.type==="street"&&s.placeId){const r=await geocodePlace(s.placeId,city);if(r.length>0){setCustomCoords({lat:r[0].lat,lon:r[0].lon});setSuburb(r[0].suburb||s.label);localStorage.setItem("es_suburb",r[0].suburb||s.label);}}
+                    else if(cities.includes(s.suburb)||cities.includes(s.label)){const newCity=cities.includes(s.suburb)?s.suburb:s.label;handleCityChange(newCity);localStorage.setItem("es_suburb","All Suburbs");}
                     else{if(s.city&&s.city!==city)handleCityChange(s.city);setSuburb(s.suburb||s.label);setCustomCoords(null);localStorage.setItem("es_suburb",s.suburb||s.label);}
                     setLocationSuggestions([]);setSearchFocused(false);
                   }} style={{padding:"10px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:s.type==="street"?"#1a73e8":s.type==="city"?"#e83a2a":"#333",display:"flex",alignItems:"center",gap:8}}>
