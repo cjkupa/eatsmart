@@ -181,6 +181,7 @@ export default function EatSmart() {
   const [priceFilter, setPriceFilter] = useState("Any");
   const [cuisineFilters, setCuisineFilters] = useState([]); const cuisineFilter = cuisineFilters[0] || "";  const setCuisineFilter = (v) => setCuisineFilters(v ? [v] : []);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [smartSearch, setSmartSearch] = useState("");
   const [sortBy, setSortBy] = useState("rating");
   const [results, setResults] = useState([]);
@@ -470,9 +471,10 @@ export default function EatSmart() {
     const featured = getFeatured(spot.name);
     return (
       <div style={S.spotCard}>
-        <div style={{display:"flex",gap:12,padding:"12px 12px 8px",alignItems:"stretch"}}>
+        <a href={"https://www.google.com/maps/search/"+encodeURIComponent(spot.name+" "+(spot.address||""))} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",color:"inherit",display:"block"}}>
+        <div style={{display:"flex",gap:12,padding:"12px 12px 8px",alignItems:"stretch",cursor:"pointer"}}>
           {spot.photoRef
-            ? <a href={"https://www.google.com/maps/search/"+encodeURIComponent(spot.name+" "+(spot.address||""))} target="_blank" rel="noopener noreferrer" style={{flexShrink:0}}><img src={`${API_BASE_URL}/api/photo?ref=${encodeURIComponent(spot.photoRef)}`} alt={spot.name} style={{width:110,height:110,objectFit:"cover",borderRadius:10,display:"block",cursor:"pointer"}} onError={function(e){e.target.parentElement.style.display="none";}} /></a>
+            ? <img src={`${API_BASE_URL}/api/photo?ref=${encodeURIComponent(spot.photoRef)}`} alt={spot.name} style={{width:110,height:110,objectFit:"cover",borderRadius:10,display:"block",flexShrink:0}} onError={function(e){e.target.style.display="none";}} />
             : <div style={{width:110,height:110,borderRadius:10,background:"#fff0ed",display:"flex",alignItems:"center",justifyContent:"center",fontSize:44,flexShrink:0}}>{spot.emoji || "🍽️"}</div>}
           <div style={{flex:1,minWidth:0,display:"flex",flexDirection:"column"}}>
             <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"wrap"}}>
@@ -490,6 +492,7 @@ export default function EatSmart() {
             {featured && featured.signatureDish && <div style={{fontSize:11,color:"#a06000",marginTop:3,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{featured.signatureDish}</div>}
           </div>
         </div>
+        </a>
         <div style={{...S.actionRow, padding:"0 10px 10px",gap:5}}>
           {spot.website
             ? <a href={spot.website} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>Website</a>
@@ -582,29 +585,42 @@ export default function EatSmart() {
           {searchFocused && locationSuggestions.length === 0 && (
             <div style={{paddingTop:8}}>
               <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CITIES</div>
-              <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
+              <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
                 {["Auckland","Wellington","Christchurch","Hamilton","Tauranga","Napier","Hastings","Whangarei","Dunedin"].map(c=>(
                   <button key={c} onMouseDown={e=>{e.preventDefault();handleCityChange(c);setSuburb("All Suburbs");setSearchFocused(false);}} style={{background:city===c?"#e83a2a":"#fff",color:city===c?"#fff":"#555",border:"1.5px solid",borderColor:city===c?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c}</button>
-                ))}
-              </div>
-              <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CUISINE</div>
-              <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
-                {[{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🍔",l:"Burgers"},{e:"🍕",l:"Pizza"},{e:"🍛",l:"Indian"},{e:"🍣",l:"Sushi"},{e:"🍜",l:"Chinese"},{e:"🥗",l:"Healthy"}].map(c=>(
-                  <button key={c.l} onMouseDown={e=>{e.preventDefault();setCuisineFilters(prev => prev.includes(c.l) ? prev.filter(x=>x!==c.l) : [...prev, c.l]);}} style={{background:cuisineFilters.includes(c.l)?"#e83a2a":"#fff",color:cuisineFilters.includes(c.l)?"#fff":"#555",border:"1.5px solid",borderColor:cuisineFilters.includes(c.l)?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
-                ))}
-              </div>
-              <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>BUDGET</div>
-              <div style={{display:"flex",gap:5}}>
-                {[{label:"Any",desc:"All"},{label:"$",desc:"<$15"},{label:"$$",desc:"$15-35"},{label:"$$$",desc:"$35-60"},{label:"$$$$",desc:">$60"}].map(p=>(
-                  <button key={p.label} onMouseDown={e=>{e.preventDefault();setPriceFilter(p.label);}} style={{flex:1,background:priceFilter===p.label?"#d63020":"#f5f5f5",color:priceFilter===p.label?"#fff":"#555",border:"none",borderRadius:10,padding:"5px 0",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"inherit",display:"flex",flexDirection:"column",alignItems:"center"}}>
-                    <span>{p.label}</span>
-                    <span style={{fontSize:9,opacity:0.75}}>{p.desc}</span>
-                  </button>
                 ))}
               </div>
             </div>
           )}
         </div>
+
+        {/* FILTERS BUTTON + PANEL (separate from keyboard) */}
+        <div style={{display:"flex",gap:8,marginTop:10,alignItems:"center"}}>
+          <button onClick={()=>setShowFilters(v=>!v)} style={{display:"flex",alignItems:"center",gap:6,background:showFilters||hasActiveFilters?"#e83a2a":"#fff",color:showFilters||hasActiveFilters?"#fff":"#555",border:"1.5px solid",borderColor:showFilters||hasActiveFilters?"#e83a2a":"#e0d9d2",borderRadius:12,padding:"8px 14px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+            ⚙ Filters {hasActiveFilters?`(${cuisineFilters.length + (priceFilter!=="Any"?1:0)})`:""} <span style={{fontSize:10}}>{showFilters?"▲":"▼"}</span>
+          </button>
+          {hasActiveFilters && <button onClick={()=>{setCuisineFilters([]);setPriceFilter("Any");}} style={{background:"none",border:"none",color:"#999",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",textDecoration:"underline"}}>Reset</button>}
+        </div>
+
+        {showFilters && (
+          <div style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:14,padding:14,marginTop:8}}>
+            <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CUISINE</div>
+            <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:12}}>
+              {[{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🍔",l:"Burgers"},{e:"🍕",l:"Pizza"},{e:"🍛",l:"Indian"},{e:"🍣",l:"Sushi"},{e:"🍜",l:"Chinese"},{e:"🥗",l:"Healthy"}].map(c=>(
+                <button key={c.l} onClick={()=>setCuisineFilters(prev => prev.includes(c.l) ? prev.filter(x=>x!==c.l) : [...prev, c.l])} style={{background:cuisineFilters.includes(c.l)?"#e83a2a":"#fff",color:cuisineFilters.includes(c.l)?"#fff":"#555",border:"1.5px solid",borderColor:cuisineFilters.includes(c.l)?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"5px 11px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
+              ))}
+            </div>
+            <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>BUDGET</div>
+            <div style={{display:"flex",gap:5}}>
+              {[{label:"Any",desc:"All"},{label:"$",desc:"<$15"},{label:"$$",desc:"$15-35"},{label:"$$$",desc:"$35-60"},{label:"$$$$",desc:">$60"}].map(p=>(
+                <button key={p.label} onClick={()=>setPriceFilter(p.label)} style={{flex:1,background:priceFilter===p.label?"#d63020":"#f5f5f5",color:priceFilter===p.label?"#fff":"#555",border:"none",borderRadius:10,padding:"7px 0",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"inherit",display:"flex",flexDirection:"column",alignItems:"center"}}>
+                  <span>{p.label}</span>
+                  <span style={{fontSize:9,opacity:0.75}}>{p.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* HERO EMPTY STATE */}
