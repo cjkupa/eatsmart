@@ -281,7 +281,8 @@ export default function EatSmart() {
     }, () => { setError("📍 Location access was denied. On iPhone go to Settings → Privacy → Location Services → Safari → While Using. On Android go to Settings → Apps → Chrome → Permissions → Location."); setLocating(false); });
   }
 
-  const handleSearch = useCallback(async () => {
+  const handleSearch = useCallback(async (cuisineOverride) => {
+    const activeCuisines = Array.isArray(cuisineOverride) ? cuisineOverride : cuisineFilters;
     setLoading(true); setError(null); setSearched(true); setResults([]);
     try {
       let coords = customCoords;
@@ -342,7 +343,7 @@ export default function EatSmart() {
       if (suburb === "All Suburbs") setResultLimit(20);
       let spots = []; let usedRadius = 800;
       for (const r of radii) {
-        const selectedCuisine = cuisineFilters.length > 0 ? cuisineFilters[0] : (cuisine || "Any");
+        const selectedCuisine = activeCuisines.length > 0 ? activeCuisines[0] : (cuisine || "Any");
         const elements = await searchRestaurants(coords.lat, coords.lon, r, selectedCuisine); console.log("Elements:", elements.length, "radius:", r);
         spots = elements.map((el, i) => formatRestaurant(el, i)).filter(Boolean); console.log("Spots after filter:", spots.length);
         if (spots.length > 0) { usedRadius = r; break; }
@@ -353,8 +354,8 @@ export default function EatSmart() {
         ? spots.filter(s => pLevel === 0 ? (s.priceLevel === 0 || s.priceLevel === null) : s.priceLevel === pLevel)
         : spots;
       // Multi-cuisine: keep results matching ANY selected cuisine
-      const filteredByCuisine = cuisineFilters.length > 1
-        ? filteredByPrice.filter(s => cuisineFilters.some(cf => (s.cuisine||"").toLowerCase().includes(cf.toLowerCase()) || (s.rawTypes||[]).some(t => t.toLowerCase().includes(cf.toLowerCase()))))
+      const filteredByCuisine = activeCuisines.length > 1
+        ? filteredByPrice.filter(s => activeCuisines.some(cf => (s.cuisine||"").toLowerCase().includes(cf.toLowerCase()) || (s.rawTypes||[]).some(t => t.toLowerCase().includes(cf.toLowerCase()))))
         : filteredByPrice;
       const cuisineResult = filteredByCuisine.length > 0 ? filteredByCuisine : filteredByPrice;
       const toShow = cuisineResult.length > 0 ? cuisineResult : spots;
@@ -371,7 +372,7 @@ export default function EatSmart() {
       setResults(sorted.slice(0, 30));
       // Save to recent searches (dedup, keep last 3)
       try {
-        const entry = { city, suburb, cuisines: [...cuisineFilters], price: priceFilter };
+        const entry = { city, suburb, cuisines: [...activeCuisines], price: priceFilter };
         const key = JSON.stringify(entry);
         setRecentSearches(prev => {
           const next = [entry, ...prev.filter(r => JSON.stringify(r) !== key)].slice(0, 3);
@@ -391,7 +392,7 @@ export default function EatSmart() {
     setCuisineFilters(r.cuisines || []);
     setPriceFilter(r.price || "Any");
     setCustomCoords(null);
-    setTimeout(() => handleSearch(), 50);
+    setTimeout(() => handleSearch(r.cuisines || []), 50);
   }
 
   async function handleContactSubmit() {
@@ -640,7 +641,7 @@ export default function EatSmart() {
             <div style={{fontSize:11,color:"#bbb",fontWeight:700,letterSpacing:0.5,marginBottom:10,paddingLeft:4}}>QUICK PICKS</div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
               {[{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🍔",l:"Burgers"},{e:"🍕",l:"Pizza"},{e:"🍛",l:"Indian"},{e:"🍣",l:"Sushi"},{e:"🍜",l:"Chinese"},{e:"🥗",l:"Healthy"}].map(c=>(
-                <button key={c.l} onClick={()=>{setCuisineFilters([c.l]);setTimeout(()=>handleSearch(),50);}} style={{display:"flex",alignItems:"center",gap:10,background:"#fff",border:"1.5px solid #f0ebe6",borderRadius:14,padding:"14px",cursor:"pointer",fontFamily:"inherit",fontWeight:700,fontSize:14,color:"#1a1a1a",boxShadow:"0 1px 4px rgba(0,0,0,0.04)"}}>
+                <button key={c.l} onClick={()=>{setCuisineFilters([c.l]);handleSearch([c.l]);}} style={{display:"flex",alignItems:"center",gap:10,background:"#fff",border:"1.5px solid #f0ebe6",borderRadius:14,padding:"14px",cursor:"pointer",fontFamily:"inherit",fontWeight:700,fontSize:14,color:"#1a1a1a",boxShadow:"0 1px 4px rgba(0,0,0,0.04)"}}>
                   <span style={{fontSize:24}}>{c.e}</span> {c.l}
                 </button>
               ))}
