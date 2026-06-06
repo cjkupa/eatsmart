@@ -536,7 +536,7 @@ export default function EatSmart() {
                   const cityMatches = cities.filter(c=>c.toLowerCase().startsWith(q)).slice(0,2).map(c=>({label:c,city:c,suburb:"All Suburbs",type:"city"}));
                   if (val.length > 2) {
                     try {
-                      const res = await fetch(API_BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(val));
+                      const res = await fetch(API_BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(val + ' ' + city));
                       const data = await res.json();
                       const allSuburbs2 = Object.values(NZ_CITIES).flat().map(s=>s.toLowerCase());
                       const googleSuggestions = (data.predictions||[]).slice(0,5).map(p=>{
@@ -573,7 +573,7 @@ export default function EatSmart() {
                   <div key={i} onMouseDown={async()=>{
                     setLocationSearch(null);
                     if(s.type==="city"){handleCityChange(s.city);localStorage.setItem("es_suburb","All Suburbs");}
-                    else if(s.type==="place"){setCuisineFilters([s.term]);setSuburb("All Suburbs");localStorage.setItem("es_suburb","All Suburbs");setCustomCoords(null);setLocationSuggestions([]);setSearchFocused(false);handleSearch([s.term]);return;}
+                    else if(s.type==="place"){setSuburb("All Suburbs");localStorage.setItem("es_suburb","All Suburbs");setCustomCoords(null);setPriceFilter("Any");setCuisineFilters([s.term]);setLocationSearch(null);setLocationSuggestions([]);setSearchFocused(false);handleSearch([s.term]);return;}
                     else if(s.type==="street"&&s.placeId){const r=await geocodePlace(s.placeId,city);if(r.length>0){setCustomCoords({lat:r[0].lat,lon:r[0].lon});setSuburb(r[0].suburb||s.label);localStorage.setItem("es_suburb",r[0].suburb||s.label);}}
                     else if(cities.includes(s.suburb)||cities.includes(s.label)){const newCity=cities.includes(s.suburb)?s.suburb:s.label;handleCityChange(newCity);localStorage.setItem("es_suburb","All Suburbs");}
                     else{if(s.city&&s.city!==city)handleCityChange(s.city);setSuburb(s.suburb||s.label);setCustomCoords(null);localStorage.setItem("es_suburb",s.suburb||s.label);}
