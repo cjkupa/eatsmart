@@ -512,11 +512,11 @@ export default function EatSmart() {
       {/* SEARCH SECTION */}
       <div ref={searchRef}>
         <header style={S.header}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:4}}>
-            <img src="/logo.png" alt="EatSmart" style={{width:48,height:48,borderRadius:12,boxShadow:"0 4px 12px rgba(0,0,0,0.25)"}} />
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:2}}>
+            <img src="/logo.png" alt="EatSmart" style={{width:36,height:36,borderRadius:9,boxShadow:"0 3px 9px rgba(0,0,0,0.25)"}} />
             <div><span style={S.logoEat}>Eat</span><span style={S.logoSmart}>Smart</span></div>
           </div>
-          <p style={{color:"rgba(255,255,255,0.9)",fontSize:13,margin:"6px 0 0",textAlign:"center",fontWeight:500,padding:"0 20px"}}>Find great food near you</p>
+          <p style={{color:"rgba(255,255,255,0.92)",fontSize:12,margin:"2px 0 0",textAlign:"center",fontWeight:500}}>Find great food near you</p>
           <div style={S.wave} />
         </header>
         <div style={S.card}>
@@ -780,10 +780,10 @@ export default function EatSmart() {
 
 const S = {
   page:{overflow:"hidden",minHeight:"100vh",fontFamily:"'Poppins',sans-serif",background:"#faf9f7",maxWidth:480,margin:"0 auto",paddingBottom:100,width:"100%"},
-  header:{background:"#e83a2a",padding:"14px 16px 14px",position:"relative"},
+  header:{background:"#e83a2a",padding:"10px 16px 10px",position:"relative"},
   logo:{display:"flex",alignItems:"center",gap:2,marginBottom:6},
-  logoEat:{fontWeight:900,fontSize:36,color:"#fff",letterSpacing:-1.5},
-  logoSmart:{fontWeight:900,fontSize:36,color:"#ffd97d",letterSpacing:-1.5},
+  logoEat:{fontWeight:900,fontSize:28,color:"#fff",letterSpacing:-1.2},
+  logoSmart:{fontWeight:900,fontSize:28,color:"#ffd97d",letterSpacing:-1.2},
   logoIcon:{fontSize:28,marginLeft:6},
   tagline:{color:"rgba(255,255,255,0.9)",fontSize:15,margin:"4px 0 0",fontWeight:500},
   wave:{position:"absolute",bottom:-2,left:0,right:0,height:36,background:"#faf9f7",borderRadius:"50% 50% 0 0 / 100% 100% 0 0"},
