@@ -58,24 +58,16 @@ app.get('/api/places', async (req, res) => {
   const { lat, lng, radius, cuisine } = req.query;
   if (!lat || !lng) return sendError(res, 400, 'Missing lat or lng');
 
+  const keyword = cuisine && cuisine !== 'Any'
+    ? '&keyword=' + encodeURIComponent(cuisineMap[String(cuisine).toLowerCase()] || cuisine)
+    : '';
   const safeRadius = Math.min(Number(radius) || 2000, 10000);
-  const hasCuisine = cuisine && cuisine !== 'Any';
-  const term = hasCuisine ? (cuisineMap[String(cuisine).toLowerCase()] || cuisine) : '';
-
-  // For a specific cuisine, Text Search treats it as a real query (like typing into
-  // Google Maps) and returns genuine matches with specific place types. Nearby Search
-  // with a keyword only loosely ranks and returns all nearby restaurants regardless.
-  const url = hasCuisine
-    ? 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=' +
-        encodeURIComponent(term + ' restaurant') +
-        '&location=' + encodeURIComponent(lat + ',' + lng) +
-        '&radius=' + safeRadius +
-        '&key=' + GOOGLE_API_KEY
-    : 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
-        encodeURIComponent(lat + ',' + lng) +
-        '&radius=' + safeRadius +
-        '&type=restaurant' +
-        '&key=' + GOOGLE_API_KEY;
+  const url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
+    encodeURIComponent(lat + ',' + lng) +
+    '&radius=' + safeRadius +
+    '&type=restaurant' +
+    keyword +
+    '&key=' + GOOGLE_API_KEY;
 
   try {
     const r = await fetch(url);
@@ -151,16 +143,24 @@ app.get('/api/autocomplete', async (req, res) => {
   if (!q) return sendError(res, 400, 'Missing query');
 
   const location = lat && lng ? `&location=${encodeURIComponent(`${lat},${lng}`)}&radius=50000` : '';
-  const url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=' +
-    encodeURIComponent(q) +
-    '&components=country:nz&types=geocode' +
-    location +
-    '&key=' + GOOGLE_API_KEY;
+  const base = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=' +
+    encodeURIComponent(q) + '&components=country:nz' + location + '&key=' + GOOGLE_API_KEY;
 
   try {
-    const r = await fetch(url);
-    const data = await r.json();
-    res.json(data);
+    // Two calls: establishments (KFC, cafes) + addresses (suburbs, streets), then merge.
+    const [estRes, geoRes] = await Promise.all([
+      fetch(base + '&types=establishment').then(r => r.json()).catch(() => ({ predictions: [] })),
+      fetch(base + '&types=geocode').then(r => r.json()).catch(() => ({ predictions: [] })),
+    ]);
+    const est = estRes.predictions || [];
+    const geo = geoRes.predictions || [];
+    // Interleave: addresses first (suburbs are the common case), then businesses, dedup by place_id.
+    const seen = new Set();
+    const merged = [];
+    [...geo, ...est].forEach(p => {
+      if (p.place_id && !seen.has(p.place_id)) { seen.add(p.place_id); merged.push(p); }
+    });
+    res.json({ predictions: merged, status: merged.length ? 'OK' : 'ZERO_RESULTS' });
   } catch (e) {
     sendError(res, 500, e.message);
   }
