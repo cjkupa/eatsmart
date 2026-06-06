@@ -251,13 +251,15 @@ export default function EatSmart() {
   }
 
   function searchPlaceNearMe(term) {
+    // Use just the brand/base name (strip any ", Suburb" so we find the nearest branch, not a specific far one)
+    const brand = (term || "").split(",")[0].trim();
     setLocating(true);
     if (!navigator.geolocation) {
       // No GPS — fall back to current city as the search area
       setLocating(false);
       setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs");
-      setPriceFilter("Any"); setCustomCoords(null); setCuisineFilters([term]);
-      handleSearch([term]);
+      setPriceFilter("Any"); setCustomCoords(null); setCuisineFilters([brand]);
+      handleSearch([brand]);
       return;
     }
     navigator.geolocation.getCurrentPosition((pos) => {
@@ -265,15 +267,15 @@ export default function EatSmart() {
       const c = { lat: pos.coords.latitude, lon: pos.coords.longitude };
       setCustomCoords(c);
       setSuburb("Near me"); localStorage.setItem("es_suburb","Near me");
-      setPriceFilter("Any"); setCuisineFilters([term]);
+      setPriceFilter("Any"); setCuisineFilters([brand]);
       setLocating(false);
-      handleSearch([term], c);
+      handleSearch([brand], c);
     }, () => {
       // Denied — fall back to current city
       setLocating(false);
       setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs");
-      setPriceFilter("Any"); setCustomCoords(null); setCuisineFilters([term]);
-      handleSearch([term]);
+      setPriceFilter("Any"); setCustomCoords(null); setCuisineFilters([brand]);
+      handleSearch([brand]);
     });
   }
 
@@ -563,7 +565,7 @@ export default function EatSmart() {
                   const cityMatches = cities.filter(c=>c.toLowerCase().startsWith(q)).slice(0,2).map(c=>({label:c,city:c,suburb:"All Suburbs",type:"city"}));
                   if (val.length > 2) {
                     try {
-                      const res = await fetch(API_BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(val + ' ' + city));
+                      const res = await fetch(API_BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(val));
                       const data = await res.json();
                       const allSuburbs2 = Object.values(NZ_CITIES).flat().map(s=>s.toLowerCase());
                       const googleSuggestions = (data.predictions||[]).slice(0,5).map(p=>{
