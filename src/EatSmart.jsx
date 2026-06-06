@@ -539,11 +539,13 @@ export default function EatSmart() {
                       const res = await fetch(API_BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(val));
                       const data = await res.json();
                       const allSuburbs2 = Object.values(NZ_CITIES).flat().map(s=>s.toLowerCase());
-                      const googleSuggestions = (data.predictions||[]).slice(0,4).map(p=>{
+                      const googleSuggestions = (data.predictions||[]).slice(0,5).map(p=>{
                         const label = p.description.replace(', New Zealand','');
                         const mainText = (p.structured_formatting&&p.structured_formatting.main_text)||'';
                         const types = p.types||[];
                         const isSuburb = types.includes("sublocality")||types.includes("locality")||types.includes("neighborhood")||allSuburbs2.includes(mainText.toLowerCase());
+                        const isPlace = types.includes("establishment")||types.includes("food")||types.includes("restaurant")||types.includes("point_of_interest")||types.includes("cafe")||types.includes("bar")||types.includes("meal_takeaway");
+                        if (isPlace && !isSuburb) return {label,type:'place',placeId:p.place_id,term:mainText||label};
                         return {label,type:isSuburb?'suburb':'street',placeId:p.place_id,suburb:isSuburb?mainText:null};
                       });
                       setLocationSuggestions([...cityMatches,...suburbMatches,...googleSuggestions].slice(0,8));
@@ -571,12 +573,13 @@ export default function EatSmart() {
                   <div key={i} onMouseDown={async()=>{
                     setLocationSearch(null);
                     if(s.type==="city"){handleCityChange(s.city);localStorage.setItem("es_suburb","All Suburbs");}
+                    else if(s.type==="place"){setCuisineFilters([s.term]);setSuburb("All Suburbs");localStorage.setItem("es_suburb","All Suburbs");setCustomCoords(null);setLocationSuggestions([]);setSearchFocused(false);handleSearch([s.term]);return;}
                     else if(s.type==="street"&&s.placeId){const r=await geocodePlace(s.placeId,city);if(r.length>0){setCustomCoords({lat:r[0].lat,lon:r[0].lon});setSuburb(r[0].suburb||s.label);localStorage.setItem("es_suburb",r[0].suburb||s.label);}}
                     else if(cities.includes(s.suburb)||cities.includes(s.label)){const newCity=cities.includes(s.suburb)?s.suburb:s.label;handleCityChange(newCity);localStorage.setItem("es_suburb","All Suburbs");}
                     else{if(s.city&&s.city!==city)handleCityChange(s.city);setSuburb(s.suburb||s.label);setCustomCoords(null);localStorage.setItem("es_suburb",s.suburb||s.label);}
                     setLocationSuggestions([]);setSearchFocused(false);
-                  }} style={{padding:"10px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:s.type==="street"?"#1a73e8":s.type==="city"?"#e83a2a":"#333",display:"flex",alignItems:"center",gap:8}}>
-                    {s.type==="street"?"🛣️":s.type==="city"?"🏙️":"📍"} {s.label}
+                  }} style={{padding:"10px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:s.type==="place"?"#e83a2a":s.type==="street"?"#1a73e8":s.type==="city"?"#e83a2a":"#333",display:"flex",alignItems:"center",gap:8}}>
+                    {s.type==="place"?"🍴":s.type==="street"?"🛣️":s.type==="city"?"🏙️":"📍"} {s.label}
                   </div>
                 ))}
               </div>
