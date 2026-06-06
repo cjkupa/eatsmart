@@ -250,6 +250,33 @@ export default function EatSmart() {
     setSearched(false); setResults([]); setError(null);
   }
 
+  function searchPlaceNearMe(term) {
+    setLocating(true);
+    if (!navigator.geolocation) {
+      // No GPS — fall back to current city as the search area
+      setLocating(false);
+      setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs");
+      setPriceFilter("Any"); setCustomCoords(null); setCuisineFilters([term]);
+      handleSearch([term]);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition((pos) => {
+      // Use the user's real location as the search center, ignore the selected city
+      const c = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      setCustomCoords(c);
+      setSuburb("Near me"); localStorage.setItem("es_suburb","Near me");
+      setPriceFilter("Any"); setCuisineFilters([term]);
+      setLocating(false);
+      handleSearch([term], c);
+    }, () => {
+      // Denied — fall back to current city
+      setLocating(false);
+      setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs");
+      setPriceFilter("Any"); setCustomCoords(null); setCuisineFilters([term]);
+      handleSearch([term]);
+    });
+  }
+
   function handleLocate() {
     setLocating(true);
     if (!navigator.geolocation) { alert("Location not supported on this device."); setLocating(false); return; }
@@ -282,11 +309,11 @@ export default function EatSmart() {
     }, () => { setError("📍 Location access was denied. On iPhone go to Settings → Privacy → Location Services → Safari → While Using. On Android go to Settings → Apps → Chrome → Permissions → Location."); setLocating(false); });
   }
 
-  const handleSearch = useCallback(async (cuisineOverride) => {
+  const handleSearch = useCallback(async (cuisineOverride, coordsOverride) => {
     const activeCuisines = Array.isArray(cuisineOverride) ? cuisineOverride : cuisineFilters;
     setLoading(true); setError(null); setSearched(true); setResults([]);
     try {
-      let coords = customCoords;
+      let coords = coordsOverride || customCoords;
       let resolvedLabel = suburb;
       const typedSearch = locationSearch && locationSearch.trim().length > 0 ? locationSearch.trim() : (suburb && suburb !== "All Suburbs" ? suburb : "");
 
@@ -573,7 +600,7 @@ export default function EatSmart() {
                   <div key={i} onMouseDown={async()=>{
                     setLocationSearch(null);
                     if(s.type==="city"){handleCityChange(s.city);localStorage.setItem("es_suburb","All Suburbs");}
-                    else if(s.type==="place"){setSuburb("All Suburbs");localStorage.setItem("es_suburb","All Suburbs");setCustomCoords(null);setPriceFilter("Any");setCuisineFilters([s.term]);setLocationSearch(null);setLocationSuggestions([]);setSearchFocused(false);handleSearch([s.term]);return;}
+                    else if(s.type==="place"){setLocationSearch(null);setLocationSuggestions([]);setSearchFocused(false);searchPlaceNearMe(s.term);return;}
                     else if(s.type==="street"&&s.placeId){const r=await geocodePlace(s.placeId,city);if(r.length>0){setCustomCoords({lat:r[0].lat,lon:r[0].lon});setSuburb(r[0].suburb||s.label);localStorage.setItem("es_suburb",r[0].suburb||s.label);}}
                     else if(cities.includes(s.suburb)||cities.includes(s.label)){const newCity=cities.includes(s.suburb)?s.suburb:s.label;handleCityChange(newCity);localStorage.setItem("es_suburb","All Suburbs");}
                     else{if(s.city&&s.city!==city)handleCityChange(s.city);setSuburb(s.suburb||s.label);setCustomCoords(null);localStorage.setItem("es_suburb",s.suburb||s.label);}
