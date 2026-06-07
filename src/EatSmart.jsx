@@ -678,8 +678,6 @@ export default function EatSmart() {
             </div>
           )}
 
-          <button onClick={()=>runSearch()} style={{width:"100%",background:"#e83a2a",border:"none",borderRadius:12,padding:13,cursor:"pointer",color:"#fff",fontWeight:700,fontSize:15,fontFamily:"inherit",marginTop:10}}>{loading||locating?"Searching…":"Search"}</button>
-
         </div>
 
         {/* FILTERS BUTTON + PANEL (separate from keyboard) */}
