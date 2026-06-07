@@ -49,6 +49,31 @@ const NZ_CITIES = {
 const CUISINES = ["Any","Fish & Chips","NZ Modern","Cafe","Bakery","Pub Food","Burgers","Pizza","Takeaway","Italian","Japanese","Sushi","Chinese","Indian","Thai","Mexican","Korean","Mediterranean","American","French","Vietnamese","Middle Eastern","Seafood","Vegetarian","Turkish","Greek"];
 const CUISINE_EMOJI = {"italian":"🍝","japanese":"🍣","chinese":"🥢","indian":"🍛","thai":"🌶️","mexican":"🌮","korean":"🍱","mediterranean":"🥗","american":"🍔","french":"🥐","vietnamese":"🍜","seafood":"🐟","vegetarian":"🥦","cafe":"☕","pizza":"🍕","burger":"🍔","default":"🍽️"};
 
+// 🔥 TRENDING — curated list of spots popping on TikTok/Insta/YouTube.
+// Edit this list to keep it current. Matching is by name (case-insensitive, partial).
+const TRENDING = [
+  "Fang'd",
+  "Daily Bread",
+  "Gilmours",
+  "Pici",
+  "Bell\u00e9 Studio",
+  "Honeybones",
+  "Apero",
+  "Lilian",
+  "Kol",
+  "Amano",
+  "Cassia",
+  "Hello Beasty",
+  "Gochu",
+  "Saan",
+  "Inca",
+];
+function isTrending(name) {
+  if (!name) return false;
+  const n = name.toLowerCase();
+  return TRENDING.some(t => n.includes(t.toLowerCase()) || t.toLowerCase().includes(n));
+}
+
 function getCuisineEmoji(cuisine) {
   if (!cuisine) return CUISINE_EMOJI.default;
   const key = cuisine.toLowerCase();
@@ -187,6 +212,7 @@ export default function EatSmart() {
   const [detectedArea, setDetectedArea] = useState(() => localStorage.getItem("es_detected") || "");
   const [showNearMenu, setShowNearMenu] = useState(false);
   const [findSuggestions, setFindSuggestions] = useState([]);
+  const [trendingOnly, setTrendingOnly] = useState(false);
   const [smartSearch, setSmartSearch] = useState("");
   const [sortBy, setSortBy] = useState("rating");
   const [results, setResults] = useState([]);
@@ -434,7 +460,8 @@ export default function EatSmart() {
       const cuisineResult = filteredByCuisine.length > 0 ? filteredByCuisine : filteredByPrice;
       const toShow = cuisineResult.length > 0 ? cuisineResult : spots;
       const filteredOpen = openNowOnly ? toShow.filter(s => s.isOpen && s.isOpen.includes("Open")) : toShow;
-      const sorted = [...filteredOpen].sort((a, b) => {
+      const filteredTrending = trendingOnly ? filteredOpen.filter(s => isTrending(s.name)) : filteredOpen;
+      const sorted = [...filteredTrending].sort((a, b) => {
         if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
         if (sortBy === "nearest") {
           const distA = a.lat && a.lng ? Math.pow(a.lat - coords.lat, 2) + Math.pow(a.lng - coords.lon, 2) : Number.MAX_SAFE_INTEGER;
@@ -456,7 +483,7 @@ export default function EatSmart() {
       } catch(e) {}
     } catch(e) { setError("Error: " + e.message); console.error(e); }
     setLoading(false);
-  }, [suburb, city, customCoords, locationSearch, cuisine, cuisineFilter, cuisineFilters, priceFilter, sortBy, openNowOnly]);
+  }, [suburb, city, customCoords, locationSearch, cuisine, cuisineFilter, cuisineFilters, priceFilter, sortBy, openNowOnly, trendingOnly]);
 
   function toggleSave(id) { setSaved(prev => { const next = { ...prev, [id]: !prev[id] }; if (!next[id]) delete next[id]; localStorage.setItem("es_saved", JSON.stringify(next)); return next; }); }
 
@@ -542,6 +569,7 @@ export default function EatSmart() {
 
   const SpotCard = ({ spot }) => {
     const featured = getFeatured(spot.name);
+    const trending = isTrending(spot.name);
     return (
       <div style={S.spotCard}>
         <a href={"https://www.google.com/maps/search/"+encodeURIComponent(spot.name+" "+(spot.address||""))} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",color:"inherit",display:"block"}}>
@@ -553,6 +581,7 @@ export default function EatSmart() {
             <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"wrap"}}>
               <span style={{background:"#e83a2a",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700,color:"#fff",flexShrink:0}}>{spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
               {featured && <span style={{background:"#ffd97d",color:"#7a4800",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:800}}>⭐ Featured</span>}
+              {trending && <span style={{background:"#ffe3e0",color:"#e83a2a",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:800}}>🔥 Trending</span>}
             </div>
             <div style={{fontWeight:700,fontSize:15,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{spot.name}</div>
             <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:3}}>
@@ -698,6 +727,10 @@ export default function EatSmart() {
 
         {showFilters && (
           <div style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:14,padding:14,marginTop:8}}>
+            <button onClick={()=>setTrendingOnly(v=>!v)} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",background:trendingOnly?"#ffe3e0":"#faf7f5",border:"1.5px solid",borderColor:trendingOnly?"#e83a2a":"#eee",borderRadius:10,padding:"10px 12px",cursor:"pointer",fontFamily:"inherit",marginBottom:14}}>
+              <span style={{fontSize:14,fontWeight:700,color:trendingOnly?"#e83a2a":"#444"}}>🔥 Trending only <span style={{fontSize:11,fontWeight:500,color:"#999"}}>— what's popping on socials</span></span>
+              <span style={{width:38,height:22,borderRadius:11,background:trendingOnly?"#e83a2a":"#ddd",position:"relative",flexShrink:0,transition:"background 0.2s"}}><span style={{position:"absolute",top:2,left:trendingOnly?18:2,width:18,height:18,borderRadius:9,background:"#fff",transition:"left 0.2s"}}></span></span>
+            </button>
             <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CUISINE</div>
             <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:12}}>
               {[{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🍔",l:"Burgers"},{e:"🍕",l:"Pizza"},{e:"🍛",l:"Indian"},{e:"🍣",l:"Sushi"},{e:"🍜",l:"Chinese"},{e:"🥗",l:"Healthy"}].map(c=>(
