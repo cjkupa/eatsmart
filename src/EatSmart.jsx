@@ -636,45 +636,53 @@ export default function EatSmart() {
             )}
           </div>
 
-          {/* NEAR picker menu */}
+          {/* NEAR picker — floating overlay */}
           {showNearMenu && (
-            <div style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:12,overflow:"hidden",marginTop:6}}>
-              <div onClick={()=>{setNearMode("gps");localStorage.setItem("es_nearmode","gps");setShowNearMenu(false);}} style={{padding:"12px 14px",fontSize:14,cursor:"pointer",borderBottom:"1px solid #f5f5f5",color:"#e83a2a",fontWeight:700,display:"flex",alignItems:"center",gap:8}}>📍 Near me (use my location)</div>
-              <div style={{padding:"8px 14px 4px",fontSize:10,fontWeight:700,color:"#bbb",letterSpacing:0.5}}>OR PICK AN AREA</div>
-              <input
-                autoFocus
-                placeholder="Type a suburb or city…"
-                style={{width:"100%",border:"none",borderBottom:"1px solid #f0ebe6",outline:"none",fontSize:14,padding:"10px 14px",fontFamily:"inherit",boxSizing:"border-box"}}
-                value={locationSearch || ""}
-                onChange={async e => {
-                  const val = e.target.value; setLocationSearch(val);
-                  const q = val.toLowerCase();
-                  const cityM = cities.filter(c=>c.toLowerCase().startsWith(q)).slice(0,3).map(c=>({label:c,city:c,suburb:"All Suburbs",type:"city"}));
-                  const subM = (NZ_CITIES[city]||[]).filter(s=>s.toLowerCase().startsWith(q)).slice(0,4).map(s=>({label:s+", "+city,city,suburb:s,type:"suburb"}));
-                  if (val.length > 2) {
-                    try {
-                      const res = await fetch(API_BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(val));
-                      const data = await res.json();
-                      const allSub = Object.values(NZ_CITIES).flat().map(s=>s.toLowerCase());
-                      const g = (data.predictions||[]).filter(p=>{const t=p.types||[];return t.includes("geocode")||t.includes("sublocality")||t.includes("locality")||t.includes("neighborhood");}).slice(0,4).map(p=>{
-                        const mt=(p.structured_formatting&&p.structured_formatting.main_text)||"";
-                        return {label:p.description.replace(', New Zealand',''),type:allSub.includes(mt.toLowerCase())?"suburb":"street",placeId:p.place_id,suburb:mt};
-                      });
-                      setLocationSuggestions([...cityM,...subM,...g].slice(0,8));
-                    } catch(e){ setLocationSuggestions([...cityM,...subM]); }
-                  } else setLocationSuggestions([...cityM,...subM]);
-                }}
-              />
-              {locationSuggestions.map((s,i)=>(
-                <div key={i} onMouseDown={async()=>{
-                  setNearMode("area"); localStorage.setItem("es_nearmode","area"); setCustomCoords(null);
-                  if(s.type==="city"){handleCityChange(s.city);localStorage.setItem("es_suburb","All Suburbs");}
-                  else if(s.type==="street"&&s.placeId){const r=await geocodePlace(s.placeId,city);if(r.length>0){setCustomCoords({lat:r[0].lat,lon:r[0].lon});setSuburb(r[0].suburb||s.suburb||s.label);localStorage.setItem("es_suburb",r[0].suburb||s.suburb||s.label);}}
-                  else if(cities.includes(s.suburb)||cities.includes(s.label)){handleCityChange(cities.includes(s.suburb)?s.suburb:s.label);localStorage.setItem("es_suburb","All Suburbs");}
-                  else {if(s.city&&s.city!==city)handleCityChange(s.city);setSuburb(s.suburb||s.label);localStorage.setItem("es_suburb",s.suburb||s.label);}
-                  setLocationSearch(null);setLocationSuggestions([]);setShowNearMenu(false);
-                }} style={{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#333",display:"flex",alignItems:"center",gap:8}}>📍 {s.label}</div>
-              ))}
+            <div onClick={()=>{setShowNearMenu(false);setLocationSearch(null);setLocationSuggestions([]);}} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.35)",zIndex:1000,display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"80px 16px 16px"}}>
+              <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:360,boxShadow:"0 20px 60px rgba(0,0,0,0.3)",overflow:"hidden"}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",borderBottom:"1px solid #f2ede8"}}>
+                  <span style={{fontWeight:800,fontSize:16,color:"#1a1a1a"}}>Where to look</span>
+                  <button onClick={()=>{setShowNearMenu(false);setLocationSearch(null);setLocationSuggestions([]);}} style={{background:"none",border:"none",fontSize:20,color:"#bbb",cursor:"pointer",lineHeight:1}}>×</button>
+                </div>
+                <div onClick={()=>{setNearMode("gps");localStorage.setItem("es_nearmode","gps");setShowNearMenu(false);setLocationSearch(null);setLocationSuggestions([]);}} style={{padding:"14px 16px",fontSize:15,cursor:"pointer",borderBottom:"1px solid #f5f5f5",color:"#e83a2a",fontWeight:700,display:"flex",alignItems:"center",gap:10}}>📍 Near me <span style={{fontSize:12,fontWeight:500,color:"#999"}}>(use my location)</span></div>
+                <div style={{padding:"12px 16px 6px",fontSize:10,fontWeight:700,color:"#bbb",letterSpacing:0.5}}>OR PICK AN AREA</div>
+                <input
+                  autoFocus
+                  placeholder="Type a suburb or city…"
+                  style={{width:"100%",border:"none",borderBottom:"1px solid #f0ebe6",outline:"none",fontSize:15,padding:"12px 16px",fontFamily:"inherit",boxSizing:"border-box"}}
+                  value={locationSearch || ""}
+                  onChange={async e => {
+                    const val = e.target.value; setLocationSearch(val);
+                    const q = val.toLowerCase();
+                    const cityM = cities.filter(c=>c.toLowerCase().startsWith(q)).slice(0,3).map(c=>({label:c,city:c,suburb:"All Suburbs",type:"city"}));
+                    const subM = (NZ_CITIES[city]||[]).filter(s=>s.toLowerCase().startsWith(q)).slice(0,4).map(s=>({label:s+", "+city,city,suburb:s,type:"suburb"}));
+                    if (val.length > 2) {
+                      try {
+                        const res = await fetch(API_BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(val));
+                        const data = await res.json();
+                        const allSub = Object.values(NZ_CITIES).flat().map(s=>s.toLowerCase());
+                        const g = (data.predictions||[]).filter(p=>{const t=p.types||[];return t.includes("geocode")||t.includes("sublocality")||t.includes("locality")||t.includes("neighborhood");}).slice(0,4).map(p=>{
+                          const mt=(p.structured_formatting&&p.structured_formatting.main_text)||"";
+                          return {label:p.description.replace(', New Zealand',''),type:allSub.includes(mt.toLowerCase())?"suburb":"street",placeId:p.place_id,suburb:mt};
+                        });
+                        setLocationSuggestions([...cityM,...subM,...g].slice(0,8));
+                      } catch(e){ setLocationSuggestions([...cityM,...subM]); }
+                    } else setLocationSuggestions([...cityM,...subM]);
+                  }}
+                />
+                <div style={{maxHeight:240,overflowY:"auto"}}>
+                  {locationSuggestions.map((s,i)=>(
+                    <div key={i} onMouseDown={async()=>{
+                      setNearMode("area"); localStorage.setItem("es_nearmode","area"); setCustomCoords(null);
+                      if(s.type==="city"){handleCityChange(s.city);localStorage.setItem("es_suburb","All Suburbs");}
+                      else if(s.type==="street"&&s.placeId){const r=await geocodePlace(s.placeId,city);if(r.length>0){setCustomCoords({lat:r[0].lat,lon:r[0].lon});setSuburb(r[0].suburb||s.suburb||s.label);localStorage.setItem("es_suburb",r[0].suburb||s.suburb||s.label);}}
+                      else if(cities.includes(s.suburb)||cities.includes(s.label)){handleCityChange(cities.includes(s.suburb)?s.suburb:s.label);localStorage.setItem("es_suburb","All Suburbs");}
+                      else {if(s.city&&s.city!==city)handleCityChange(s.city);setSuburb(s.suburb||s.label);localStorage.setItem("es_suburb",s.suburb||s.label);}
+                      setLocationSearch(null);setLocationSuggestions([]);setShowNearMenu(false);
+                    }} style={{padding:"12px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:15,color:"#333",display:"flex",alignItems:"center",gap:8}}>📍 {s.label}</div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
