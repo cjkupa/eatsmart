@@ -184,6 +184,7 @@ export default function EatSmart() {
   const [showFilters, setShowFilters] = useState(false);
   const [findTerm, setFindTerm] = useState("");
   const [nearMode, setNearMode] = useState(() => localStorage.getItem("es_nearmode") || "gps");
+  const [detectedArea, setDetectedArea] = useState(() => localStorage.getItem("es_detected") || "");
   const [showNearMenu, setShowNearMenu] = useState(false);
   const [findSuggestions, setFindSuggestions] = useState([]);
   const [smartSearch, setSmartSearch] = useState("");
@@ -267,9 +268,18 @@ export default function EatSmart() {
         setCuisineFilters(cuisines); handleSearch(cuisines);
         return;
       }
-      navigator.geolocation.getCurrentPosition((pos) => {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
         const c = { lat: pos.coords.latitude, lon: pos.coords.longitude };
         setCustomCoords(c); setSuburb("Near me"); localStorage.setItem("es_suburb","Near me");
+        // Reverse-geocode to show the actual suburb name
+        try {
+          const gr = await fetch(`${API_BASE_URL}/api/geocode?lat=${c.lat}&lng=${c.lon}`);
+          const gd = await gr.json();
+          const comp = gd.results && gd.results[0] && gd.results[0].address_components || [];
+          const sub = comp.find(x=>x.types.includes("sublocality")||x.types.includes("neighborhood"))
+                   || comp.find(x=>x.types.includes("locality"));
+          if (sub) { setDetectedArea(sub.long_name); localStorage.setItem("es_detected", sub.long_name); }
+        } catch(e) {}
         setCuisineFilters(cuisines); setLocating(false);
         handleSearch(cuisines, c);
       }, () => {
@@ -584,13 +594,12 @@ export default function EatSmart() {
         </header>
         <div style={S.card}>
           <div style={{background:"#fff",border:"2px solid #ede8e3",borderRadius:14,overflow:"hidden",position:"relative"}}>
-            {/* FIND field */}
-            <div style={{display:"flex",alignItems:"center",gap:8,padding:"11px 12px"}}>
-              <span style={{fontSize:16,width:20,textAlign:"center",flexShrink:0}}>🔍</span>
-              <span style={{fontSize:10,fontWeight:700,color:"#bbb",letterSpacing:0.5,width:38,flexShrink:0}}>FIND</span>
+            {/* FIND field with inline search button */}
+            <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 8px 8px 12px"}}>
+              <span style={{fontSize:16,flexShrink:0}}>🔍</span>
               <input
                 style={{flex:1,border:"none",outline:"none",fontSize:15,fontFamily:"inherit",color:"#222",background:"transparent",minWidth:0}}
-                placeholder="Restaurant, cuisine, or dish…"
+                placeholder="Search food, a place, or dish…"
                 value={findTerm}
                 onChange={async e => {
                   const val = e.target.value; setFindTerm(val);
@@ -607,14 +616,14 @@ export default function EatSmart() {
                 }}
                 onKeyDown={e => { if (e.key==='Enter') runSearch(); }}
               />
+              <button onClick={()=>runSearch()} style={{background:"#e83a2a",border:"none",borderRadius:10,padding:"9px 16px",cursor:"pointer",color:"#fff",fontWeight:700,fontSize:14,fontFamily:"inherit",flexShrink:0}}>{loading||locating?"…":"Search"}</button>
             </div>
-            {/* NEAR field */}
-            <div style={{display:"flex",alignItems:"center",gap:8,padding:"11px 12px",borderTop:"1px solid #f2ede8"}}>
-              <span style={{fontSize:16,width:20,textAlign:"center",flexShrink:0}}>📍</span>
-              <span style={{fontSize:10,fontWeight:700,color:"#bbb",letterSpacing:0.5,width:38,flexShrink:0}}>NEAR</span>
-              <div onClick={()=>setShowNearMenu(v=>!v)} style={{flex:1,fontSize:15,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <span style={{color:nearMode==="gps"?"#e83a2a":"#1a1a1a"}}>{nearMode==="gps" ? "Near me" : (suburb && suburb!=="All Suburbs" && suburb!=="Near me" ? suburb + ", " + city : city)}</span>
-                <span style={{color:"#bbb",fontSize:12}}>▾</span>
+            {/* NEAR field — shows detected area or chosen place */}
+            <div onClick={()=>setShowNearMenu(v=>!v)} style={{display:"flex",alignItems:"center",gap:8,padding:"11px 12px",borderTop:"1px solid #f2ede8",cursor:"pointer"}}>
+              <span style={{fontSize:15,flexShrink:0}}>📍</span>
+              <div style={{flex:1,fontSize:14,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <span style={{color:"#444"}}>{nearMode==="gps" ? (detectedArea ? detectedArea : "Near me") : (suburb && suburb!=="All Suburbs" && suburb!=="Near me" ? suburb + ", " + city : city)}</span>
+                <span style={{color:"#1a73e8",fontSize:12,fontWeight:700}}>Change ▾</span>
               </div>
             </div>
             {/* FIND suggestions dropdown */}
