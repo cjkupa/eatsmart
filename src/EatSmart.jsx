@@ -869,6 +869,15 @@ export default function EatSmart() {
         <>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 16px 8px"}}>
             <span style={{fontSize:17,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#888",fontSize:14}}>spots near you</span></span>
+            <div style={{display:"inline-flex",background:"#f0ebe6",borderRadius:20,padding:3}}>
+              {["list","map"].map(v=>(
+                <button key={v} onClick={()=>setViewMode(v)} style={{background:viewMode===v?"#fff":"transparent",color:viewMode===v?"#e83a2a":"#888",border:"none",borderRadius:18,padding:"5px 14px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",boxShadow:viewMode===v?"0 1px 4px rgba(0,0,0,0.1)":"none",transition:"all 0.15s"}}>
+                  {v==="list"?"☰ List":"🗺 Map"}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px"}}>
             <div style={{display:"flex",gap:4}}>
               {["rating","nearest"].map(s => (
                 <button key={s} onClick={() => setSortBy(s)} style={{background:sortBy===s?"#e83a2a":"#f5f5f5",color:sortBy===s?"#fff":"#888",border:"none",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>
@@ -876,8 +885,8 @@ export default function EatSmart() {
                 </button>
               ))}
             </div>
+            <span style={{fontSize:11,color:"#bbb"}}>{openSpots.length} open now</span>
           </div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px",fontSize:11,color:"#bbb"}}><span>Powered by Google Places</span><span>{openSpots.length} open now</span></div>
           {/* Quick cuisine chips — refine the current search */}
           <div style={{display:"flex",gap:6,overflowX:"auto",padding:"0 16px 12px",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
             {[{e:"🍕",l:"Pizza"},{e:"🍣",l:"Sushi"},{e:"🍔",l:"Burgers"},{e:"🍜",l:"Chinese"},{e:"🍛",l:"Indian"},{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🥗",l:"Healthy"},{e:"🍵",l:"Thai"}].map(c=>{
@@ -887,16 +896,6 @@ export default function EatSmart() {
                 setCuisineFilters(next); setFindTerm(next[0]||""); runSearch(next[0]||"");
               }} style={{flexShrink:0,background:active?"#e83a2a":"#fff",color:active?"#fff":"#555",border:"1.5px solid",borderColor:active?"#e83a2a":"#e8e1da",borderRadius:20,padding:"6px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>{c.e} {c.l}</button>;
             })}
-          </div>
-          {/* List / Map view toggle */}
-          <div style={{display:"flex",gap:0,padding:"0 16px 12px"}}>
-            <div style={{display:"inline-flex",background:"#f0ebe6",borderRadius:20,padding:3}}>
-              {["list","map"].map(v=>(
-                <button key={v} onClick={()=>setViewMode(v)} style={{background:viewMode===v?"#fff":"transparent",color:viewMode===v?"#e83a2a":"#888",border:"none",borderRadius:18,padding:"6px 18px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",boxShadow:viewMode===v?"0 1px 4px rgba(0,0,0,0.1)":"none",transition:"all 0.15s"}}>
-                  {v==="list"?"☰ List":"🗺 Map"}
-                </button>
-              ))}
-            </div>
           </div>
           {viewMode==="map" && (activeTab==="search"||activeTab==="results") && (
             <div style={{padding:"0 16px 16px"}}>
