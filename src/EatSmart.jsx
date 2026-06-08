@@ -739,12 +739,12 @@ export default function EatSmart() {
                 <button key={c.l} onClick={()=>setCuisineFilters(prev => prev.includes(c.l) ? prev.filter(x=>x!==c.l) : [...prev, c.l])} style={{background:cuisineFilters.includes(c.l)?"#e83a2a":"#fff",color:cuisineFilters.includes(c.l)?"#fff":"#555",border:"1.5px solid",borderColor:cuisineFilters.includes(c.l)?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"5px 11px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
               ))}
             </div>
-            <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>BUDGET</div>
-            <div style={{display:"flex",gap:5}}>
-              {[{label:"Any",desc:"All"},{label:"$",desc:"<$15"},{label:"$$",desc:"$15-35"},{label:"$$$",desc:"$35-60"},{label:"$$$$",desc:">$60"}].map(p=>(
-                <button key={p.label} onClick={()=>setPriceFilter(p.label)} style={{flex:1,background:priceFilter===p.label?"#d63020":"#f5f5f5",color:priceFilter===p.label?"#fff":"#555",border:"none",borderRadius:10,padding:"7px 0",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"inherit",display:"flex",flexDirection:"column",alignItems:"center"}}>
-                  <span>{p.label}</span>
-                  <span style={{fontSize:9,opacity:0.75}}>{p.desc}</span>
+            <div style={{fontSize:10,color:"#bbb",marginBottom:6,fontWeight:600}}>BUDGET</div>
+            <div style={{display:"flex",gap:6}}>
+              {[{label:"Any",desc:"All"},{label:"$",desc:"<$15"},{label:"$$",desc:"$15–35"},{label:"$$$",desc:"$35–60"},{label:"$$$$",desc:"$60+"}].map(p=>(
+                <button key={p.label} onClick={()=>setPriceFilter(p.label)} style={{flex:1,background:priceFilter===p.label?"#e83a2a":"#fff",color:priceFilter===p.label?"#fff":"#666",border:"1.5px solid",borderColor:priceFilter===p.label?"#e83a2a":"#eee",borderRadius:10,padding:"8px 0 6px",cursor:"pointer",fontFamily:"inherit",display:"flex",flexDirection:"column",alignItems:"center",gap:1,transition:"all 0.15s"}}>
+                  <span style={{fontSize:13,fontWeight:800}}>{p.label}</span>
+                  <span style={{fontSize:9,opacity:0.7,fontWeight:500}}>{p.desc}</span>
                 </button>
               ))}
             </div>
@@ -812,6 +812,16 @@ export default function EatSmart() {
             </div>
           </div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px",fontSize:11,color:"#bbb"}}><span>Powered by Google Places</span><span>{openSpots.length} open now</span></div>
+          {/* Quick cuisine chips — refine the current search */}
+          <div style={{display:"flex",gap:6,overflowX:"auto",padding:"0 16px 12px",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
+            {[{e:"🍕",l:"Pizza"},{e:"🍣",l:"Sushi"},{e:"🍔",l:"Burgers"},{e:"🍜",l:"Chinese"},{e:"🍛",l:"Indian"},{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🥗",l:"Healthy"},{e:"🍵",l:"Thai"}].map(c=>{
+              const active = cuisineFilters.includes(c.l);
+              return <button key={c.l} onClick={()=>{
+                const next = active ? cuisineFilters.filter(x=>x!==c.l) : [c.l];
+                setCuisineFilters(next); setFindTerm(next[0]||""); runSearch(next[0]||"");
+              }} style={{flexShrink:0,background:active?"#e83a2a":"#fff",color:active?"#fff":"#555",border:"1.5px solid",borderColor:active?"#e83a2a":"#e8e1da",borderRadius:20,padding:"6px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>{c.e} {c.l}</button>;
+            })}
+          </div>
           {showInstallPrompt && (
             <div style={{margin:"0 16px 12px",background:"#fff9ee",border:"1.5px solid #ffd97d",borderRadius:14,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div>
