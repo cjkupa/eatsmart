@@ -58,19 +58,37 @@ app.get('/api/places', async (req, res) => {
   const { lat, lng, radius, cuisine } = req.query;
   if (!lat || !lng) return sendError(res, 400, 'Missing lat or lng');
 
-  const keyword = cuisine && cuisine !== 'Any'
-    ? '&keyword=' + encodeURIComponent(cuisineMap[String(cuisine).toLowerCase()] || cuisine)
-    : '';
   const safeRadius = Math.min(Number(radius) || 2000, 10000);
-  const url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
+  const hasCuisine = cuisine && cuisine !== 'Any';
+  const term = hasCuisine ? (cuisineMap[String(cuisine).toLowerCase()] || cuisine) : '';
+
+  const nearbyUrl = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' +
     encodeURIComponent(lat + ',' + lng) +
     '&radius=' + safeRadius +
     '&type=restaurant' +
-    keyword +
+    (hasCuisine ? '&keyword=' + encodeURIComponent(term) : '') +
     '&key=' + GOOGLE_API_KEY;
 
   try {
-    const r = await fetch(url);
+    // For a specific cuisine, try Text Search first — it filters far more accurately
+    // (returns places that genuinely match, not just nearby restaurants). If it errors
+    // or returns nothing usable, fall back to nearby search so the app never breaks.
+    if (hasCuisine) {
+      const textUrl = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=' +
+        encodeURIComponent(term + ' restaurant') +
+        '&location=' + encodeURIComponent(lat + ',' + lng) +
+        '&radius=' + safeRadius +
+        '&key=' + GOOGLE_API_KEY;
+      try {
+        const tr = await fetch(textUrl);
+        const tdata = await tr.json();
+        if (tdata.status === 'OK' && Array.isArray(tdata.results) && tdata.results.length > 0) {
+          return res.json(tdata);
+        }
+        // else fall through to nearby search
+      } catch (e) { /* fall through to nearby search */ }
+    }
+    const r = await fetch(nearbyUrl);
     const data = await r.json();
     res.json(data);
   } catch (e) {
