@@ -198,6 +198,71 @@ async function geocodePlace(placeId, fallbackCity = "") {
   return [];
 }
 
+function MapView({ spots, center, onPick }) {
+  const mapRef = useRef(null);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    function ensureLeaflet() {
+      return new Promise((resolve) => {
+        if (window.L) return resolve(window.L);
+        // CSS
+        if (!document.getElementById("leaflet-css")) {
+          const link = document.createElement("link");
+          link.id = "leaflet-css";
+          link.rel = "stylesheet";
+          link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+          document.head.appendChild(link);
+        }
+        // JS
+        const existing = document.getElementById("leaflet-js");
+        if (existing) { existing.addEventListener("load", () => resolve(window.L)); return; }
+        const script = document.createElement("script");
+        script.id = "leaflet-js";
+        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        script.onload = () => resolve(window.L);
+        document.body.appendChild(script);
+      });
+    }
+
+    ensureLeaflet().then((L) => {
+      if (cancelled || !containerRef.current) return;
+      const validSpots = spots.filter(s => s.lat && s.lng);
+      const c = center && center.lat ? [center.lat, center.lon || center.lng] : (validSpots[0] ? [validSpots[0].lat, validSpots[0].lng] : [-36.8485, 174.7633]);
+
+      if (!mapRef.current) {
+        mapRef.current = L.map(containerRef.current).setView(c, 14);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "© OpenStreetMap", maxZoom: 19,
+        }).addTo(mapRef.current);
+      } else {
+        mapRef.current.setView(c, 14);
+      }
+
+      // Clear old markers
+      mapRef.current.eachLayer(layer => { if (layer instanceof L.Marker) mapRef.current.removeLayer(layer); });
+
+      const bounds = [];
+      validSpots.forEach((s, i) => {
+        const marker = L.marker([s.lat, s.lng]).addTo(mapRef.current);
+        const stars = s.rating ? ` ⭐${s.rating}` : "";
+        marker.bindPopup(`<strong>${s.name}</strong>${stars}<br>${s.address || ""}`);
+        if (onPick) marker.on("click", () => onPick(s));
+        bounds.push([s.lat, s.lng]);
+      });
+      if (bounds.length > 1) { try { mapRef.current.fitBounds(bounds, { padding: [40, 40] }); } catch(e){} }
+      setTimeout(() => { if (mapRef.current) mapRef.current.invalidateSize(); }, 100);
+    });
+
+    return () => { cancelled = true; };
+  }, [spots, center, onPick]);
+
+  useEffect(() => () => { if (mapRef.current) { mapRef.current.remove(); mapRef.current = null; } }, []);
+
+  return <div ref={containerRef} style={{width:"100%",height:420,borderRadius:14,overflow:"hidden",border:"1.5px solid #ede8e3"}} />;
+}
+
 export default function EatSmart() {
   const cities = Object.keys(NZ_CITIES);
   const [city, setCity] = useState(() => localStorage.getItem("es_city") || "Auckland");
@@ -213,6 +278,7 @@ export default function EatSmart() {
   const [showNearMenu, setShowNearMenu] = useState(false);
   const [findSuggestions, setFindSuggestions] = useState([]);
   const [trendingOnly, setTrendingOnly] = useState(false);
+  const [viewMode, setViewMode] = useState("list");
   const [smartSearch, setSmartSearch] = useState("");
   const [sortBy, setSortBy] = useState("rating");
   const [results, setResults] = useState([]);
@@ -822,6 +888,21 @@ export default function EatSmart() {
               }} style={{flexShrink:0,background:active?"#e83a2a":"#fff",color:active?"#fff":"#555",border:"1.5px solid",borderColor:active?"#e83a2a":"#e8e1da",borderRadius:20,padding:"6px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>{c.e} {c.l}</button>;
             })}
           </div>
+          {/* List / Map view toggle */}
+          <div style={{display:"flex",gap:0,padding:"0 16px 12px"}}>
+            <div style={{display:"inline-flex",background:"#f0ebe6",borderRadius:20,padding:3}}>
+              {["list","map"].map(v=>(
+                <button key={v} onClick={()=>setViewMode(v)} style={{background:viewMode===v?"#fff":"transparent",color:viewMode===v?"#e83a2a":"#888",border:"none",borderRadius:18,padding:"6px 18px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",boxShadow:viewMode===v?"0 1px 4px rgba(0,0,0,0.1)":"none",transition:"all 0.15s"}}>
+                  {v==="list"?"☰ List":"🗺 Map"}
+                </button>
+              ))}
+            </div>
+          </div>
+          {viewMode==="map" && activeTab==="results" && (
+            <div style={{padding:"0 16px 16px"}}>
+              <MapView spots={sortedResults.slice(0, resultLimit)} center={customCoords} onPick={()=>{}} />
+            </div>
+          )}
           {showInstallPrompt && (
             <div style={{margin:"0 16px 12px",background:"#fff9ee",border:"1.5px solid #ffd97d",borderRadius:14,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div>
@@ -834,7 +915,7 @@ export default function EatSmart() {
 
           {activeTab === "opennow" && openSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
           {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet — tap the Save button on any restaurant!</div>}
-          <div style={{display:"flex",flexDirection:"column",gap:10,padding:"0 16px"}}>
+          <div style={{display:viewMode==="map"&&activeTab==="results"?"none":"flex",flexDirection:"column",gap:10,padding:"0 16px"}}>
           {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : sortedResults).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
           </div>
         </>
