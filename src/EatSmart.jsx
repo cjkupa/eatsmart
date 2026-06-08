@@ -793,20 +793,26 @@ export default function EatSmart() {
               <span style={{width:38,height:22,borderRadius:11,background:trendingOnly?"#e83a2a":"#ddd",position:"relative",flexShrink:0,transition:"background 0.2s"}}><span style={{position:"absolute",top:2,left:trendingOnly?18:2,width:18,height:18,borderRadius:9,background:"#fff",transition:"left 0.2s"}}></span></span>
             </button>
             <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CUISINE</div>
-            <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:12}}>
-              {[{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🍔",l:"Burgers"},{e:"🍕",l:"Pizza"},{e:"🍛",l:"Indian"},{e:"🍣",l:"Sushi"},{e:"🍜",l:"Chinese"},{e:"🥗",l:"Healthy"}].map(c=>(
-                <button key={c.l} onClick={()=>setCuisineFilters(prev => prev.includes(c.l) ? prev.filter(x=>x!==c.l) : [...prev, c.l])} style={{background:cuisineFilters.includes(c.l)?"#e83a2a":"#fff",color:cuisineFilters.includes(c.l)?"#fff":"#555",border:"1.5px solid",borderColor:cuisineFilters.includes(c.l)?"#e83a2a":"#e0e0e0",borderRadius:20,padding:"5px 11px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{c.e} {c.l}</button>
+            <select
+              value={cuisineFilters[0] || ""}
+              onChange={e => setCuisineFilters(e.target.value ? [e.target.value] : [])}
+              style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"11px 12px",fontSize:14,fontFamily:"inherit",color:cuisineFilters[0]?"#1a1a1a":"#888",background:"#fff",marginBottom:14,appearance:"none",WebkitAppearance:"none",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 12px center"}}>
+              <option value="">All cuisines</option>
+              {["Fish & Chips","Cafe","Burgers","Pizza","Indian","Sushi","Chinese","Thai","Japanese","Korean","Italian","Mexican","Vietnamese","Mediterranean","Seafood","Healthy"].map(c=>(
+                <option key={c} value={c}>{c}</option>
               ))}
-            </div>
-            <div style={{fontSize:10,color:"#bbb",marginBottom:6,fontWeight:600}}>BUDGET</div>
-            <div style={{display:"flex",gap:6}}>
-              {[{label:"Any",desc:"All"},{label:"$",desc:"<$15"},{label:"$$",desc:"$15–35"},{label:"$$$",desc:"$35–60"},{label:"$$$$",desc:"$60+"}].map(p=>(
-                <button key={p.label} onClick={()=>setPriceFilter(p.label)} style={{flex:1,background:priceFilter===p.label?"#e83a2a":"#fff",color:priceFilter===p.label?"#fff":"#666",border:"1.5px solid",borderColor:priceFilter===p.label?"#e83a2a":"#eee",borderRadius:10,padding:"8px 0 6px",cursor:"pointer",fontFamily:"inherit",display:"flex",flexDirection:"column",alignItems:"center",gap:1,transition:"all 0.15s"}}>
-                  <span style={{fontSize:13,fontWeight:800}}>{p.label}</span>
-                  <span style={{fontSize:9,opacity:0.7,fontWeight:500}}>{p.desc}</span>
-                </button>
-              ))}
-            </div>
+            </select>
+            <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>BUDGET</div>
+            <select
+              value={priceFilter}
+              onChange={e => setPriceFilter(e.target.value)}
+              style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"11px 12px",fontSize:14,fontFamily:"inherit",color:priceFilter!=="Any"?"#1a1a1a":"#888",background:"#fff",appearance:"none",WebkitAppearance:"none",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 12px center"}}>
+              <option value="Any">Any price</option>
+              <option value="$">$ — Under $15</option>
+              <option value="$$">$$ — $15–35</option>
+              <option value="$$$">$$$ — $35–60</option>
+              <option value="$$$$">$$$$ — $60+</option>
+            </select>
           </div>
         )}
       </div>
@@ -860,7 +866,8 @@ export default function EatSmart() {
       {!loading && searched && results.length === 0 && !error && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>No restaurants found near {suburb}. Try a nearby suburb.</div>}
       {!loading && results.length > 0 && (
         <>
-          {/* Quick refine chips — right under search, the one scannable action */}
+          {/* Quick refine chips — right under search, the one scannable action (hidden when Filters panel open) */}
+          {!showFilters && (
           <div style={{display:"flex",gap:6,overflowX:"auto",padding:"12px 16px 0",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
             {[{e:"🍕",l:"Pizza"},{e:"🍣",l:"Sushi"},{e:"🍔",l:"Burgers"},{e:"🍜",l:"Chinese"},{e:"🍛",l:"Indian"},{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🥗",l:"Healthy"},{e:"🍵",l:"Thai"}].map(c=>{
               const active = cuisineFilters.includes(c.l);
@@ -870,6 +877,7 @@ export default function EatSmart() {
               }} style={{flexShrink:0,background:active?"#e83a2a":"#fff",color:active?"#fff":"#555",border:"1.5px solid",borderColor:active?"#e83a2a":"#e8e1da",borderRadius:20,padding:"6px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>{c.e} {c.l}</button>;
             })}
           </div>
+          )}
 
           {/* divider — clean break between searching and results */}
           <div style={{height:1,background:"#eee",margin:"14px 16px 12px"}} />
