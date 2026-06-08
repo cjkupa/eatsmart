@@ -785,14 +785,7 @@ export default function EatSmart() {
 
         </div>
 
-        {/* FILTERS BUTTON + PANEL (separate from keyboard) */}
-        <div style={{display:"flex",gap:8,marginTop:10,alignItems:"center"}}>
-          <button onClick={()=>setShowFilters(v=>!v)} style={{display:"flex",alignItems:"center",gap:6,background:showFilters||hasActiveFilters?"#e83a2a":"#fff",color:showFilters||hasActiveFilters?"#fff":"#555",border:"1.5px solid",borderColor:showFilters||hasActiveFilters?"#e83a2a":"#e0d9d2",borderRadius:12,padding:"8px 14px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
-            ⚙ Filters {hasActiveFilters?`(${cuisineFilters.length + (priceFilter!=="Any"?1:0)})`:""} <span style={{fontSize:10}}>{showFilters?"▲":"▼"}</span>
-          </button>
-          {hasActiveFilters && <button onClick={()=>{setCuisineFilters([]);setPriceFilter("Any");}} style={{background:"none",border:"none",color:"#999",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",textDecoration:"underline"}}>Reset</button>}
-        </div>
-
+        {/* FILTERS PANEL (toggled from the control bar below) */}
         {showFilters && (
           <div style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:14,padding:14,marginTop:8}}>
             <button onClick={()=>setTrendingOnly(v=>!v)} style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",background:trendingOnly?"#ffe3e0":"#faf7f5",border:"1.5px solid",borderColor:trendingOnly?"#e83a2a":"#eee",borderRadius:10,padding:"10px 12px",cursor:"pointer",fontFamily:"inherit",marginBottom:14}}>
@@ -867,28 +860,8 @@ export default function EatSmart() {
       {!loading && searched && results.length === 0 && !error && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>No restaurants found near {suburb}. Try a nearby suburb.</div>}
       {!loading && results.length > 0 && (
         <>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 16px 8px"}}>
-            <span style={{fontSize:17,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#888",fontSize:14}}>spots near you</span></span>
-            <div style={{display:"inline-flex",background:"#f0ebe6",borderRadius:20,padding:3}}>
-              {["list","map"].map(v=>(
-                <button key={v} onClick={()=>setViewMode(v)} style={{background:viewMode===v?"#fff":"transparent",color:viewMode===v?"#e83a2a":"#888",border:"none",borderRadius:18,padding:"5px 14px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",boxShadow:viewMode===v?"0 1px 4px rgba(0,0,0,0.1)":"none",transition:"all 0.15s"}}>
-                  {v==="list"?"☰ List":"🗺 Map"}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px"}}>
-            <div style={{display:"flex",gap:4}}>
-              {["rating","nearest"].map(s => (
-                <button key={s} onClick={() => setSortBy(s)} style={{background:sortBy===s?"#e83a2a":"#f5f5f5",color:sortBy===s?"#fff":"#888",border:"none",borderRadius:20,padding:"4px 10px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>
-                  {s==="rating"?"Top rated":"Nearest"}
-                </button>
-              ))}
-            </div>
-            <span style={{fontSize:11,color:"#bbb"}}>{openSpots.length} open now</span>
-          </div>
-          {/* Quick cuisine chips — refine the current search */}
-          <div style={{display:"flex",gap:6,overflowX:"auto",padding:"0 16px 12px",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
+          {/* Quick refine chips — right under search, the one scannable action */}
+          <div style={{display:"flex",gap:6,overflowX:"auto",padding:"12px 16px 0",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
             {[{e:"🍕",l:"Pizza"},{e:"🍣",l:"Sushi"},{e:"🍔",l:"Burgers"},{e:"🍜",l:"Chinese"},{e:"🍛",l:"Indian"},{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🥗",l:"Healthy"},{e:"🍵",l:"Thai"}].map(c=>{
               const active = cuisineFilters.includes(c.l);
               return <button key={c.l} onClick={()=>{
@@ -896,6 +869,35 @@ export default function EatSmart() {
                 setCuisineFilters(next); setFindTerm(next[0]||""); runSearch(next[0]||"");
               }} style={{flexShrink:0,background:active?"#e83a2a":"#fff",color:active?"#fff":"#555",border:"1.5px solid",borderColor:active?"#e83a2a":"#e8e1da",borderRadius:20,padding:"6px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>{c.e} {c.l}</button>;
             })}
+          </div>
+
+          {/* divider — clean break between searching and results */}
+          <div style={{height:1,background:"#eee",margin:"14px 16px 12px"}} />
+
+          {/* control bar — count + Filters + List/Map, one tidy line */}
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px"}}>
+            <span style={{fontSize:16,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#888",fontSize:13}}>spots</span></span>
+            <div style={{display:"flex",gap:6,alignItems:"center"}}>
+              <button onClick={()=>setShowFilters(v=>!v)} style={{background:showFilters||hasActiveFilters?"#e83a2a":"#fff",color:showFilters||hasActiveFilters?"#fff":"#666",border:"1.5px solid",borderColor:showFilters||hasActiveFilters?"#e83a2a":"#e8e1da",borderRadius:18,padding:"5px 11px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>⚙ Filters{hasActiveFilters?` · ${cuisineFilters.length + (priceFilter!=="Any"?1:0)}`:""}</button>
+              <div style={{display:"inline-flex",background:"#f0ebe6",borderRadius:18,padding:3}}>
+                {["list","map"].map(v=>(
+                  <button key={v} onClick={()=>setViewMode(v)} style={{background:viewMode===v?"#fff":"transparent",color:viewMode===v?"#e83a2a":"#999",border:"none",borderRadius:15,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",boxShadow:viewMode===v?"0 1px 3px rgba(0,0,0,0.12)":"none",transition:"all 0.15s"}}>
+                    {v==="list"?"☰":"🗺"}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* sort — quiet secondary line */}
+          <div style={{display:"flex",gap:6,alignItems:"center",padding:"0 16px 10px"}}>
+            <span style={{fontSize:10,color:"#bbb",fontWeight:700,letterSpacing:0.5}}>SORT</span>
+            {["rating","nearest"].map(s => (
+              <button key={s} onClick={() => setSortBy(s)} style={{background:sortBy===s?"#e83a2a":"#fff",color:sortBy===s?"#fff":"#888",border:"1.5px solid",borderColor:sortBy===s?"#e83a2a":"#eee",borderRadius:16,padding:"3px 10px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+                {s==="rating"?"Top rated":"Nearest"}
+              </button>
+            ))}
+            <span style={{marginLeft:"auto",fontSize:11,color:"#bbb"}}>{openSpots.length} open now</span>
           </div>
           {viewMode==="map" && (activeTab==="search"||activeTab==="results") && (
             <div style={{padding:"0 16px 16px"}}>
