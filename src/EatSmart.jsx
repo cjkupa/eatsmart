@@ -898,7 +898,7 @@ export default function EatSmart() {
               ))}
             </div>
           </div>
-          {viewMode==="map" && activeTab==="results" && (
+          {viewMode==="map" && (activeTab==="search"||activeTab==="results") && (
             <div style={{padding:"0 16px 16px"}}>
               <MapView spots={sortedResults.slice(0, resultLimit)} center={customCoords} onPick={()=>{}} />
             </div>
@@ -915,7 +915,7 @@ export default function EatSmart() {
 
           {activeTab === "opennow" && openSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
           {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet — tap the Save button on any restaurant!</div>}
-          <div style={{display:viewMode==="map"&&activeTab==="results"?"none":"flex",flexDirection:"column",gap:10,padding:"0 16px"}}>
+          <div style={{display:viewMode==="map"&&(activeTab==="search"||activeTab==="results")?"none":"flex",flexDirection:"column",gap:10,padding:"0 16px"}}>
           {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : sortedResults).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
           </div>
         </>
