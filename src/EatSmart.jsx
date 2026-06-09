@@ -792,27 +792,33 @@ export default function EatSmart() {
               <span style={{fontSize:14,fontWeight:700,color:trendingOnly?"#e83a2a":"#444"}}>🔥 Trending only <span style={{fontSize:11,fontWeight:500,color:"#999"}}>— what's popping on socials</span></span>
               <span style={{width:38,height:22,borderRadius:11,background:trendingOnly?"#e83a2a":"#ddd",position:"relative",flexShrink:0,transition:"background 0.2s"}}><span style={{position:"absolute",top:2,left:trendingOnly?18:2,width:18,height:18,borderRadius:9,background:"#fff",transition:"left 0.2s"}}></span></span>
             </button>
-            <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CUISINE</div>
-            <select
-              value={cuisineFilters[0] || ""}
-              onChange={e => setCuisineFilters(e.target.value ? [e.target.value] : [])}
-              style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"11px 12px",fontSize:14,fontFamily:"inherit",color:cuisineFilters[0]?"#1a1a1a":"#888",background:"#fff",marginBottom:14,appearance:"none",WebkitAppearance:"none",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 12px center"}}>
-              <option value="">All cuisines</option>
-              {["Fish & Chips","Cafe","Burgers","Pizza","Indian","Sushi","Chinese","Thai","Japanese","Korean","Italian","Mexican","Vietnamese","Mediterranean","Seafood","Healthy"].map(c=>(
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-            <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>BUDGET</div>
-            <select
-              value={priceFilter}
-              onChange={e => setPriceFilter(e.target.value)}
-              style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"11px 12px",fontSize:14,fontFamily:"inherit",color:priceFilter!=="Any"?"#1a1a1a":"#888",background:"#fff",appearance:"none",WebkitAppearance:"none",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 12px center"}}>
-              <option value="Any">Any price</option>
-              <option value="$">$ — Under $15</option>
-              <option value="$$">$$ — $15–35</option>
-              <option value="$$$">$$$ — $35–60</option>
-              <option value="$$$$">$$$$ — $60+</option>
-            </select>
+            <div style={{display:"flex",gap:10}}>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CUISINE</div>
+                <select
+                  value={cuisineFilters[0] || ""}
+                  onChange={e => setCuisineFilters(e.target.value ? [e.target.value] : [])}
+                  style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"11px 28px 11px 12px",fontSize:14,fontFamily:"inherit",color:cuisineFilters[0]?"#1a1a1a":"#888",background:"#fff",appearance:"none",WebkitAppearance:"none",boxSizing:"border-box",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 10px center"}}>
+                  <option value="">All</option>
+                  {["Fish & Chips","Cafe","Burgers","Pizza","Indian","Sushi","Chinese","Thai","Japanese","Korean","Italian","Mexican","Vietnamese","Mediterranean","Seafood","Healthy"].map(c=>(
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>BUDGET</div>
+                <select
+                  value={priceFilter}
+                  onChange={e => setPriceFilter(e.target.value)}
+                  style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"11px 28px 11px 12px",fontSize:14,fontFamily:"inherit",color:priceFilter!=="Any"?"#1a1a1a":"#888",background:"#fff",appearance:"none",WebkitAppearance:"none",boxSizing:"border-box",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 10px center"}}>
+                  <option value="Any">Any</option>
+                  <option value="$">$ · Under $15</option>
+                  <option value="$$">$$ · $15–35</option>
+                  <option value="$$$">$$$ · $35–60</option>
+                  <option value="$$$$">$$$$ · $60+</option>
+                </select>
+              </div>
+            </div>
           </div>
         )}
       </div>
