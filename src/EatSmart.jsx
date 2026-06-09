@@ -705,7 +705,12 @@ export default function EatSmart() {
                       const res = await fetch(API_BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(val));
                       const data = await res.json();
                       const places = (data.predictions||[]).filter(p=>{
-                        const t = p.types||[]; return t.includes("establishment")||t.includes("food")||t.includes("restaurant")||t.includes("cafe")||t.includes("bar")||t.includes("meal_takeaway");
+                        const t = p.types||[];
+                        const foodTypes = ["restaurant","food","cafe","bar","meal_takeaway","meal_delivery","bakery"];
+                        const nonFood = ["store","lodging","clothing_store","electronics_store","furniture_store","home_goods_store","hardware_store","car_dealer","car_repair","gym","bank","hospital","school","gas_station"];
+                        const isFood = foodTypes.some(ft => t.includes(ft));
+                        const isNonFood = nonFood.some(nf => t.includes(nf));
+                        return isFood && !isNonFood;
                       }).slice(0,5).map(p=>({label:(p.structured_formatting&&p.structured_formatting.main_text)||p.description.replace(', New Zealand',''),term:(p.structured_formatting&&p.structured_formatting.main_text)||p.description}));
                       setFindSuggestions(places);
                     } catch(e) { setFindSuggestions([]); }
