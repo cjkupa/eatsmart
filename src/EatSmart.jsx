@@ -631,6 +631,17 @@ export default function EatSmart() {
   });
   const openSpots = sortedResults.filter(r => r.isOpen && r.isOpen.includes("Open"));
   const savedSpots = results.filter(r => saved[r.id]);
+  // Derive the city the results are actually in (reliable: match known NZ cities in the addresses)
+  const resultsCity = (() => {
+    if (results.length === 0) return "";
+    const counts = {};
+    for (const r of results.slice(0, 8)) {
+      const a = (r.address || "").toLowerCase();
+      for (const c of cities) { if (a.includes(c.toLowerCase())) { counts[c] = (counts[c]||0) + 1; } }
+    }
+    const top = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+    return top ? top[0] : "";
+  })();
   const topRatedSpots = [...results].filter(r => r.rating).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, resultLimit);
 
   const SpotCard = ({ spot }) => {
@@ -895,7 +906,7 @@ export default function EatSmart() {
 
           {/* control bar — count + Filters + List/Map, one tidy line */}
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px"}}>
-            <span style={{fontSize:16,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#888",fontSize:13}}>spots</span></span>
+            <span style={{fontSize:16,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#888",fontSize:13}}>{results.length === 1 ? "spot" : "spots"}</span>{resultsCity ? <span style={{fontWeight:400,color:"#aaa",fontSize:12}}> · {resultsCity}</span> : null}</span>
             <div style={{display:"flex",gap:6,alignItems:"center"}}>
               <button onClick={()=>setShowFilters(v=>!v)} style={{background:showFilters||hasActiveFilters?"#e83a2a":"#fff",color:showFilters||hasActiveFilters?"#fff":"#666",border:"1.5px solid",borderColor:showFilters||hasActiveFilters?"#e83a2a":"#e8e1da",borderRadius:18,padding:"5px 11px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>⚙ Filters{hasActiveFilters?` · ${cuisineFilters.length + (priceFilter!=="Any"?1:0)}`:""}</button>
               <div style={{display:"inline-flex",background:"#f0ebe6",borderRadius:18,padding:3}}>
