@@ -122,7 +122,7 @@ function formatRestaurant(place, index) {
   const cmap={"meal_delivery":"Takeaway","meal_takeaway":"Takeaway","fast_food_restaurant":"Fast Food","american_restaurant":"American","chinese_restaurant":"Chinese","indian_restaurant":"Indian","italian_restaurant":"Italian","japanese_restaurant":"Japanese","korean_restaurant":"Korean","mexican_restaurant":"Mexican","thai_restaurant":"Thai","vietnamese_restaurant":"Vietnamese","french_restaurant":"French","mediterranean_restaurant":"Mediterranean","seafood_restaurant":"Seafood","steak_house":"Steakhouse","sushi_restaurant":"Sushi","pizza_restaurant":"Pizza","hamburger_restaurant":"Burgers","cafe":"Cafe","bakery":"Bakery","bar":"Bar","restaurant":"Restaurant"};
   const ct=types.find(t=>cmap[t]);
   const cuisine=ct?cmap[ct]:types.length>0?types[0].replace(/_/g," "):"Restaurant";
-  const addr = place.vicinity || null;
+  const addr = place.formatted_address || place.vicinity || null;
   const website = place.website || null;
   const phone = place.formatted_phone_number || null;
   const rating = place.rating || null;
@@ -631,13 +631,26 @@ export default function EatSmart() {
   });
   const openSpots = sortedResults.filter(r => r.isOpen && r.isOpen.includes("Open"));
   const savedSpots = results.filter(r => saved[r.id]);
-  // Derive the city the results are actually in (reliable: match known NZ cities in the addresses)
+  // Derive the city the results are actually in.
+  // First try matching a city name directly in the addresses; if none (vicinity often
+  // returns just a suburb), map known suburbs back to their city via NZ_CITIES.
   const resultsCity = (() => {
     if (results.length === 0) return "";
     const counts = {};
     for (const r of results.slice(0, 8)) {
       const a = (r.address || "").toLowerCase();
-      for (const c of cities) { if (a.includes(c.toLowerCase())) { counts[c] = (counts[c]||0) + 1; } }
+      if (!a) continue;
+      let matched = false;
+      // direct city match
+      for (const c of cities) {
+        if (a.includes(c.toLowerCase())) { counts[c] = (counts[c]||0) + 1; matched = true; }
+      }
+      // suburb → city fallback
+      if (!matched) {
+        for (const [cityName, suburbs] of Object.entries(NZ_CITIES)) {
+          if (suburbs.some(s => a.includes(s.toLowerCase()))) { counts[cityName] = (counts[cityName]||0) + 1; break; }
+        }
+      }
     }
     const top = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
     return top ? top[0] : "";
@@ -888,34 +901,15 @@ export default function EatSmart() {
       {!loading && searched && results.length === 0 && !error && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>No restaurants found near {suburb}. Try a nearby suburb.</div>}
       {!loading && results.length > 0 && (
         <>
-          {/* Quick refine chips — right under search, the one scannable action (hidden when Filters panel open) */}
-          {!showFilters && (
-          <div style={{display:"flex",gap:6,overflowX:"auto",padding:"12px 16px 0",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
-            {[{e:"🍕",l:"Pizza"},{e:"🍣",l:"Sushi"},{e:"🍔",l:"Burgers"},{e:"🍜",l:"Chinese"},{e:"🍛",l:"Indian"},{e:"🐟",l:"Fish & Chips"},{e:"☕",l:"Cafe"},{e:"🥗",l:"Healthy"},{e:"🍵",l:"Thai"}].map(c=>{
-              const active = cuisineFilters.includes(c.l);
-              return <button key={c.l} onClick={()=>{
-                const next = active ? cuisineFilters.filter(x=>x!==c.l) : [c.l];
-                setCuisineFilters(next); setFindTerm(next[0]||""); runSearch(next[0]||"");
-              }} style={{flexShrink:0,background:active?"#e83a2a":"#fff",color:active?"#fff":"#555",border:"1.5px solid",borderColor:active?"#e83a2a":"#e8e1da",borderRadius:20,padding:"6px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>{c.e} {c.l}</button>;
-            })}
-          </div>
-          )}
-
           {/* divider — clean break between searching and results */}
           <div style={{height:1,background:"#eee",margin:"14px 16px 12px"}} />
 
           {/* control bar — count + Filters + List/Map, one tidy line */}
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px"}}>
             <span style={{fontSize:16,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#888",fontSize:13}}>{results.length === 1 ? "spot" : "spots"}</span>{resultsCity ? <span style={{fontWeight:400,color:"#aaa",fontSize:12}}> · {resultsCity}</span> : null}</span>
-            <div style={{display:"flex",gap:6,alignItems:"center"}}>
-              <button onClick={()=>setShowFilters(v=>!v)} style={{background:showFilters||hasActiveFilters?"#e83a2a":"#fff",color:showFilters||hasActiveFilters?"#fff":"#666",border:"1.5px solid",borderColor:showFilters||hasActiveFilters?"#e83a2a":"#e8e1da",borderRadius:18,padding:"5px 11px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>⚙ Filters{hasActiveFilters?` · ${cuisineFilters.length + (priceFilter!=="Any"?1:0)}`:""}</button>
-              <div style={{display:"inline-flex",background:"#f0ebe6",borderRadius:18,padding:3}}>
-                {["list","map"].map(v=>(
-                  <button key={v} onClick={()=>setViewMode(v)} style={{background:viewMode===v?"#fff":"transparent",color:viewMode===v?"#e83a2a":"#999",border:"none",borderRadius:15,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",boxShadow:viewMode===v?"0 1px 3px rgba(0,0,0,0.12)":"none",transition:"all 0.15s"}}>
-                    {v==="list"?"☰":"🗺"}
-                  </button>
-                ))}
-              </div>
+            <div style={{display:"flex",gap:8,alignItems:"center"}}>
+              <button onClick={()=>setShowFilters(v=>!v)} style={{background:showFilters||hasActiveFilters?"#e83a2a":"#fff",color:showFilters||hasActiveFilters?"#fff":"#666",border:"1.5px solid",borderColor:showFilters||hasActiveFilters?"#e83a2a":"#e8e1da",borderRadius:18,padding:"7px 13px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>⚙ Filters{hasActiveFilters?` · ${cuisineFilters.length + (priceFilter!=="Any"?1:0)}`:""}</button>
+              <button onClick={()=>setViewMode(viewMode==="map"?"list":"map")} style={{background:viewMode==="map"?"#e83a2a":"#1a1a1a",color:"#fff",border:"none",borderRadius:18,padding:"7px 15px",fontSize:13,fontWeight:800,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5,boxShadow:"0 2px 8px rgba(0,0,0,0.18)"}}>{viewMode==="map"?"☰ List view":"🗺 Map view"}</button>
             </div>
           </div>
 
