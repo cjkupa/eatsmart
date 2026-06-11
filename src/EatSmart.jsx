@@ -201,33 +201,50 @@ async function geocodePlace(placeId, fallbackCity = "") {
 function MapView({ spots, center, onPick }) {
   const mapRef = useRef(null);
   const containerRef = useRef(null);
+  const [status, setStatus] = useState("loading"); // loading | ready | error
 
   useEffect(() => {
     let cancelled = false;
+
     function ensureLeaflet() {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         if (window.L) return resolve(window.L);
-        // CSS
+        // CSS (once)
         if (!document.getElementById("leaflet-css")) {
           const link = document.createElement("link");
-          link.id = "leaflet-css";
-          link.rel = "stylesheet";
+          link.id = "leaflet-css"; link.rel = "stylesheet";
           link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
           document.head.appendChild(link);
         }
-        // JS
+        // Poll for window.L in case a script tag is already loading/loaded
         const existing = document.getElementById("leaflet-js");
-        if (existing) { existing.addEventListener("load", () => resolve(window.L)); return; }
+        if (existing) {
+          let tries = 0;
+          const iv = setInterval(() => {
+            if (window.L) { clearInterval(iv); resolve(window.L); }
+            else if (++tries > 60) { clearInterval(iv); reject(new Error("leaflet timeout")); }
+          }, 100);
+          return;
+        }
         const script = document.createElement("script");
         script.id = "leaflet-js";
         script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
         script.onload = () => resolve(window.L);
+        script.onerror = () => {
+          // Fallback CDN
+          const alt = document.createElement("script");
+          alt.src = "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js";
+          alt.onload = () => resolve(window.L);
+          alt.onerror = () => reject(new Error("leaflet failed"));
+          document.body.appendChild(alt);
+        };
         document.body.appendChild(script);
       });
     }
 
     ensureLeaflet().then((L) => {
       if (cancelled || !containerRef.current) return;
+      setStatus("ready");
       const validSpots = spots.filter(s => s.lat && s.lng);
       const c = center && center.lat ? [center.lat, center.lon || center.lng] : (validSpots[0] ? [validSpots[0].lat, validSpots[0].lng] : [-36.8485, 174.7633]);
 
@@ -240,11 +257,10 @@ function MapView({ spots, center, onPick }) {
         mapRef.current.setView(c, 14);
       }
 
-      // Clear old markers
       mapRef.current.eachLayer(layer => { if (layer instanceof L.Marker) mapRef.current.removeLayer(layer); });
 
       const bounds = [];
-      validSpots.forEach((s, i) => {
+      validSpots.forEach((s) => {
         const marker = L.marker([s.lat, s.lng]).addTo(mapRef.current);
         const stars = s.rating ? ` ⭐${s.rating}` : "";
         marker.bindPopup(`<strong>${s.name}</strong>${stars}<br>${s.address || ""}`);
@@ -252,15 +268,21 @@ function MapView({ spots, center, onPick }) {
         bounds.push([s.lat, s.lng]);
       });
       if (bounds.length > 1) { try { mapRef.current.fitBounds(bounds, { padding: [40, 40] }); } catch(e){} }
-      setTimeout(() => { if (mapRef.current) mapRef.current.invalidateSize(); }, 100);
-    });
+      setTimeout(() => { if (mapRef.current) mapRef.current.invalidateSize(); }, 120);
+    }).catch(() => { if (!cancelled) setStatus("error"); });
 
     return () => { cancelled = true; };
   }, [spots, center, onPick]);
 
   useEffect(() => () => { if (mapRef.current) { mapRef.current.remove(); mapRef.current = null; } }, []);
 
-  return <div ref={containerRef} style={{width:"100%",height:420,borderRadius:14,overflow:"hidden",border:"1.5px solid #ede8e3"}} />;
+  return (
+    <div style={{position:"relative",width:"100%",height:420,borderRadius:14,overflow:"hidden",border:"1.5px solid #ede8e3",background:"#eef2f3"}}>
+      <div ref={containerRef} style={{width:"100%",height:"100%"}} />
+      {status==="loading" && <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",color:"#999",fontSize:14,fontWeight:600}}>Loading map…</div>}
+      {status==="error" && <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",color:"#999",fontSize:13,textAlign:"center",padding:20}}>Map couldn't load. Switch back to List view.</div>}
+    </div>
+  );
 }
 
 export default function EatSmart() {
