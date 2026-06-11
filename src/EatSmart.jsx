@@ -286,6 +286,7 @@ export default function EatSmart() {
   const [error, setError] = useState(null);
   const [searched, setSearched] = useState(false);
   const [recentSearches, setRecentSearches] = useState(() => { try { return JSON.parse(localStorage.getItem("es_recent") || "[]"); } catch(e) { return []; } });
+  const [recentCollapsed, setRecentCollapsed] = useState(() => localStorage.getItem("es_recent_collapsed") === "1");
   const [saved, setSaved] = useState(() => { try { return JSON.parse(localStorage.getItem("es_saved") || "{}"); } catch(e) { return {}; } });
   const [locating, setLocating] = useState(false);
   const [searchRadius, setSearchRadius] = useState(800);
@@ -853,9 +854,13 @@ export default function EatSmart() {
           {recentSearches.length > 0 && (
             <div style={{marginBottom:24}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10,paddingLeft:4}}>
-                <span style={{fontSize:11,color:"#bbb",fontWeight:700,letterSpacing:0.5}}>RECENT SEARCHES</span>
+                <button onClick={()=>{const v=!recentCollapsed;setRecentCollapsed(v);localStorage.setItem("es_recent_collapsed",v?"1":"0");}} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",fontFamily:"inherit",padding:0}}>
+                  <span style={{fontSize:11,color:"#bbb",fontWeight:700,letterSpacing:0.5}}>RECENT SEARCHES</span>
+                  <span style={{fontSize:10,color:"#bbb",transform:recentCollapsed?"rotate(-90deg)":"none",transition:"transform 0.15s"}}>▼</span>
+                </button>
                 <button onClick={()=>{setRecentSearches([]);localStorage.setItem("es_recent","[]");}} style={{background:"none",border:"none",color:"#e83a2a",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",padding:"2px 4px"}}>Clear</button>
               </div>
+              {!recentCollapsed && (
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 {recentSearches.map((r,i) => (
                   <button key={i} onClick={()=>applyRecent(r)} style={{display:"flex",alignItems:"center",gap:10,background:"#fff",border:"1.5px solid #f0ebe6",borderRadius:14,padding:"12px 14px",cursor:"pointer",fontFamily:"inherit",textAlign:"left",width:"100%",boxShadow:"0 1px 4px rgba(0,0,0,0.04)"}}>
@@ -868,6 +873,7 @@ export default function EatSmart() {
                   </button>
                 ))}
               </div>
+              )}
             </div>
           )}
 
