@@ -903,7 +903,7 @@ export default function EatSmart() {
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px"}}>
             <span style={{fontSize:16,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#888",fontSize:13}}>{results.length === 1 ? "spot" : "spots"}</span>{resultsCity ? <span style={{fontWeight:400,color:"#aaa",fontSize:12}}> · {resultsCity}</span> : null}</span>
             <div style={{display:"flex",gap:8,alignItems:"center"}}>
-              <button onClick={()=>setShowFilters(v=>!v)} style={{background:showFilters||hasActiveFilters?"#e83a2a":"#fff",color:showFilters||hasActiveFilters?"#fff":"#666",border:"1.5px solid",borderColor:showFilters||hasActiveFilters?"#e83a2a":"#e8e1da",borderRadius:18,padding:"7px 13px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>⚙ Filters{hasActiveFilters?` · ${cuisineFilters.length + (priceFilter!=="Any"?1:0)}`:""}</button>
+              <button onClick={()=>setShowFilters(v=>!v)} style={{background:showFilters||hasActiveFilters?"#fdecea":"#fff",color:showFilters||hasActiveFilters?"#e83a2a":"#666",border:"1.5px solid",borderColor:showFilters||hasActiveFilters?"#f3b8b0":"#e8e1da",borderRadius:18,padding:"7px 13px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>⚙ Filters{hasActiveFilters?` · ${cuisineFilters.length + (priceFilter!=="Any"?1:0)}`:""}</button>
               <button onClick={()=>setViewMode(viewMode==="map"?"list":"map")} style={{background:viewMode==="map"?"#e83a2a":"#1a1a1a",color:"#fff",border:"none",borderRadius:18,padding:"7px 15px",fontSize:13,fontWeight:800,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5,boxShadow:"0 2px 8px rgba(0,0,0,0.18)"}}>{viewMode==="map"?"☰ List view":"🗺 Map view"}</button>
             </div>
           </div>
@@ -946,7 +946,7 @@ export default function EatSmart() {
           <div style={{display:"flex",gap:6,alignItems:"center",padding:"0 16px 10px"}}>
             <span style={{fontSize:10,color:"#bbb",fontWeight:700,letterSpacing:0.5}}>SORT</span>
             {["rating","nearest"].map(s => (
-              <button key={s} onClick={() => setSortBy(s)} style={{background:sortBy===s?"#e83a2a":"#fff",color:sortBy===s?"#fff":"#888",border:"1.5px solid",borderColor:sortBy===s?"#e83a2a":"#eee",borderRadius:16,padding:"3px 10px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+              <button key={s} onClick={() => setSortBy(s)} style={{background:sortBy===s?"#2c2c2c":"#fff",color:sortBy===s?"#fff":"#888",border:"1.5px solid",borderColor:sortBy===s?"#2c2c2c":"#eee",borderRadius:16,padding:"3px 10px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
                 {s==="rating"?"Top rated":"Nearest"}
               </button>
             ))}
@@ -1095,7 +1095,7 @@ const S = {
   resultsCount:{fontSize:17,color:"#222"},
   resultsLocation:{fontSize:13,color:"#888"},
   radiusBadge:{fontSize:12,color:"#aaa",marginBottom:16,paddingLeft:2},
-  spotCard:{background:"#fff",borderRadius:16,padding:"12px 14px",marginBottom:10,boxShadow:"0 2px 8px rgba(0,0,0,0.06)",borderLeft:"4px solid #e83a2a"},
+  spotCard:{background:"#fff",borderRadius:16,padding:"12px 14px",marginBottom:10,boxShadow:"0 2px 8px rgba(0,0,0,0.06)"},
   spotTop:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12},
   spotLeft:{display:"flex",gap:10,alignItems:"flex-start"},
   spotEmoji:{fontSize:26,lineHeight:1},
