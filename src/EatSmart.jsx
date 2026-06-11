@@ -525,7 +525,7 @@ export default function EatSmart() {
         : filteredByPrice;
       const cuisineResult = filteredByCuisine.length > 0 ? filteredByCuisine : filteredByPrice;
       const toShow = cuisineResult.length > 0 ? cuisineResult : spots;
-      const filteredOpen = openNowOnly ? toShow.filter(s => s.isOpen && s.isOpen.includes("Open")) : toShow;
+      const filteredOpen = toShow;
       const filteredTrending = trendingOnly ? filteredOpen.filter(s => isTrending(s.name)) : filteredOpen;
       const sorted = [...filteredTrending].sort((a, b) => {
         if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
@@ -537,6 +537,27 @@ export default function EatSmart() {
         return 0;
       });
       setResults(sorted.slice(0, 30));
+      // If the results are clearly in a different city than selected (e.g. searched a
+      // specific place by name that only exists elsewhere), switch the area to match.
+      try {
+        const cityCounts = {};
+        for (const r of sorted.slice(0, 8)) {
+          const a = (r.address || "").toLowerCase();
+          if (!a) continue;
+          let hit = cities.find(c => a.includes(c.toLowerCase()));
+          if (!hit) {
+            for (const [cn, subs] of Object.entries(NZ_CITIES)) { if (subs.some(s => a.includes(s.toLowerCase()))) { hit = cn; break; } }
+          }
+          if (hit) cityCounts[hit] = (cityCounts[hit] || 0) + 1;
+        }
+        const dominant = Object.entries(cityCounts).sort((a,b)=>b[1]-a[1])[0];
+        // Only switch if a clear majority of results are in a single different city
+        if (dominant && dominant[0] !== city && dominant[1] >= Math.min(3, sorted.length)) {
+          setCity(dominant[0]); localStorage.setItem("es_city", dominant[0]);
+          setSuburb("All Suburbs"); localStorage.setItem("es_suburb", "All Suburbs");
+          setNearMode("area"); localStorage.setItem("es_nearmode", "area");
+        }
+      } catch (e) {}
       // Save to recent searches (dedup, keep last 3)
       try {
         const entry = { city, suburb, cuisines: [...activeCuisines], price: priceFilter };
@@ -549,7 +570,7 @@ export default function EatSmart() {
       } catch(e) {}
     } catch(e) { setError("Error: " + e.message); console.error(e); }
     setLoading(false);
-  }, [suburb, city, customCoords, locationSearch, cuisine, cuisineFilter, cuisineFilters, priceFilter, sortBy, openNowOnly, trendingOnly]);
+  }, [suburb, city, customCoords, locationSearch, cuisine, cuisineFilter, cuisineFilters, priceFilter, sortBy, trendingOnly]);
 
   function toggleSave(id) { setSaved(prev => { const next = { ...prev, [id]: !prev[id] }; if (!next[id]) delete next[id]; localStorage.setItem("es_saved", JSON.stringify(next)); return next; }); }
 
@@ -940,8 +961,11 @@ export default function EatSmart() {
 
           {activeTab === "opennow" && openSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
           {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet — tap the Save button on any restaurant!</div>}
+          {(activeTab === "search" || activeTab === "results") && openNowOnly && sortedResults.filter(r => r.isOpen && r.isOpen.includes("Open")).length === 0 && results.length > 0 && (
+            <div style={{textAlign:"center",padding:"24px 20px",color:"#888"}}>None of these are open right now. <button onClick={()=>setOpenNowOnly(false)} style={{background:"none",border:"none",color:"#e83a2a",fontWeight:700,cursor:"pointer",fontFamily:"inherit",textDecoration:"underline",fontSize:14}}>Show all</button></div>
+          )}
           <div style={{display:viewMode==="map"&&(activeTab==="search"||activeTab==="results")?"none":"flex",flexDirection:"column",gap:10,padding:"0 16px"}}>
-          {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : sortedResults).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
+          {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : (openNowOnly ? sortedResults.filter(r => r.isOpen && r.isOpen.includes("Open")) : sortedResults)).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
           </div>
         </>
       )}
