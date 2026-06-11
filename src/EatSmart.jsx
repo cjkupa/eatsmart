@@ -736,7 +736,15 @@ export default function EatSmart() {
           : spot.phone
           ? <a href={"tel:"+spot.phone} style={{flex:1,textAlign:"center",textDecoration:"none",fontSize:12,fontWeight:700,padding:"8px 0",borderRadius:10,background:"#f4f1ee",color:"#555"}}>Call</a>
           : <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{flex:1,textAlign:"center",textDecoration:"none",fontSize:12,fontWeight:700,padding:"8px 0",borderRadius:10,background:"#f4f1ee",color:"#555"}}>Details</a>}
-        <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{flex:1,textAlign:"center",textDecoration:"none",fontSize:12,fontWeight:700,padding:"8px 0",borderRadius:10,background:"#eef4ff",color:"#1a73e8"}}>Maps</a>
+        <button onClick={()=>{
+          const shareUrl = "https://eatsmart.co.nz";
+          const text = `${spot.name}${spot.rating?` ⭐${spot.rating}`:""} — found on EatSmart`;
+          if (navigator.share) {
+            navigator.share({ title: spot.name, text, url: shareUrl }).catch(()=>{});
+          } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(`${text} ${shareUrl}`).then(()=>{ try{alert("Link copied to clipboard");}catch(e){} });
+          }
+        }} style={{flex:1,textAlign:"center",fontSize:12,fontWeight:700,padding:"8px 0",borderRadius:10,background:"#eef4ff",color:"#1a73e8",border:"none",cursor:"pointer",fontFamily:"inherit"}}>↗ Share</button>
         <button onClick={()=>toggleSave(spot.id)} style={{flexShrink:0,fontSize:14,fontWeight:700,padding:"8px 12px",borderRadius:10,background:saved[spot.id]?"#fde8e8":"#f7f3f0",color:saved[spot.id]?"#e83a2a":"#888",border:"none",cursor:"pointer",fontFamily:"inherit"}}>{saved[spot.id]?"🩷":"🤍"}</button>
       </div>
     );
