@@ -669,13 +669,35 @@ export default function EatSmart() {
   });
   const openSpots = sortedResults.filter(r => r.isOpen && r.isOpen.includes("Open"));
   // Client-side filters from the Filters panel (cuisine + budget) — applied instantly, no re-search.
+  // Cuisine matching checks name + cuisine + types against keyword aliases, because Google's
+  // type tags alone are unreliable (e.g. fish & chip shops are often just "meal_takeaway").
+  const CUISINE_KEYWORDS = {
+    "fish & chips": ["fish","chip","chippy","takeaway","seafood","battered"],
+    "cafe": ["cafe","café","coffee","espresso","brunch","bakery"],
+    "burgers": ["burger","grill","diner","patty"],
+    "pizza": ["pizza","pizzeria","italian"],
+    "indian": ["indian","curry","tandoor","masala","biryani"],
+    "sushi": ["sushi","japanese","sashimi","ramen","bento"],
+    "chinese": ["chinese","wok","dumpling","noodle","yum cha","dim sum"],
+    "thai": ["thai","pad","tom yum"],
+    "japanese": ["japanese","sushi","ramen","izakaya","teppan"],
+    "korean": ["korean","bbq","kimchi","bibimbap"],
+    "italian": ["italian","pizza","pasta","trattoria","ristorante"],
+    "mexican": ["mexican","taco","burrito","cantina"],
+    "vietnamese": ["vietnamese","pho","banh"],
+    "mediterranean": ["mediterranean","greek","kebab","falafel","turkish"],
+    "seafood": ["seafood","fish","oyster","prawn","crab"],
+    "healthy": ["healthy","salad","poke","vegan","vegetarian","bowl"],
+  };
   const displayResults = (() => {
     let list = sortedResults;
     if (cuisineFilters.length > 0) {
-      list = list.filter(s => cuisineFilters.some(cf =>
-        (s.cuisine||"").toLowerCase().includes(cf.toLowerCase()) ||
-        (s.rawTypes||[]).some(t => t.toLowerCase().includes(cf.toLowerCase().replace(/ .*/,"")))
-      ));
+      list = list.filter(s => cuisineFilters.some(cf => {
+        const key = cf.toLowerCase();
+        const kws = CUISINE_KEYWORDS[key] || [key.replace(/ .*/,"")];
+        const hay = `${(s.name||"").toLowerCase()} ${(s.cuisine||"").toLowerCase()} ${((s.rawTypes||[]).join(" ")).toLowerCase()}`;
+        return kws.some(k => hay.includes(k));
+      }));
     }
     if (priceFilter !== "Any") {
       const pLevel = ["$","$$","$$$","$$$$"].indexOf(priceFilter);
@@ -1036,6 +1058,12 @@ export default function EatSmart() {
             </div>
           )}
 
+          {(activeTab === "search" || activeTab === "results") && cuisineFilters.length > 0 && displayResults.length === 0 && results.length > 0 && (
+            <div style={{textAlign:"center",padding:"24px 20px",color:"#888",fontSize:14}}>
+              No {cuisineFilters[0]} in these results.{" "}
+              <button onClick={()=>{const c=cuisineFilters[0];setFindTerm(c);runSearch(c);}} style={{background:"none",border:"none",color:"#e83a2a",fontWeight:700,cursor:"pointer",fontFamily:"inherit",textDecoration:"underline",fontSize:14}}>Search {cuisineFilters[0]} nearby</button>
+            </div>
+          )}
           {activeTab === "opennow" && openSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No open restaurants found nearby right now.</div>}
           {activeTab === "saved" && savedSpots.length === 0 && <div style={{textAlign:"center",padding:"30px 20px",color:"#888"}}>No saved spots yet — tap the Save button on any restaurant!</div>}
           {(activeTab === "search" || activeTab === "results") && openNowOnly && sortedResults.filter(r => r.isOpen && r.isOpen.includes("Open")).length === 0 && results.length > 0 && (
