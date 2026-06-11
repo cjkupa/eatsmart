@@ -539,18 +539,9 @@ export default function EatSmart() {
         if (spots.length > 0) { usedRadius = r; break; }
       }
       setSearchRadius(usedRadius);
-      const pLevel = priceFilter === "Any" ? null : ["$","$$","$$$","$$$$"].indexOf(priceFilter);
-      const filteredByPrice = pLevel !== null
-        ? spots.filter(s => pLevel === 0 ? (s.priceLevel === 0 || s.priceLevel === null) : s.priceLevel === pLevel)
-        : spots;
-      // Multi-cuisine: keep results matching ANY selected cuisine
-      const filteredByCuisine = activeCuisines.length > 1
-        ? filteredByPrice.filter(s => activeCuisines.some(cf => (s.cuisine||"").toLowerCase().includes(cf.toLowerCase()) || (s.rawTypes||[]).some(t => t.toLowerCase().includes(cf.toLowerCase()))))
-        : filteredByPrice;
-      const cuisineResult = filteredByCuisine.length > 0 ? filteredByCuisine : filteredByPrice;
-      const toShow = cuisineResult.length > 0 ? cuisineResult : spots;
-      const filteredOpen = toShow;
-      const filteredTrending = trendingOnly ? filteredOpen.filter(s => isTrending(s.name)) : filteredOpen;
+      // Cuisine + budget are now applied as client-side display filters (see displayResults),
+      // so the search itself returns everything for the area. This keeps filters instant & consistent.
+      const filteredTrending = trendingOnly ? spots.filter(s => isTrending(s.name)) : spots;
       const sorted = [...filteredTrending].sort((a, b) => {
         if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
         if (sortBy === "nearest") {
@@ -594,7 +585,7 @@ export default function EatSmart() {
       } catch(e) {}
     } catch(e) { setError("Error: " + e.message); console.error(e); }
     setLoading(false);
-  }, [suburb, city, customCoords, locationSearch, cuisine, cuisineFilter, cuisineFilters, priceFilter, sortBy, trendingOnly]);
+  }, [suburb, city, customCoords, locationSearch, cuisine, sortBy, trendingOnly]);
 
   function toggleSave(id) { setSaved(prev => { const next = { ...prev, [id]: !prev[id] }; if (!next[id]) delete next[id]; localStorage.setItem("es_saved", JSON.stringify(next)); return next; }); }
 
@@ -677,6 +668,21 @@ export default function EatSmart() {
     return 0;
   });
   const openSpots = sortedResults.filter(r => r.isOpen && r.isOpen.includes("Open"));
+  // Client-side filters from the Filters panel (cuisine + budget) — applied instantly, no re-search.
+  const displayResults = (() => {
+    let list = sortedResults;
+    if (cuisineFilters.length > 0) {
+      list = list.filter(s => cuisineFilters.some(cf =>
+        (s.cuisine||"").toLowerCase().includes(cf.toLowerCase()) ||
+        (s.rawTypes||[]).some(t => t.toLowerCase().includes(cf.toLowerCase().replace(/ .*/,"")))
+      ));
+    }
+    if (priceFilter !== "Any") {
+      const pLevel = ["$","$$","$$$","$$$$"].indexOf(priceFilter);
+      list = list.filter(s => pLevel === 0 ? (s.priceLevel === 0 || s.priceLevel === null) : s.priceLevel === pLevel);
+    }
+    return list;
+  })();
   const savedSpots = results.filter(r => saved[r.id]);
   // Derive the city the results are actually in.
   // First try matching a city name directly in the addresses; if none (vicinity often
@@ -956,7 +962,7 @@ export default function EatSmart() {
 
           {/* control bar — count + Filters + List/Map, one tidy line */}
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px"}}>
-            <span style={{fontSize:16,color:"#1a1a1a",fontWeight:800}}>{results.length} <span style={{fontWeight:400,color:"#888",fontSize:13}}>{results.length === 1 ? "spot" : "spots"}</span>{resultsCity ? <span style={{fontWeight:400,color:"#aaa",fontSize:12}}> · {resultsCity}</span> : null}</span>
+            <span style={{fontSize:16,color:"#1a1a1a",fontWeight:800}}>{displayResults.length} <span style={{fontWeight:400,color:"#888",fontSize:13}}>{displayResults.length === 1 ? "spot" : "spots"}</span>{resultsCity ? <span style={{fontWeight:400,color:"#aaa",fontSize:12}}> · {resultsCity}</span> : null}</span>
             <div style={{display:"flex",gap:8,alignItems:"center"}}>
               <button onClick={()=>setShowFilters(v=>!v)} style={{background:showFilters||hasActiveFilters?"#fdecea":"#fff",color:showFilters||hasActiveFilters?"#e83a2a":"#666",border:"1.5px solid",borderColor:showFilters||hasActiveFilters?"#f3b8b0":"#e8e1da",borderRadius:18,padding:"7px 13px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>⚙ Filters{hasActiveFilters?` · ${cuisineFilters.length + (priceFilter!=="Any"?1:0)}`:""}</button>
               <button onClick={()=>setViewMode(viewMode==="map"?"list":"map")} style={{background:viewMode==="map"?"#e83a2a":"#1a1a1a",color:"#fff",border:"none",borderRadius:18,padding:"7px 15px",fontSize:13,fontWeight:800,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5,boxShadow:"0 2px 8px rgba(0,0,0,0.18)"}}>{viewMode==="map"?"☰ List view":"🗺 Map view"}</button>
@@ -1009,7 +1015,7 @@ export default function EatSmart() {
           </div>
           {viewMode==="map" && (activeTab==="search"||activeTab==="results") && (
             <div style={{padding:"0 16px 16px"}}>
-              <MapView spots={sortedResults.slice(0, resultLimit)} center={customCoords} onPick={()=>{}} />
+              <MapView spots={displayResults.slice(0, resultLimit)} center={customCoords} onPick={()=>{}} />
             </div>
           )}
           {showInstallPrompt && (
@@ -1028,7 +1034,7 @@ export default function EatSmart() {
             <div style={{textAlign:"center",padding:"24px 20px",color:"#888"}}>None of these are open right now. <button onClick={()=>setOpenNowOnly(false)} style={{background:"none",border:"none",color:"#e83a2a",fontWeight:700,cursor:"pointer",fontFamily:"inherit",textDecoration:"underline",fontSize:14}}>Show all</button></div>
           )}
           <div style={{display:viewMode==="map"&&(activeTab==="search"||activeTab==="results")?"none":"flex",flexDirection:"column",gap:10,padding:"0 16px"}}>
-          {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : (openNowOnly ? sortedResults.filter(r => r.isOpen && r.isOpen.includes("Open")) : sortedResults)).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
+          {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : (openNowOnly ? displayResults.filter(r => r.isOpen && r.isOpen.includes("Open")) : displayResults)).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
           </div>
         </>
       )}
