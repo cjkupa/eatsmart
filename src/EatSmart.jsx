@@ -763,6 +763,9 @@ export default function EatSmart() {
                 }}
                 onKeyDown={e => { if (e.key==='Enter') runSearch(); }}
               />
+              {findTerm && (
+                <button onClick={()=>{setFindTerm("");setFindSuggestions([]);setResults([]);setSearched(false);setCuisineFilters([]);}} aria-label="Clear search" style={{background:"#eee",border:"none",borderRadius:"50%",width:24,height:24,minWidth:24,cursor:"pointer",color:"#888",fontSize:15,fontWeight:700,fontFamily:"inherit",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,padding:0}}>×</button>
+              )}
               <button onClick={()=>runSearch()} style={{background:"#e83a2a",border:"none",borderRadius:10,padding:"9px 16px",cursor:"pointer",color:"#fff",fontWeight:700,fontSize:14,fontFamily:"inherit",flexShrink:0}}>{loading||locating?"…":"Search"}</button>
             </div>
             {/* NEAR field — shows detected area or chosen place */}
