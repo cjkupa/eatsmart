@@ -707,43 +707,74 @@ export default function EatSmart() {
   const SpotCard = ({ spot }) => {
     const featured = getFeatured(spot.name);
     const trending = isTrending(spot.name);
-    return (
-      <div style={S.spotCard}>
-        <a href={"https://www.google.com/maps/search/"+encodeURIComponent(spot.name+" "+(spot.address||""))} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",color:"inherit",display:"block"}}>
-        <div style={{display:"flex",gap:12,padding:"12px 12px 8px",alignItems:"stretch",cursor:"pointer"}}>
-          {spot.photoRef
-            ? <img src={`${API_BASE_URL}/api/photo?ref=${encodeURIComponent(spot.photoRef)}`} alt={spot.name} style={{width:110,height:110,objectFit:"cover",borderRadius:10,display:"block",flexShrink:0}} onError={function(e){e.target.style.display="none";}} />
-            : <div style={{width:110,height:110,borderRadius:10,background:"#fff0ed",display:"flex",alignItems:"center",justifyContent:"center",fontSize:44,flexShrink:0}}>{spot.emoji || "🍽️"}</div>}
-          <div style={{flex:1,minWidth:0,display:"flex",flexDirection:"column"}}>
-            {(featured || trending) && (
-              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"wrap"}}>
-                {featured && <span style={{background:"#ffd97d",color:"#7a4800",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:800}}>⭐ Featured</span>}
-                {trending && <span style={{background:"#ffe3e0",color:"#e83a2a",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:800}}>🔥 Trending</span>}
+    const hero = featured || trending; // hero photo treatment for special spots
+    const photo = spot.photoRef ? `${API_BASE_URL}/api/photo?ref=${encodeURIComponent(spot.photoRef)}` : null;
+    const cuisineLabel = spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1);
+    const open = spot.isOpen && spot.isOpen.includes("Open");
+    const mapsUrl = "https://www.google.com/maps/search/" + encodeURIComponent(spot.name + " " + (spot.address || ""));
+
+    // shared info pills
+    const Pills = ({ small }) => (
+      <div style={{display:"flex",gap:5,marginTop:small?6:8,flexWrap:"wrap"}}>
+        {spot.rating && <span style={{fontSize:small?11:12,fontWeight:700,padding:small?"3px 8px":"4px 10px",borderRadius:14,background:"#fff4e5",color:"#e67e22"}}>⭐ {spot.rating}{spot.ratingCount?` (${spot.ratingCount})`:""}</span>}
+        <span style={{fontSize:small?11:12,fontWeight:700,padding:small?"3px 8px":"4px 10px",borderRadius:14,background:"#f4f1ee",color:"#666"}}>{cuisineLabel}</span>
+        {(spot.priceLevel !== null && spot.priceLevel !== undefined) && <span style={{fontSize:small?11:12,fontWeight:700,padding:small?"3px 8px":"4px 10px",borderRadius:14,background:"#f4f1ee",color:"#666"}}>{"$".repeat(spot.priceLevel + 1)}</span>}
+        {spot.isOpen && <span style={{fontSize:small?11:12,fontWeight:700,padding:small?"3px 8px":"4px 10px",borderRadius:14,background:open?"#e8f7ee":"#f0f0f0",color:open?"#27ae60":"#aaa"}}>{open?"● Open":"Closed"}</span>}
+      </div>
+    );
+
+    const Actions = () => (
+      <div style={{display:"flex",gap:6,marginTop:10}}>
+        {spot.website
+          ? <a href={spot.website} target="_blank" rel="noopener noreferrer" style={{flex:1,textAlign:"center",textDecoration:"none",fontSize:12,fontWeight:700,padding:"8px 0",borderRadius:10,background:"#f4f1ee",color:"#555"}}>Website</a>
+          : spot.phone
+          ? <a href={"tel:"+spot.phone} style={{flex:1,textAlign:"center",textDecoration:"none",fontSize:12,fontWeight:700,padding:"8px 0",borderRadius:10,background:"#f4f1ee",color:"#555"}}>Call</a>
+          : <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{flex:1,textAlign:"center",textDecoration:"none",fontSize:12,fontWeight:700,padding:"8px 0",borderRadius:10,background:"#f4f1ee",color:"#555"}}>Details</a>}
+        <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{flex:1,textAlign:"center",textDecoration:"none",fontSize:12,fontWeight:700,padding:"8px 0",borderRadius:10,background:"#eef4ff",color:"#1a73e8"}}>Maps</a>
+        <button onClick={()=>toggleSave(spot.id)} style={{flexShrink:0,fontSize:14,fontWeight:700,padding:"8px 12px",borderRadius:10,background:saved[spot.id]?"#fde8e8":"#f7f3f0",color:saved[spot.id]?"#e83a2a":"#888",border:"none",cursor:"pointer",fontFamily:"inherit"}}>{saved[spot.id]?"🩷":"🤍"}</button>
+      </div>
+    );
+
+    if (hero) {
+      // ---- A: HERO PHOTO CARD (trending/featured) ----
+      return (
+        <div style={{background:"#fff",borderRadius:20,marginBottom:14,boxShadow:"0 4px 16px rgba(0,0,0,0.08)",overflow:"hidden"}}>
+          <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",color:"inherit",display:"block"}}>
+            <div style={{height:150,position:"relative",background:"#fff0ed"}}>
+              {photo
+                ? <img src={photo} alt={spot.name} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} onError={function(e){e.target.style.display="none";}} />
+                : <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:56}}>{spot.emoji||"🍽️"}</div>}
+              <div style={{position:"absolute",top:10,left:10,display:"flex",gap:6}}>
+                {trending && <span style={{background:"rgba(255,255,255,0.95)",color:"#e83a2a",fontSize:11,fontWeight:800,padding:"4px 9px",borderRadius:20,boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>🔥 Trending</span>}
+                {featured && <span style={{background:"rgba(255,255,255,0.95)",color:"#b45309",fontSize:11,fontWeight:800,padding:"4px 9px",borderRadius:20,boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>⭐ Featured</span>}
               </div>
-            )}
-            <div style={{fontWeight:700,fontSize:16,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{spot.name}</div>
-            <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:3}}>
-              {spot.rating && <span style={{fontWeight:800,fontSize:13,color:"#e67e22"}}>⭐ {spot.rating}</span>}
-              {spot.ratingCount && <span style={{fontSize:11,color:"#bbb"}}>({spot.ratingCount})</span>}
-              <span style={{fontSize:12,color:"#aaa"}}>· {spot.cuisine.charAt(0).toUpperCase() + spot.cuisine.slice(1)}</span>
-              {spot.priceLevel !== null && spot.priceLevel !== undefined && <span style={{fontWeight:800,fontSize:13,color:"#27ae60"}}>{"$".repeat(spot.priceLevel + 1)}</span>}
-              {spot.isOpen && <span style={{fontWeight:600,fontSize:11,color:spot.isOpen.includes("Open")?"#27ae60":"#ccc"}}>● {spot.isOpen.includes("Open")?"Open":"Closed"}</span>}
             </div>
-            {spot.address && <div style={{fontSize:12,color:"#999",marginTop:3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>📍 {spot.address}</div>}
-            {featured && featured.signatureDish && <div style={{fontSize:11,color:"#a06000",marginTop:3,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{featured.signatureDish}</div>}
+          </a>
+          <button onClick={()=>toggleSave(spot.id)} style={{position:"absolute",marginTop:-44,marginLeft:"calc(100% - 52px)",width:34,height:34,borderRadius:"50%",background:"rgba(255,255,255,0.95)",border:"none",fontSize:15,cursor:"pointer",boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>{saved[spot.id]?"🩷":"🤍"}</button>
+          <div style={{padding:"12px 14px 14px"}}>
+            <div style={{fontSize:18,fontWeight:800,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{spot.name}</div>
+            <Pills />
+            {featured && featured.signatureDish && <div style={{fontSize:12,color:"#a06000",marginTop:6,fontWeight:600}}>{featured.signatureDish}</div>}
+            <Actions />
           </div>
         </div>
+      );
+    }
+
+    // ---- B: REFINED HORIZONTAL CARD (default) ----
+    return (
+      <div style={{background:"#fff",borderRadius:18,padding:12,marginBottom:12,boxShadow:"0 3px 12px rgba(0,0,0,0.07)"}}>
+        <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",color:"inherit",display:"flex",gap:12,alignItems:"flex-start"}}>
+          {photo
+            ? <img src={photo} alt={spot.name} style={{width:92,height:92,objectFit:"cover",borderRadius:14,flexShrink:0,display:"block"}} onError={function(e){e.target.style.display="none";}} />
+            : <div style={{width:92,height:92,borderRadius:14,background:"#fff0ed",display:"flex",alignItems:"center",justifyContent:"center",fontSize:40,flexShrink:0}}>{spot.emoji||"🍽️"}</div>}
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:16,fontWeight:800,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{spot.name}</div>
+            <Pills small />
+            {spot.address && <div style={{fontSize:11,color:"#aaa",marginTop:6,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>📍 {spot.address}</div>}
+          </div>
         </a>
-        <div style={{...S.actionRow, padding:"0 10px 10px",gap:5}}>
-          {spot.website
-            ? <a href={spot.website} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>Website</a>
-            : spot.phone
-            ? <a href={"tel:"+spot.phone} style={{...S.openBtn,textDecoration:"none",textAlign:"center"}}>Call</a>
-            : <button style={S.openBtn}>Looks good?</button>}
-          <a href={"https://www.google.com/maps/search/" + encodeURIComponent(spot.name + " " + (spot.address || ""))} target="_blank" rel="noopener noreferrer" style={{...S.openBtn,textDecoration:"none",textAlign:"center",color:"#1a73e8",background:"#f0f5ff",border:"1.5px solid #bbd4f8"}}>Maps</a>
-          <button style={{...S.saveBtn,background:"#fffbf0",border:"1.5px solid #fde68a",color:"#b45309"}} onClick={() => setPriceModal(spot)}>Add price</button>
-          <button style={{...S.saveBtn, background: saved[spot.id] ? "#fde8e8" : "#fef2f2"}} onClick={() => toggleSave(spot.id)}>{saved[spot.id] ? "🩷 Saved" : "🤍 Save"}</button>
-        </div>
+        <Actions />
       </div>
     );
   };
