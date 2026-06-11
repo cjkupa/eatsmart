@@ -349,7 +349,8 @@ export default function EatSmart() {
 
   function runSearch(termOverride) {
     const term = (termOverride !== undefined ? termOverride : findTerm).trim();
-    const cuisines = term ? [term.split(",")[0].trim()] : [];
+    // Use the typed term if present; otherwise fall back to the cuisine picked in Filters.
+    const cuisines = term ? [term.split(",")[0].trim()] : (cuisineFilters.length > 0 ? cuisineFilters : []);
     setShowNearMenu(false);
     setFindSuggestions([]);
     if (nearMode === "gps") {
