@@ -623,6 +623,7 @@ export default function EatSmart() {
       return;
     }
     if (tabId === "search") {
+      // The Search tab intentionally starts a fresh search
       setActiveTab("search");
       setSearched(false);
       setResults([]);
@@ -630,11 +631,12 @@ export default function EatSmart() {
       window.scrollTo({top:0,behavior:"smooth"});
       setTimeout(() => setSearchFocused(true), 300);
     } else if (activeTab !== tabId) {
+      // Switch into a view tab (Open Now / Saved) — keep results intact
       setActiveTab(tabId);
+      window.scrollTo({top:0,behavior:"smooth"});
     } else {
+      // Tapping the active tab again returns to the results view WITHOUT wiping results
       setActiveTab("search");
-      setSearched(false);
-      setResults([]);
       window.scrollTo({top:0,behavior:"smooth"});
     }
   }
