@@ -892,7 +892,12 @@ export default function EatSmart() {
               <span style={{fontSize:15,flexShrink:0}}>📍</span>
               <div style={{flex:1,fontSize:14,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                 <span style={{color:"#444"}}>{nearMode==="gps" ? (detectedArea ? detectedArea : "Near me") : (suburb && suburb!=="All Suburbs" && suburb!=="Near me" ? suburb + ", " + city : city)}</span>
-                <span style={{color:"#1a73e8",fontSize:12,fontWeight:700}}>Change ▾</span>
+                <div style={{display:"flex",alignItems:"center",gap:8}} onClick={e=>e.stopPropagation()}>
+                  {nearMode!=="gps" && (
+                    <button onClick={()=>{setNearMode("gps");localStorage.setItem("es_nearmode","gps");setLocationSearch(null);setLocationSuggestions([]);setSuburb("Near me");localStorage.setItem("es_suburb","Near me");}} aria-label="Reset to near me" style={{background:"#eee",border:"none",borderRadius:"50%",width:22,height:22,minWidth:22,cursor:"pointer",color:"#888",fontSize:14,fontWeight:700,fontFamily:"inherit",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,padding:0}}>×</button>
+                  )}
+                  <span onClick={()=>setShowNearMenu(v=>!v)} style={{color:"#1a73e8",fontSize:12,fontWeight:700,cursor:"pointer"}}>Change ▾</span>
+                </div>
               </div>
             </div>
             {/* FIND suggestions dropdown */}
