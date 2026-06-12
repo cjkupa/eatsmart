@@ -914,18 +914,13 @@ export default function EatSmart() {
 
           {/* NEAR picker — floating overlay */}
           {showNearMenu && (
-            <div onClick={()=>{setShowNearMenu(false);setLocationSearch(null);setLocationSuggestions([]);}} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.35)",zIndex:1000,display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"80px 16px 16px"}}>
-              <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:360,boxShadow:"0 20px 60px rgba(0,0,0,0.3)",overflow:"hidden"}}>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",borderBottom:"1px solid #f2ede8"}}>
-                  <span style={{fontWeight:800,fontSize:16,color:"#1a1a1a"}}>Where to look</span>
-                  <button onClick={()=>{setShowNearMenu(false);setLocationSearch(null);setLocationSuggestions([]);}} style={{background:"none",border:"none",fontSize:20,color:"#bbb",cursor:"pointer",lineHeight:1}}>×</button>
-                </div>
-                <div onClick={()=>{setNearMode("gps");localStorage.setItem("es_nearmode","gps");setShowNearMenu(false);setLocationSearch(null);setLocationSuggestions([]);}} style={{padding:"14px 16px",fontSize:15,cursor:"pointer",borderBottom:"1px solid #f5f5f5",color:"#e83a2a",fontWeight:700,display:"flex",alignItems:"center",gap:10}}>📍 Near me <span style={{fontSize:12,fontWeight:500,color:"#999"}}>(use my location)</span></div>
-                <div style={{padding:"12px 16px 6px",fontSize:10,fontWeight:700,color:"#bbb",letterSpacing:0.5}}>OR PICK AN AREA</div>
+            <div style={{borderTop:"1px solid #f2ede8",background:"#fff"}}>
+                <div onClick={()=>{setNearMode("gps");localStorage.setItem("es_nearmode","gps");setShowNearMenu(false);setLocationSearch(null);setLocationSuggestions([]);}} style={{padding:"13px 14px",fontSize:15,cursor:"pointer",borderBottom:"1px solid #f5f5f5",color:"#e83a2a",fontWeight:700,display:"flex",alignItems:"center",gap:10}}>📍 Near me <span style={{fontSize:12,fontWeight:500,color:"#999"}}>(use my location)</span></div>
+                <div style={{padding:"10px 14px 5px",fontSize:10,fontWeight:700,color:"#bbb",letterSpacing:0.5}}>OR PICK AN AREA</div>
                 <input
                   autoFocus
                   placeholder="Type a suburb or city…"
-                  style={{width:"100%",border:"none",borderBottom:"1px solid #f0ebe6",outline:"none",fontSize:15,padding:"12px 16px",fontFamily:"inherit",boxSizing:"border-box"}}
+                  style={{width:"100%",border:"none",borderBottom:"1px solid #f0ebe6",outline:"none",fontSize:15,padding:"11px 14px",fontFamily:"inherit",boxSizing:"border-box"}}
                   value={locationSearch || ""}
                   onChange={async e => {
                     const val = e.target.value; setLocationSearch(val);
@@ -955,10 +950,9 @@ export default function EatSmart() {
                       else if(cities.includes(s.suburb)||cities.includes(s.label)){handleCityChange(cities.includes(s.suburb)?s.suburb:s.label);localStorage.setItem("es_suburb","All Suburbs");}
                       else {if(s.city&&s.city!==city)handleCityChange(s.city);setSuburb(s.suburb||s.label);localStorage.setItem("es_suburb",s.suburb||s.label);}
                       setLocationSearch(null);setLocationSuggestions([]);setShowNearMenu(false);
-                    }} style={{padding:"12px 16px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:15,color:"#333",display:"flex",alignItems:"center",gap:8}}>📍 {s.label}</div>
+                    }} style={{padding:"11px 14px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:15,color:"#333",display:"flex",alignItems:"center",gap:8}}>📍 {s.label}</div>
                   ))}
                 </div>
-              </div>
             </div>
           )}
 
