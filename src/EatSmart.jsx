@@ -895,9 +895,7 @@ export default function EatSmart() {
               <div style={{flex:1,fontSize:14,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                 <span style={{color:"#444"}}>{nearMode==="gps" ? (detectedArea ? detectedArea : "Near me") : (suburb && suburb!=="All Suburbs" && suburb!=="Near me" ? suburb + ", " + city : city)}</span>
                 <div style={{display:"flex",alignItems:"center",gap:8}} onClick={e=>e.stopPropagation()}>
-                  {nearMode!=="gps" && (
-                    <button onClick={()=>{setNearMode("gps");localStorage.setItem("es_nearmode","gps");setLocationSearch(null);setLocationSuggestions([]);setSuburb("Near me");localStorage.setItem("es_suburb","Near me");}} aria-label="Reset to near me" style={{background:"#eee",border:"none",borderRadius:"50%",width:22,height:22,minWidth:22,cursor:"pointer",color:"#888",fontSize:14,fontWeight:700,fontFamily:"inherit",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,padding:0}}>×</button>
-                  )}
+                  <button onClick={()=>{setNearMode("gps");localStorage.setItem("es_nearmode","gps");setCustomCoords(null);setDetectedArea("");localStorage.removeItem("es_detected");setLocationSearch(null);setLocationSuggestions([]);setSuburb("Near me");localStorage.setItem("es_suburb","Near me");setShowNearMenu(true);}} aria-label="Clear location" style={{background:"#eee",border:"none",borderRadius:"50%",width:22,height:22,minWidth:22,cursor:"pointer",color:"#888",fontSize:14,fontWeight:700,fontFamily:"inherit",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,padding:0}}>×</button>
                   <span onClick={()=>setShowNearMenu(v=>!v)} style={{color:"#1a73e8",fontSize:12,fontWeight:700,cursor:"pointer"}}>Change ▾</span>
                 </div>
               </div>
@@ -1031,7 +1029,6 @@ export default function EatSmart() {
             <div style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:14,padding:14,margin:"0 16px 10px"}}>
               <div style={{display:"flex",gap:10}}>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CUISINE</div>
                   <select
                     value={cuisineFilters[0] || ""}
                     onChange={e => {
@@ -1041,20 +1038,19 @@ export default function EatSmart() {
                       // location (near-me or chosen area), not just filter what's on screen.
                       if (searched) { setFindTerm(val); runSearch(val); }
                     }}
-                    style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"11px 28px 11px 12px",fontSize:14,fontFamily:"inherit",color:cuisineFilters[0]?"#1a1a1a":"#888",background:"#fff",appearance:"none",WebkitAppearance:"none",boxSizing:"border-box",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 10px center"}}>
-                    <option value="">All</option>
+                    style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"12px 28px 12px 12px",fontSize:14,fontFamily:"inherit",color:cuisineFilters[0]?"#1a1a1a":"#888",background:"#fff",appearance:"none",WebkitAppearance:"none",boxSizing:"border-box",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 10px center"}}>
+                    <option value="">🍽 Cuisine</option>
                     {["Fish & Chips","Cafe","Burgers","Pizza","Indian","Sushi","Chinese","Thai","Japanese","Korean","Italian","Mexican","Vietnamese","Mediterranean","Seafood","Healthy"].map(c=>(
                       <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
                 </div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>BUDGET</div>
                   <select
                     value={priceFilter}
                     onChange={e => setPriceFilter(e.target.value)}
-                    style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"11px 28px 11px 12px",fontSize:14,fontFamily:"inherit",color:priceFilter!=="Any"?"#1a1a1a":"#888",background:"#fff",appearance:"none",WebkitAppearance:"none",boxSizing:"border-box",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 10px center"}}>
-                    <option value="Any">Any</option>
+                    style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"12px 28px 12px 12px",fontSize:14,fontFamily:"inherit",color:priceFilter!=="Any"?"#1a1a1a":"#888",background:"#fff",appearance:"none",WebkitAppearance:"none",boxSizing:"border-box",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 10px center"}}>
+                    <option value="Any">💰 Budget</option>
                     <option value="$">$ · Under $15</option>
                     <option value="$$">$$ · $15–35</option>
                     <option value="$$$">$$$ · $35–60</option>
