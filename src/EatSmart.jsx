@@ -1012,66 +1012,52 @@ export default function EatSmart() {
       {!loading && searched && results.length === 0 && !error && <div style={{textAlign:"center",padding:"40px 20px",color:"#888"}}>No restaurants found near {suburb}. Try a nearby suburb.</div>}
       {!loading && results.length > 0 && (
         <>
-          {/* divider — clean break between searching and results */}
-          <div style={{height:1,background:"#eee",margin:"14px 16px 12px"}} />
-
-          {/* control bar — count + Filters + List/Map, one tidy line */}
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 16px 8px"}}>
-            <span style={{fontSize:16,color:"#1a1a1a",fontWeight:800}}>{displayResults.length} <span style={{fontWeight:400,color:"#888",fontSize:13}}>{displayResults.length === 1 ? "spot" : "spots"}</span>{resultsCity ? <span style={{fontWeight:400,color:"#aaa",fontSize:12}}> · {resultsCity}</span> : null}</span>
-            <div style={{display:"flex",gap:8,alignItems:"center"}}>
-              <button onClick={()=>setShowFilters(v=>!v)} style={{background:showFilters||hasActiveFilters?"#fdecea":"#fff",color:showFilters||hasActiveFilters?"#e83a2a":"#666",border:"1.5px solid",borderColor:showFilters||hasActiveFilters?"#f3b8b0":"#e8e1da",borderRadius:18,padding:"7px 13px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>⚙ Filters{hasActiveFilters?` · ${cuisineFilters.length + (priceFilter!=="Any"?1:0)}`:""}</button>
-              <button onClick={()=>setViewMode(viewMode==="map"?"list":"map")} style={{background:viewMode==="map"?"#e83a2a":"#1a1a1a",color:"#fff",border:"none",borderRadius:18,padding:"7px 15px",fontSize:13,fontWeight:800,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5,boxShadow:"0 2px 8px rgba(0,0,0,0.18)"}}>{viewMode==="map"?"☰ List view":"🗺 Map view"}</button>
-            </div>
+          {/* count line — quiet */}
+          <div style={{padding:"12px 16px 8px"}}>
+            <span style={{fontSize:15,color:"#1a1a1a",fontWeight:800}}>{displayResults.length} <span style={{fontWeight:400,color:"#888",fontSize:13}}>{displayResults.length === 1 ? "spot" : "spots"}</span>{resultsCity ? <span style={{fontWeight:400,color:"#aaa",fontSize:12}}> · {resultsCity}</span> : null}</span>
           </div>
 
-          {/* FILTERS PANEL — opens directly below the Filters button */}
-          {showFilters && (
-            <div style={{background:"#fff",border:"1.5px solid #ede8e3",borderRadius:14,padding:14,margin:"0 16px 10px"}}>
-              <div style={{display:"flex",gap:10}}>
-                <div style={{flex:1,minWidth:0}}>
-                  <select
-                    value={cuisineFilters[0] || ""}
-                    onChange={e => {
-                      const val = e.target.value;
-                      setCuisineFilters(val ? [val] : []);
-                      // Re-run the search so it actually fetches that cuisine near the current
-                      // location (near-me or chosen area), not just filter what's on screen.
-                      if (searched) { setFindTerm(val); runSearch(val); }
-                    }}
-                    style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"12px 28px 12px 12px",fontSize:14,fontFamily:"inherit",color:cuisineFilters[0]?"#1a1a1a":"#888",background:"#fff",appearance:"none",WebkitAppearance:"none",boxSizing:"border-box",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 10px center"}}>
-                    <option value="">🍽 Cuisine</option>
-                    {["Fish & Chips","Cafe","Burgers","Pizza","Indian","Sushi","Chinese","Thai","Japanese","Korean","Italian","Mexican","Vietnamese","Mediterranean","Seafood","Healthy"].map(c=>(
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </div>
-                <div style={{flex:1,minWidth:0}}>
-                  <select
-                    value={priceFilter}
-                    onChange={e => setPriceFilter(e.target.value)}
-                    style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"12px 28px 12px 12px",fontSize:14,fontFamily:"inherit",color:priceFilter!=="Any"?"#1a1a1a":"#888",background:"#fff",appearance:"none",WebkitAppearance:"none",boxSizing:"border-box",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 10px center"}}>
-                    <option value="Any">💰 Budget</option>
-                    <option value="$">$ · Under $15</option>
-                    <option value="$$">$$ · $15–35</option>
-                    <option value="$$$">$$$ · $35–60</option>
-                    <option value="$$$$">$$$$ · $60+</option>
-                  </select>
-                </div>
-              </div>
-              {hasActiveFilters && <button onClick={()=>{setCuisineFilters([]);setPriceFilter("Any");}} style={{background:"none",border:"none",color:"#999",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",textDecoration:"underline",marginTop:10}}>Clear filters</button>}
-            </div>
-          )}
+          {/* single scrollable filter chip row — the whole control surface, one line */}
+          <div style={{display:"flex",gap:8,overflowX:"auto",padding:"0 16px 12px",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
+            {/* Map toggle */}
+            <button onClick={()=>setViewMode(viewMode==="map"?"list":"map")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:5,background:viewMode==="map"?"#e83a2a":"#1a1a1a",color:"#fff",border:"none",borderRadius:20,padding:"8px 14px",fontSize:13,fontWeight:800,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>{viewMode==="map"?"☰ List":"🗺 Map"}</button>
 
-          {/* sort — quiet secondary line */}
-          <div style={{display:"flex",gap:6,alignItems:"center",padding:"0 16px 10px"}}>
-            <span style={{fontSize:10,color:"#bbb",fontWeight:700,letterSpacing:0.5}}>SORT</span>
-            {["rating","nearest"].map(s => (
-              <button key={s} onClick={() => setSortBy(s)} style={{background:sortBy===s?"#2c2c2c":"#fff",color:sortBy===s?"#fff":"#888",border:"1.5px solid",borderColor:sortBy===s?"#2c2c2c":"#eee",borderRadius:16,padding:"3px 10px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
-                {s==="rating"?"Top rated":"Nearest"}
-              </button>
-            ))}
-            <span style={{marginLeft:"auto",fontSize:11,color:"#bbb"}}>{openSpots.length} open now</span>
+            {/* Cuisine chip (native select styled as chip) */}
+            <div style={{flexShrink:0,position:"relative"}}>
+              <select value={cuisineFilters[0] || ""} onChange={e => { const val=e.target.value; setCuisineFilters(val?[val]:[]); if(searched){setFindTerm(val);runSearch(val);} }}
+                style={{appearance:"none",WebkitAppearance:"none",border:"1.5px solid",borderColor:cuisineFilters[0]?"#e83a2a":"#e8e1da",background:cuisineFilters[0]?"#fdecea":"#fff",color:cuisineFilters[0]?"#e83a2a":"#555",borderRadius:20,padding:"8px 30px 8px 14px",fontSize:13,fontWeight:700,fontFamily:"inherit",cursor:"pointer",whiteSpace:"nowrap",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 12px center"}}>
+                <option value="">🍽 Cuisine</option>
+                {["Fish & Chips","Cafe","Burgers","Pizza","Indian","Sushi","Chinese","Thai","Japanese","Korean","Italian","Mexican","Vietnamese","Mediterranean","Seafood","Healthy"].map(c=>(<option key={c} value={c}>{c}</option>))}
+              </select>
+              {cuisineFilters[0] && <button onClick={()=>{setCuisineFilters([]);if(searched){setFindTerm("");runSearch("");}}} style={{position:"absolute",right:-4,top:-4,width:18,height:18,borderRadius:"50%",background:"#e83a2a",color:"#fff",border:"2px solid #faf9f7",fontSize:10,fontWeight:700,cursor:"pointer",lineHeight:1,padding:0,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>}
+            </div>
+
+            {/* Budget chip */}
+            <div style={{flexShrink:0,position:"relative"}}>
+              <select value={priceFilter} onChange={e => setPriceFilter(e.target.value)}
+                style={{appearance:"none",WebkitAppearance:"none",border:"1.5px solid",borderColor:priceFilter!=="Any"?"#e83a2a":"#e8e1da",background:priceFilter!=="Any"?"#fdecea":"#fff",color:priceFilter!=="Any"?"#e83a2a":"#555",borderRadius:20,padding:"8px 30px 8px 14px",fontSize:13,fontWeight:700,fontFamily:"inherit",cursor:"pointer",whiteSpace:"nowrap",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 12px center"}}>
+                <option value="Any">💰 Budget</option>
+                <option value="$">$ · Under $15</option>
+                <option value="$$">$$ · $15–35</option>
+                <option value="$$$">$$$ · $35–60</option>
+                <option value="$$$$">$$$$ · $60+</option>
+              </select>
+              {priceFilter!=="Any" && <button onClick={()=>setPriceFilter("Any")} style={{position:"absolute",right:-4,top:-4,width:18,height:18,borderRadius:"50%",background:"#e83a2a",color:"#fff",border:"2px solid #faf9f7",fontSize:10,fontWeight:700,cursor:"pointer",lineHeight:1,padding:0,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>}
+            </div>
+
+            {/* Sort chip */}
+            <div style={{flexShrink:0,position:"relative"}}>
+              <select value={sortBy} onChange={e=>setSortBy(e.target.value)}
+                style={{appearance:"none",WebkitAppearance:"none",border:"1.5px solid #e8e1da",background:"#fff",color:"#555",borderRadius:20,padding:"8px 30px 8px 14px",fontSize:13,fontWeight:700,fontFamily:"inherit",cursor:"pointer",whiteSpace:"nowrap",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 12px center"}}>
+                <option value="rating">↕ Top rated</option>
+                <option value="nearest">↕ Nearest</option>
+              </select>
+            </div>
+
+            {/* Open now toggle */}
+            <button onClick={()=>setOpenNowOnly(v=>!v)} style={{flexShrink:0,background:openNowOnly?"#fdecea":"#fff",color:openNowOnly?"#e83a2a":"#555",border:"1.5px solid",borderColor:openNowOnly?"#e83a2a":"#e8e1da",borderRadius:20,padding:"8px 14px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>● Open now</button>
           </div>
+
           {viewMode==="map" && (activeTab==="search"||activeTab==="results") && (
             <div style={{padding:"0 16px 16px"}}>
               <MapView spots={displayResults.slice(0, resultLimit)} center={customCoords} onPick={()=>{}} />
