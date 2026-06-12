@@ -296,6 +296,7 @@ export default function EatSmart() {
   const [showFilters, setShowFilters] = useState(false);
   const [findTerm, setFindTerm] = useState("");
   const [nearMode, setNearMode] = useState(() => localStorage.getItem("es_nearmode") || "gps");
+  const searchSeqRef = useRef(0);
   const [detectedArea, setDetectedArea] = useState(() => localStorage.getItem("es_detected") || "");
   const [showNearMenu, setShowNearMenu] = useState(false);
   const [findSuggestions, setFindSuggestions] = useState([]);
@@ -473,6 +474,7 @@ export default function EatSmart() {
 
   const handleSearch = useCallback(async (cuisineOverride, coordsOverride) => {
     const activeCuisines = Array.isArray(cuisineOverride) ? cuisineOverride : cuisineFilters;
+    const reqId = ++searchSeqRef.current;
     setLoading(true); setError(null); setSearched(true); setResults([]);
     try {
       let coords = coordsOverride || customCoords;
@@ -551,10 +553,14 @@ export default function EatSmart() {
         }
         return 0;
       });
+      // Ignore this response if a newer search has started since (prevents stale results mixing in)
+      if (reqId !== searchSeqRef.current) return;
       setResults(sorted.slice(0, 30));
       // If the results are clearly in a different city than selected (e.g. searched a
       // specific place by name that only exists elsewhere), switch the area to match.
+      // Skipped in near-me/GPS mode — there the user's location is intentional.
       try {
+        if (nearMode !== "gps" && !coordsOverride) {
         const cityCounts = {};
         for (const r of sorted.slice(0, 8)) {
           const a = (r.address || "").toLowerCase();
@@ -572,6 +578,7 @@ export default function EatSmart() {
           setSuburb("All Suburbs"); localStorage.setItem("es_suburb", "All Suburbs");
           setNearMode("area"); localStorage.setItem("es_nearmode", "area");
         }
+        }
       } catch (e) {}
       // Save to recent searches (dedup, keep last 3)
       try {
@@ -583,8 +590,8 @@ export default function EatSmart() {
           return next;
         });
       } catch(e) {}
-    } catch(e) { setError("Error: " + e.message); console.error(e); }
-    setLoading(false);
+    } catch(e) { if (reqId === searchSeqRef.current) { setError("Error: " + e.message); } console.error(e); }
+    if (reqId === searchSeqRef.current) setLoading(false);
   }, [suburb, city, customCoords, locationSearch, cuisine, sortBy, trendingOnly]);
 
   function toggleSave(id) { setSaved(prev => { const next = { ...prev, [id]: !prev[id] }; if (!next[id]) delete next[id]; localStorage.setItem("es_saved", JSON.stringify(next)); return next; }); }
