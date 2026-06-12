@@ -1038,7 +1038,13 @@ export default function EatSmart() {
                   <div style={{fontSize:10,color:"#bbb",marginBottom:5,fontWeight:600}}>CUISINE</div>
                   <select
                     value={cuisineFilters[0] || ""}
-                    onChange={e => setCuisineFilters(e.target.value ? [e.target.value] : [])}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setCuisineFilters(val ? [val] : []);
+                      // Re-run the search so it actually fetches that cuisine near the current
+                      // location (near-me or chosen area), not just filter what's on screen.
+                      if (searched) { setFindTerm(val); runSearch(val); }
+                    }}
                     style={{width:"100%",border:"1.5px solid #e8e1da",borderRadius:10,padding:"11px 28px 11px 12px",fontSize:14,fontFamily:"inherit",color:cuisineFilters[0]?"#1a1a1a":"#888",background:"#fff",appearance:"none",WebkitAppearance:"none",boxSizing:"border-box",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 10px center"}}>
                     <option value="">All</option>
                     {["Fish & Chips","Cafe","Burgers","Pizza","Indian","Sushi","Chinese","Thai","Japanese","Korean","Italian","Mexican","Vietnamese","Mediterranean","Seafood","Healthy"].map(c=>(
