@@ -801,6 +801,7 @@ export default function EatSmart() {
       // ---- A: HERO PHOTO CARD (trending/featured) ----
       return (
         <div style={{background:"#fff",borderRadius:20,marginBottom:14,boxShadow:"0 4px 16px rgba(0,0,0,0.08)",overflow:"hidden"}}>
+          <div style={{position:"relative"}}>
           <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",color:"inherit",display:"block"}}>
             <div style={{height:150,position:"relative",background:"#fff0ed"}}>
               {photo
@@ -812,7 +813,8 @@ export default function EatSmart() {
               </div>
             </div>
           </a>
-          <button onClick={()=>toggleSave(spot.id)} style={{position:"absolute",marginTop:-44,marginLeft:"calc(100% - 52px)",width:34,height:34,borderRadius:"50%",background:"rgba(255,255,255,0.95)",border:"none",fontSize:15,cursor:"pointer",boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>{saved[spot.id]?"🩷":"🤍"}</button>
+          <button onClick={()=>toggleSave(spot.id)} style={{position:"absolute",top:10,right:10,width:34,height:34,borderRadius:"50%",background:"rgba(255,255,255,0.95)",border:"none",fontSize:15,cursor:"pointer",boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>{saved[spot.id]?"🩷":"🤍"}</button>
+          </div>
           <div style={{padding:"12px 14px 14px"}}>
             <div style={{fontSize:18,fontWeight:800,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{spot.name}</div>
             <Pills />
