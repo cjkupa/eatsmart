@@ -92,6 +92,13 @@ async function geocodeSuburb(suburb, city) {
   return null;
 }
 
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371, toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 async function searchRestaurants(lat, lon, radiusMeters, cuisineType) {
   const url = `${API_BASE_URL}/api/places?lat=${lat}&lng=${lon}&radius=${radiusMeters}&cuisine=${encodeURIComponent(cuisineType || "Any")}`;
   const res = await fetch(url);
@@ -531,13 +538,25 @@ export default function EatSmart() {
       }
       setSearchCoords(coords);
       const isStreetSearch = (typedSearch.length > 0 || resolvedLabel) && !Object.values(NZ_CITIES).flat().includes(resolvedLabel) && resolvedLabel !== "All Suburbs";
-      const radii = suburb === "All Suburbs" ? [5000, 8000] : isStreetSearch ? [300, 600, 1000] : [1500, 2500, 4000];
+      const isNearMe = !!coordsOverride || (suburb === "Near me");
+      // Near-me uses a tight progression so results stay in your neighbourhood
+      const radii = isNearMe ? [2000, 3500, 6000] : suburb === "All Suburbs" ? [5000, 8000] : isStreetSearch ? [300, 600, 1000] : [1500, 2500, 4000];
       if (suburb === "All Suburbs") setResultLimit(20);
       let spots = []; let usedRadius = 800;
       for (const r of radii) {
         const selectedCuisine = activeCuisines.length > 0 ? activeCuisines[0] : (cuisine || "Any");
         const elements = await searchRestaurants(coords.lat, coords.lon, r, selectedCuisine); console.log("Elements:", elements.length, "radius:", r);
-        spots = elements.map((el, i) => formatRestaurant(el, i)).filter(Boolean); console.log("Spots after filter:", spots.length);
+        let mapped = elements.map((el, i) => formatRestaurant(el, i)).filter(Boolean);
+        // For near-me, hard-filter to within the radius (Google textsearch treats radius as a
+        // loose bias, not a boundary, so without this it can return city-wide results).
+        if (isNearMe) {
+          mapped = mapped.filter(s => {
+            if (!s.lat || !s.lng) return false;
+            const dKm = haversineKm(coords.lat, coords.lon, s.lat, s.lng);
+            return dKm <= (r / 1000) * 1.15; // small tolerance
+          });
+        }
+        spots = mapped; console.log("Spots after filter:", spots.length);
         if (spots.length > 0) { usedRadius = r; break; }
       }
       setSearchRadius(usedRadius);
