@@ -304,6 +304,8 @@ export default function EatSmart() {
   const [findTerm, setFindTerm] = useState("");
   const [nearMode, setNearMode] = useState(() => localStorage.getItem("es_nearmode") || "gps");
   const searchSeqRef = useRef(0);
+  const findDebounceRef = useRef(null);
+  const [searchFieldFocused, setSearchFieldFocused] = useState(false);
   const [detectedArea, setDetectedArea] = useState(() => localStorage.getItem("es_detected") || "");
   const [showNearMenu, setShowNearMenu] = useState(false);
   const [findSuggestions, setFindSuggestions] = useState([]);
@@ -856,7 +858,7 @@ export default function EatSmart() {
           <div style={S.wave} />
         </header>
         <div style={S.card}>
-          <div style={{background:"#fff",border:"2px solid #ede8e3",borderRadius:14,overflow:"hidden",position:"relative"}}>
+          <div style={{background:"#fff",border:"2px solid",borderColor:searchFieldFocused?"#e83a2a":"#ede8e3",borderRadius:14,overflow:"hidden",position:"relative",boxShadow:searchFieldFocused?"0 4px 20px rgba(232,58,42,0.12)":"0 1px 3px rgba(0,0,0,0.04)",transition:"border-color 0.18s, box-shadow 0.18s"}}>
             {/* FIND field with inline search button */}
             <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 8px 8px 12px"}}>
               <span style={{fontSize:16,flexShrink:0}}>🔍</span>
@@ -864,9 +866,12 @@ export default function EatSmart() {
                 style={{flex:1,border:"none",outline:"none",fontSize:15,fontFamily:"inherit",color:"#222",background:"transparent",minWidth:0}}
                 placeholder="Search food, a place, or dish…"
                 value={findTerm}
-                onChange={async e => {
+                onChange={e => {
                   const val = e.target.value; setFindTerm(val);
-                  if (val.length > 2) {
+                  if (findDebounceRef.current) clearTimeout(findDebounceRef.current);
+                  if (val.length <= 2) { setFindSuggestions([]); return; }
+                  // Debounce: wait until the user pauses typing before fetching (smooth, fewer calls)
+                  findDebounceRef.current = setTimeout(async () => {
                     try {
                       const res = await fetch(API_BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(val));
                       const data = await res.json();
@@ -880,8 +885,10 @@ export default function EatSmart() {
                       }).slice(0,5).map(p=>({label:(p.structured_formatting&&p.structured_formatting.main_text)||p.description.replace(', New Zealand',''),term:(p.structured_formatting&&p.structured_formatting.main_text)||p.description}));
                       setFindSuggestions(places);
                     } catch(e) { setFindSuggestions([]); }
-                  } else { setFindSuggestions([]); }
+                  }, 250);
                 }}
+                onFocus={()=>setSearchFieldFocused(true)}
+                onBlur={()=>setTimeout(()=>setSearchFieldFocused(false),150)}
                 onKeyDown={e => { if (e.key==='Enter') runSearch(); }}
               />
               {findTerm && (
