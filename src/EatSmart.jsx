@@ -889,16 +889,11 @@ export default function EatSmart() {
               )}
               <button onClick={()=>runSearch()} style={{background:"#e83a2a",border:"none",borderRadius:10,padding:"9px 16px",cursor:"pointer",color:"#fff",fontWeight:700,fontSize:14,fontFamily:"inherit",flexShrink:0}}>{loading||locating?"…":"Search"}</button>
             </div>
-            {/* NEAR field — shows detected area or chosen place */}
+            {/* NEAR field — tap anywhere to change location */}
             <div onClick={()=>setShowNearMenu(v=>!v)} style={{display:"flex",alignItems:"center",gap:8,padding:"11px 12px",borderTop:"1px solid #f2ede8",cursor:"pointer"}}>
               <span style={{fontSize:15,flexShrink:0}}>📍</span>
-              <div style={{flex:1,fontSize:14,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <span style={{color:"#444"}}>{nearMode==="gps" ? (detectedArea ? detectedArea : "Near me") : (suburb && suburb!=="All Suburbs" && suburb!=="Near me" ? suburb + ", " + city : city)}</span>
-                <div style={{display:"flex",alignItems:"center",gap:8}} onClick={e=>e.stopPropagation()}>
-                  <button onClick={()=>{setNearMode("gps");localStorage.setItem("es_nearmode","gps");setCustomCoords(null);setDetectedArea("");localStorage.removeItem("es_detected");setLocationSearch(null);setLocationSuggestions([]);setSuburb("Near me");localStorage.setItem("es_suburb","Near me");setShowNearMenu(true);}} aria-label="Clear location" style={{background:"#eee",border:"none",borderRadius:"50%",width:22,height:22,minWidth:22,cursor:"pointer",color:"#888",fontSize:14,fontWeight:700,fontFamily:"inherit",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,padding:0}}>×</button>
-                  <span onClick={()=>setShowNearMenu(v=>!v)} style={{color:"#1a73e8",fontSize:12,fontWeight:700,cursor:"pointer"}}>Change ▾</span>
-                </div>
-              </div>
+              <span style={{flex:1,fontSize:14,fontWeight:600,color:"#444",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{nearMode==="gps" ? (detectedArea ? detectedArea : "Near me") : (suburb && suburb!=="All Suburbs" && suburb!=="Near me" ? suburb + ", " + city : city)}</span>
+              <span style={{color:"#1a73e8",fontSize:12,fontWeight:700,flexShrink:0}}>{showNearMenu ? "Close ▲" : "Change ▾"}</span>
             </div>
             {/* FIND suggestions dropdown */}
             {findSuggestions.length > 0 && (
