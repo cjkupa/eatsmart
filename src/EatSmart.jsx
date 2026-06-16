@@ -306,6 +306,8 @@ export default function EatSmart() {
   const searchSeqRef = useRef(0);
   const findDebounceRef = useRef(null);
   const [searchFieldFocused, setSearchFieldFocused] = useState(false);
+  const [findLoading, setFindLoading] = useState(false);
+  const [findHighlight, setFindHighlight] = useState(-1);
   const [detectedArea, setDetectedArea] = useState(() => localStorage.getItem("es_detected") || "");
   const [showNearMenu, setShowNearMenu] = useState(false);
   const [findSuggestions, setFindSuggestions] = useState([]);
@@ -867,9 +869,10 @@ export default function EatSmart() {
                 placeholder="Search food, a place, or dish…"
                 value={findTerm}
                 onChange={e => {
-                  const val = e.target.value; setFindTerm(val);
+                  const val = e.target.value; setFindTerm(val); setFindHighlight(-1);
                   if (findDebounceRef.current) clearTimeout(findDebounceRef.current);
-                  if (val.length <= 2) { setFindSuggestions([]); return; }
+                  if (val.length <= 2) { setFindSuggestions([]); setFindLoading(false); return; }
+                  setFindLoading(true);
                   // Debounce: wait until the user pauses typing before fetching (smooth, fewer calls)
                   findDebounceRef.current = setTimeout(async () => {
                     try {
@@ -885,11 +888,20 @@ export default function EatSmart() {
                       }).slice(0,5).map(p=>({label:(p.structured_formatting&&p.structured_formatting.main_text)||p.description.replace(', New Zealand',''),term:(p.structured_formatting&&p.structured_formatting.main_text)||p.description}));
                       setFindSuggestions(places);
                     } catch(e) { setFindSuggestions([]); }
+                    setFindLoading(false);
                   }, 250);
                 }}
                 onFocus={()=>setSearchFieldFocused(true)}
                 onBlur={()=>setTimeout(()=>setSearchFieldFocused(false),150)}
-                onKeyDown={e => { if (e.key==='Enter') runSearch(); }}
+                onKeyDown={e => {
+                  const list = findSuggestions;
+                  if (e.key==='ArrowDown' && list.length) { e.preventDefault(); setFindHighlight(h=>Math.min(h+1,list.length-1)); }
+                  else if (e.key==='ArrowUp' && list.length) { e.preventDefault(); setFindHighlight(h=>Math.max(h-1,-1)); }
+                  else if (e.key==='Enter') {
+                    if (findHighlight>=0 && list[findHighlight]) { const s=list[findHighlight]; setFindTerm(s.label); setFindSuggestions([]); setFindHighlight(-1); runSearch(s.term); }
+                    else runSearch();
+                  } else if (e.key==='Escape') { setFindSuggestions([]); setFindHighlight(-1); }
+                }}
               />
               {findTerm && (
                 <button onClick={()=>{setFindTerm("");setFindSuggestions([]);setResults([]);setSearched(false);setCuisineFilters([]);}} aria-label="Clear search" style={{background:"#eee",border:"none",borderRadius:"50%",width:24,height:24,minWidth:24,cursor:"pointer",color:"#888",fontSize:15,fontWeight:700,fontFamily:"inherit",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,padding:0}}>×</button>
@@ -932,12 +944,44 @@ export default function EatSmart() {
                 )}
               </div>
             </div>
-            {/* FIND suggestions dropdown */}
-            {findSuggestions.length > 0 && (
-              <div style={{position:"absolute",top:46,left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.14)",zIndex:120,maxHeight:240,overflowY:"auto",margin:"0 8px"}}>
-                {findSuggestions.map((s,i)=>(
-                  <div key={i} onMouseDown={()=>{setFindTerm(s.label);setFindSuggestions([]);runSearch(s.term);}} style={{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#e83a2a",display:"flex",alignItems:"center",gap:8}}>🍴 {s.label}</div>
-                ))}
+            {/* FIND autocomplete dropdown — loading, recent-on-focus, match-bolding, keyboard nav */}
+            {(findLoading || findSuggestions.length > 0 || (searchFieldFocused && findTerm.length===0 && recentSearches.length>0)) && (
+              <div style={{position:"absolute",top:46,left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.14)",zIndex:120,maxHeight:280,overflowY:"auto",margin:"0 8px"}}>
+                {/* Loading */}
+                {findLoading && findSuggestions.length===0 && (
+                  <div style={{padding:"12px 14px",fontSize:14,color:"#aaa",display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{width:14,height:14,border:"2px solid #eee",borderTopColor:"#e83a2a",borderRadius:"50%",display:"inline-block",animation:"spin 0.6s linear infinite"}}></span> Searching…
+                  </div>
+                )}
+                {/* No results */}
+                {!findLoading && findTerm.length>2 && findSuggestions.length===0 && (
+                  <div style={{padding:"12px 14px",fontSize:14,color:"#aaa"}}>No spots found — press Search to look anyway</div>
+                )}
+                {/* Recent searches (empty + focused) */}
+                {findTerm.length===0 && searchFieldFocused && recentSearches.length>0 && findSuggestions.length===0 && (
+                  <>
+                    <div style={{padding:"9px 14px 4px",fontSize:10,fontWeight:700,color:"#bbb",letterSpacing:0.5}}>RECENT</div>
+                    {recentSearches.slice(0,4).map((r,i)=>{
+                      const label = (r.cuisines&&r.cuisines[0]) ? r.cuisines[0] : (r.suburb&&r.suburb!=="All Suburbs"?r.suburb:r.city);
+                      return <div key={i} onMouseDown={()=>{applyRecent(r);setSearchFieldFocused(false);}} style={{padding:"11px 14px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#444",display:"flex",alignItems:"center",gap:8}}>🕘 {label}</div>;
+                    })}
+                  </>
+                )}
+                {/* Suggestions with match-bolding + keyboard highlight */}
+                {findSuggestions.map((s,i)=>{
+                  const q = findTerm.trim();
+                  const idx = q ? s.label.toLowerCase().indexOf(q.toLowerCase()) : -1;
+                  const labelEl = idx>=0
+                    ? <span>{s.label.slice(0,idx)}<b style={{color:"#1a1a1a"}}>{s.label.slice(idx,idx+q.length)}</b>{s.label.slice(idx+q.length)}</span>
+                    : <span>{s.label}</span>;
+                  return (
+                    <div key={i} onMouseDown={()=>{setFindTerm(s.label);setFindSuggestions([]);setFindHighlight(-1);runSearch(s.term);}}
+                      onMouseEnter={()=>setFindHighlight(i)}
+                      style={{padding:"11px 14px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#555",display:"flex",alignItems:"center",gap:8,background:findHighlight===i?"#fdf3f1":"transparent"}}>
+                      <span style={{flexShrink:0}}>🍴</span> {labelEl}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
