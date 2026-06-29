@@ -304,10 +304,6 @@ export default function EatSmart() {
   const [findTerm, setFindTerm] = useState("");
   const [nearMode, setNearMode] = useState(() => localStorage.getItem("es_nearmode") || "gps");
   const searchSeqRef = useRef(0);
-  const findDebounceRef = useRef(null);
-  const [searchFieldFocused, setSearchFieldFocused] = useState(false);
-  const [findLoading, setFindLoading] = useState(false);
-  const [findHighlight, setFindHighlight] = useState(-1);
   const [detectedArea, setDetectedArea] = useState(() => localStorage.getItem("es_detected") || "");
   const [showNearMenu, setShowNearMenu] = useState(false);
   const [findSuggestions, setFindSuggestions] = useState([]);
@@ -628,12 +624,6 @@ export default function EatSmart() {
     setTimeout(() => handleSearch(r.cuisines || []), 50);
   }
 
-  function openSuggestSpot() {
-    setContactForm({ name: "", email: "", message: "Suggest a spot 🍴\n\nName of the place:\nArea/suburb:\nWhy it's good (optional):\n" });
-    setContactModal(true);
-    setActiveTab("contact");
-  }
-
   async function handleContactSubmit() {
     if (!contactForm.message) return;
     setContactSubmitting(true);
@@ -866,131 +856,96 @@ export default function EatSmart() {
           <div style={S.wave} />
         </header>
         <div style={S.card}>
-          <div style={{background:"#fff",border:"2px solid",borderColor:searchFieldFocused?"#e83a2a":"#ede8e3",borderRadius:14,overflow:"hidden",position:"relative",boxShadow:searchFieldFocused?"0 4px 20px rgba(232,58,42,0.12)":"0 1px 3px rgba(0,0,0,0.04)",transition:"border-color 0.18s, box-shadow 0.18s"}}>
+          <div style={{background:"#fff",border:"2px solid #ede8e3",borderRadius:14,overflow:"hidden",position:"relative"}}>
             {/* FIND field with inline search button */}
             <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 8px 8px 12px"}}>
               <span style={{fontSize:16,flexShrink:0}}>🔍</span>
               <input
                 style={{flex:1,border:"none",outline:"none",fontSize:15,fontFamily:"inherit",color:"#222",background:"transparent",minWidth:0}}
-                placeholder="Search food, a place, or dish…"
+                placeholder="Try sushi, fish & chips, or a café name…"
                 value={findTerm}
-                onChange={e => {
-                  const val = e.target.value; setFindTerm(val); setFindHighlight(-1);
-                  if (findDebounceRef.current) clearTimeout(findDebounceRef.current);
-                  if (val.length <= 2) { setFindSuggestions([]); setFindLoading(false); return; }
-                  setFindLoading(true);
-                  // Debounce: wait until the user pauses typing before fetching (smooth, fewer calls)
-                  findDebounceRef.current = setTimeout(async () => {
+                onChange={async e => {
+                  const val = e.target.value; setFindTerm(val);
+                  if (val.length > 2) {
                     try {
                       const res = await fetch(API_BASE_URL + '/api/autocomplete?q=' + encodeURIComponent(val));
                       const data = await res.json();
+                      // Only drop the clearly-irrelevant (shops, banks, gyms). Everything else stays —
+                      // the field accepts anything food-related, and a typed place still runs a search.
+                      const nonFood = ["clothing_store","electronics_store","furniture_store","home_goods_store","hardware_store","car_dealer","car_repair","gym","bank","hospital","school","gas_station"];
                       const places = (data.predictions||[]).filter(p=>{
                         const t = p.types||[];
-                        const foodTypes = ["restaurant","food","cafe","bar","meal_takeaway","meal_delivery","bakery"];
-                        const nonFood = ["store","lodging","clothing_store","electronics_store","furniture_store","home_goods_store","hardware_store","car_dealer","car_repair","gym","bank","hospital","school","gas_station"];
-                        const isFood = foodTypes.some(ft => t.includes(ft));
-                        const isNonFood = nonFood.some(nf => t.includes(nf));
-                        return isFood && !isNonFood;
+                        return !nonFood.some(nf => t.includes(nf));
                       }).slice(0,5).map(p=>({label:(p.structured_formatting&&p.structured_formatting.main_text)||p.description.replace(', New Zealand',''),term:(p.structured_formatting&&p.structured_formatting.main_text)||p.description}));
                       setFindSuggestions(places);
                     } catch(e) { setFindSuggestions([]); }
-                    setFindLoading(false);
-                  }, 250);
+                  } else { setFindSuggestions([]); }
                 }}
-                onFocus={()=>setSearchFieldFocused(true)}
-                onBlur={()=>setTimeout(()=>setSearchFieldFocused(false),150)}
-                onKeyDown={e => {
-                  const list = findSuggestions;
-                  if (e.key==='ArrowDown' && list.length) { e.preventDefault(); setFindHighlight(h=>Math.min(h+1,list.length-1)); }
-                  else if (e.key==='ArrowUp' && list.length) { e.preventDefault(); setFindHighlight(h=>Math.max(h-1,-1)); }
-                  else if (e.key==='Enter') {
-                    if (findHighlight>=0 && list[findHighlight]) { const s=list[findHighlight]; setFindTerm(s.label); setFindSuggestions([]); setFindHighlight(-1); runSearch(s.term); }
-                    else runSearch();
-                  } else if (e.key==='Escape') { setFindSuggestions([]); setFindHighlight(-1); }
-                }}
+                onKeyDown={e => { if (e.key==='Enter') runSearch(); }}
               />
               {findTerm && (
                 <button onClick={()=>{setFindTerm("");setFindSuggestions([]);setResults([]);setSearched(false);setCuisineFilters([]);}} aria-label="Clear search" style={{background:"#eee",border:"none",borderRadius:"50%",width:24,height:24,minWidth:24,cursor:"pointer",color:"#888",fontSize:15,fontWeight:700,fontFamily:"inherit",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,padding:0}}>×</button>
               )}
               <button onClick={()=>runSearch()} style={{background:"#e83a2a",border:"none",borderRadius:10,padding:"9px 16px",cursor:"pointer",color:"#fff",fontWeight:700,fontSize:14,fontFamily:"inherit",flexShrink:0}}>{loading||locating?"…":"Search"}</button>
             </div>
-            {/* LOCATION — always inline, no popout. GPS toggle + type-an-area input */}
-            <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 8px 8px 12px",borderTop:"1px solid #f2ede8"}}>
-              <button onClick={()=>{setNearMode("gps");localStorage.setItem("es_nearmode","gps");setCustomCoords(null);setLocationSearch(null);setLocationSuggestions([]);setSuburb("Near me");localStorage.setItem("es_suburb","Near me");}} style={{flexShrink:0,display:"flex",alignItems:"center",gap:5,background:nearMode==="gps"?"#fdecea":"#f4f1ee",color:nearMode==="gps"?"#e83a2a":"#666",border:"1.5px solid",borderColor:nearMode==="gps"?"#e83a2a":"transparent",borderRadius:18,padding:"7px 12px",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>📍 Near me</button>
-              <div style={{flex:1,position:"relative",minWidth:0}}>
-                <input
-                  placeholder={nearMode==="area" && suburb && suburb!=="Near me" ? (suburb!=="All Suburbs"?suburb+", "+city:city) : "or type a suburb…"}
-                  style={{width:"100%",border:"none",outline:"none",fontSize:14,padding:"8px 4px",fontFamily:"inherit",boxSizing:"border-box",background:"transparent",color:"#444",fontWeight:600}}
-                  value={locationSearch || ""}
-                  onChange={e => {
-                    const val = e.target.value; setLocationSearch(val);
-                    const q = val.toLowerCase();
-                    if (q.length < 1) { setLocationSuggestions([]); return; }
-                    const cityM = cities.filter(c=>c.toLowerCase().includes(q)).slice(0,3).map(c=>({label:c,city:c,suburb:"All Suburbs",type:"city"}));
-                    const subM = [];
-                    for (const [cn, subs] of Object.entries(NZ_CITIES)) {
-                      for (const s of subs) { if (s.toLowerCase().includes(q)) subM.push({label:s+", "+cn,city:cn,suburb:s,type:"suburb"}); }
-                    }
-                    setLocationSuggestions([...subM.slice(0,6), ...cityM].slice(0,7));
-                  }}
-                />
-                {locationSuggestions.length > 0 && (
-                  <div style={{position:"absolute",top:38,left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.14)",zIndex:130,maxHeight:240,overflowY:"auto"}}>
-                    {locationSuggestions.map((s,i)=>(
-                      <div key={i} onMouseDown={()=>{
-                        setNearMode("area"); localStorage.setItem("es_nearmode","area"); setCustomCoords(null);
-                        if(s.type==="city"){ handleCityChange(s.city); setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs"); }
-                        else { if(s.city && s.city!==city) handleCityChange(s.city); setSuburb(s.suburb); localStorage.setItem("es_suburb",s.suburb); }
-                        setLocationSearch(null); setLocationSuggestions([]);
-                      }} style={{padding:"12px 14px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:15,color:"#333",display:"flex",alignItems:"center",gap:8}}>
-                        <span style={{fontSize:13}}>{s.type==="city"?"🏙":"📍"}</span> {s.label}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+            {/* NEAR field — tap anywhere to change location */}
+            <div onClick={()=>setShowNearMenu(v=>!v)} style={{display:"flex",alignItems:"center",gap:8,padding:"11px 12px",borderTop:"1px solid #f2ede8",cursor:"pointer"}}>
+              <span style={{fontSize:15,flexShrink:0}}>📍</span>
+              <span style={{flex:1,fontSize:14,fontWeight:600,color:"#444",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{nearMode==="gps" ? (detectedArea ? "Near " + detectedArea : "Near me") : (suburb && suburb!=="All Suburbs" && suburb!=="Near me" ? suburb + ", " + city : city)}</span>
+              <span style={{color:"#1a73e8",fontSize:13,fontWeight:700,flexShrink:0}}>Change</span>
             </div>
-            {/* FIND autocomplete dropdown — loading, recent-on-focus, match-bolding, keyboard nav */}
-            {(findLoading || findSuggestions.length > 0 || (searchFieldFocused && findTerm.length===0 && recentSearches.length>0)) && (
-              <div style={{position:"absolute",top:46,left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.14)",zIndex:120,maxHeight:280,overflowY:"auto",margin:"0 8px"}}>
-                {/* Loading */}
-                {findLoading && findSuggestions.length===0 && (
-                  <div style={{padding:"12px 14px",fontSize:14,color:"#aaa",display:"flex",alignItems:"center",gap:8}}>
-                    <span style={{width:14,height:14,border:"2px solid #eee",borderTopColor:"#e83a2a",borderRadius:"50%",display:"inline-block",animation:"spin 0.6s linear infinite"}}></span> Searching…
-                  </div>
-                )}
-                {/* No results */}
-                {!findLoading && findTerm.length>2 && findSuggestions.length===0 && (
-                  <div style={{padding:"12px 14px",fontSize:14,color:"#aaa"}}>No spots found — press Search to look anyway</div>
-                )}
-                {/* Recent searches (empty + focused) */}
-                {findTerm.length===0 && searchFieldFocused && recentSearches.length>0 && findSuggestions.length===0 && (
-                  <>
-                    <div style={{padding:"9px 14px 4px",fontSize:10,fontWeight:700,color:"#bbb",letterSpacing:0.5}}>RECENT</div>
-                    {recentSearches.slice(0,4).map((r,i)=>{
-                      const label = (r.cuisines&&r.cuisines[0]) ? r.cuisines[0] : (r.suburb&&r.suburb!=="All Suburbs"?r.suburb:r.city);
-                      return <div key={i} onMouseDown={()=>{applyRecent(r);setSearchFieldFocused(false);}} style={{padding:"11px 14px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#444",display:"flex",alignItems:"center",gap:8}}>🕘 {label}</div>;
-                    })}
-                  </>
-                )}
-                {/* Suggestions with match-bolding + keyboard highlight */}
-                {findSuggestions.map((s,i)=>{
-                  const q = findTerm.trim();
-                  const idx = q ? s.label.toLowerCase().indexOf(q.toLowerCase()) : -1;
-                  const labelEl = idx>=0
-                    ? <span>{s.label.slice(0,idx)}<b style={{color:"#1a1a1a"}}>{s.label.slice(idx,idx+q.length)}</b>{s.label.slice(idx+q.length)}</span>
-                    : <span>{s.label}</span>;
-                  return (
-                    <div key={i} onMouseDown={()=>{setFindTerm(s.label);setFindSuggestions([]);setFindHighlight(-1);runSearch(s.term);}}
-                      onMouseEnter={()=>setFindHighlight(i)}
-                      style={{padding:"11px 14px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#555",display:"flex",alignItems:"center",gap:8,background:findHighlight===i?"#fdf3f1":"transparent"}}>
-                      <span style={{flexShrink:0}}>🍴</span> {labelEl}
-                    </div>
-                  );
-                })}
+            {/* FIND suggestions dropdown */}
+            {findSuggestions.length > 0 && (
+              <div style={{position:"absolute",top:46,left:0,right:0,background:"#fff",borderRadius:12,boxShadow:"0 8px 24px rgba(0,0,0,0.14)",zIndex:120,maxHeight:240,overflowY:"auto",margin:"0 8px"}}>
+                {findSuggestions.map((s,i)=>(
+                  <div key={i} onMouseDown={()=>{setFindTerm(s.label);setFindSuggestions([]);runSearch(s.term);}} style={{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:14,color:"#e83a2a",display:"flex",alignItems:"center",gap:8}}>🍴 {s.label}</div>
+                ))}
               </div>
             )}
           </div>
+
+          {/* NEAR picker — floating overlay */}
+          {showNearMenu && (
+            <div style={{borderTop:"1px solid #f2ede8",background:"#fff"}}>
+                <div onClick={()=>{setNearMode("gps");localStorage.setItem("es_nearmode","gps");setShowNearMenu(false);setLocationSearch(null);setLocationSuggestions([]);runSearch();}} style={{padding:"14px",fontSize:15,cursor:"pointer",borderBottom:"1px solid #f5f5f5",color:"#e83a2a",fontWeight:700,display:"flex",alignItems:"center",gap:10}}>◎ Use my current location</div>
+                <div style={{padding:"10px 14px 5px",fontSize:10,fontWeight:700,color:"#bbb",letterSpacing:0.5}}>OR PICK AN AREA</div>
+                <input
+                  autoFocus
+                  placeholder="Type a suburb or city…"
+                  style={{width:"100%",border:"none",borderBottom:"1px solid #f0ebe6",outline:"none",fontSize:15,padding:"11px 14px",fontFamily:"inherit",boxSizing:"border-box"}}
+                  value={locationSearch || ""}
+                  onChange={async e => {
+                    const val = e.target.value; setLocationSearch(val);
+                    const q = val.toLowerCase();
+                    if (q.length < 1) { setLocationSuggestions([]); return; }
+                    // Cities that match
+                    const cityM = cities.filter(c=>c.toLowerCase().includes(q)).slice(0,3).map(c=>({label:c,city:c,suburb:"All Suburbs",type:"city"}));
+                    // Suburbs across ALL cities that match (so you can pick any NZ suburb, labelled with its city)
+                    const subM = [];
+                    for (const [cn, subs] of Object.entries(NZ_CITIES)) {
+                      for (const s of subs) {
+                        if (s.toLowerCase().includes(q)) subM.push({label:s+", "+cn,city:cn,suburb:s,type:"suburb"});
+                      }
+                    }
+                    // Suburbs first (what people usually want), then cities — capped tight to avoid a messy list
+                    setLocationSuggestions([...subM.slice(0,6), ...cityM].slice(0,7));
+                  }}
+                />
+                <div style={{maxHeight:240,overflowY:"auto"}}>
+                  {locationSuggestions.map((s,i)=>(
+                    <div key={i} onMouseDown={()=>{
+                      // Lock to area mode and clear GPS so near-me can't override the chosen place
+                      setNearMode("area"); localStorage.setItem("es_nearmode","area"); setCustomCoords(null);
+                      if(s.type==="city"){ handleCityChange(s.city); setSuburb("All Suburbs"); localStorage.setItem("es_suburb","All Suburbs"); }
+                      else { if(s.city && s.city!==city) handleCityChange(s.city); setSuburb(s.suburb); localStorage.setItem("es_suburb",s.suburb); }
+                      setLocationSearch(null); setLocationSuggestions([]); setShowNearMenu(false);
+                    }} style={{padding:"12px 14px",cursor:"pointer",borderBottom:"1px solid #f5f5f5",fontSize:15,color:"#333",display:"flex",alignItems:"center",gap:8}}>
+                      <span style={{fontSize:13}}>{s.type==="city"?"🏙":"📍"}</span> {s.label}
+                    </div>
+                  ))}
+                </div>
+            </div>
+          )}
 
         </div>
 
@@ -999,17 +954,10 @@ export default function EatSmart() {
       {/* HERO EMPTY STATE */}
       {!searched && (
         <div style={{padding:"24px 16px 20px"}}>
-          <div style={{textAlign:"center",marginBottom:18}}>
-            <div style={{fontSize:52,marginBottom:8}}>🍴</div>
-            <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:6,lineHeight:1.25}}>Find food that fits your budget</div>
-            <div style={{fontSize:14,color:"#888"}}>Great spots near you — by area, budget and type.</div>
-          </div>
-
-          {/* Trust signals */}
-          <div style={{display:"flex",justifyContent:"center",gap:6,flexWrap:"wrap",marginBottom:24}}>
-            {["🇳🇿 Built in NZ","✓ Free to use","✓ No signup"].map(t=>(
-              <span key={t} style={{fontSize:11,fontWeight:700,color:"#777",background:"#f4f1ee",borderRadius:20,padding:"5px 11px"}}>{t}</span>
-            ))}
+          <div style={{textAlign:"center",marginBottom:24}}>
+            <div style={{fontSize:56,marginBottom:10}}>🍴</div>
+            <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:4}}>Ready to eat?</div>
+            <div style={{fontSize:14,color:"#888"}}>Search by city, suburb or street and by budget</div>
           </div>
 
           {recentSearches.length > 0 && (
@@ -1048,11 +996,6 @@ export default function EatSmart() {
               ))}
             </div>
           </div>
-
-          {/* Suggest a spot — gets users involved + gathers local data */}
-          <button onClick={openSuggestSpot} style={{width:"100%",marginTop:20,display:"flex",alignItems:"center",justifyContent:"center",gap:8,background:"#fff",border:"1.5px dashed #e0d8d0",borderRadius:14,padding:"14px",cursor:"pointer",fontFamily:"inherit",fontWeight:700,fontSize:14,color:"#777"}}>
-            ➕ Know a great spot? Suggest it
-          </button>
         </div>
       )}
 
@@ -1067,7 +1010,7 @@ export default function EatSmart() {
             <span style={{fontSize:15,color:"#1a1a1a",fontWeight:800}}>{displayResults.length} <span style={{fontWeight:400,color:"#888",fontSize:13}}>{displayResults.length === 1 ? "spot" : "spots"}</span>{resultsCity ? <span style={{fontWeight:400,color:"#aaa",fontSize:12}}> · {resultsCity}</span> : null}</span>
           </div>
 
-          {/* simple control row — Map + Cuisine + Open now. The cards & map do the rest. */}
+          {/* single scrollable filter chip row — the whole control surface, one line */}
           <div style={{display:"flex",gap:8,overflowX:"auto",padding:"0 16px 12px",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
             {/* Map toggle */}
             <button onClick={()=>setViewMode(viewMode==="map"?"list":"map")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:5,background:viewMode==="map"?"#e83a2a":"#1a1a1a",color:"#fff",border:"none",borderRadius:20,padding:"8px 14px",fontSize:13,fontWeight:800,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>{viewMode==="map"?"☰ List":"🗺 Map"}</button>
@@ -1080,6 +1023,28 @@ export default function EatSmart() {
                 {["Fish & Chips","Cafe","Burgers","Pizza","Indian","Sushi","Chinese","Thai","Japanese","Korean","Italian","Mexican","Vietnamese","Mediterranean","Seafood","Healthy"].map(c=>(<option key={c} value={c}>{c}</option>))}
               </select>
               {cuisineFilters[0] && <button onClick={()=>{setCuisineFilters([]);if(searched){setFindTerm("");runSearch("");}}} style={{position:"absolute",right:-4,top:-4,width:18,height:18,borderRadius:"50%",background:"#e83a2a",color:"#fff",border:"2px solid #faf9f7",fontSize:10,fontWeight:700,cursor:"pointer",lineHeight:1,padding:0,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>}
+            </div>
+
+            {/* Budget chip */}
+            <div style={{flexShrink:0,position:"relative"}}>
+              <select value={priceFilter} onChange={e => setPriceFilter(e.target.value)}
+                style={{appearance:"none",WebkitAppearance:"none",border:"1.5px solid",borderColor:priceFilter!=="Any"?"#e83a2a":"#e8e1da",background:priceFilter!=="Any"?"#fdecea":"#fff",color:priceFilter!=="Any"?"#e83a2a":"#555",borderRadius:20,padding:"8px 30px 8px 14px",fontSize:13,fontWeight:700,fontFamily:"inherit",cursor:"pointer",whiteSpace:"nowrap",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 12px center"}}>
+                <option value="Any">💰 Budget</option>
+                <option value="$">$ · Under $15</option>
+                <option value="$$">$$ · $15–35</option>
+                <option value="$$$">$$$ · $35–60</option>
+                <option value="$$$$">$$$$ · $60+</option>
+              </select>
+              {priceFilter!=="Any" && <button onClick={()=>setPriceFilter("Any")} style={{position:"absolute",right:-4,top:-4,width:18,height:18,borderRadius:"50%",background:"#e83a2a",color:"#fff",border:"2px solid #faf9f7",fontSize:10,fontWeight:700,cursor:"pointer",lineHeight:1,padding:0,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>}
+            </div>
+
+            {/* Sort chip */}
+            <div style={{flexShrink:0,position:"relative"}}>
+              <select value={sortBy} onChange={e=>setSortBy(e.target.value)}
+                style={{appearance:"none",WebkitAppearance:"none",border:"1.5px solid #e8e1da",background:"#fff",color:"#555",borderRadius:20,padding:"8px 30px 8px 14px",fontSize:13,fontWeight:700,fontFamily:"inherit",cursor:"pointer",whiteSpace:"nowrap",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 12px center"}}>
+                <option value="rating">↕ Top rated</option>
+                <option value="nearest">↕ Nearest</option>
+              </select>
             </div>
 
             {/* Open now toggle */}
@@ -1115,13 +1080,9 @@ export default function EatSmart() {
           <div style={{display:viewMode==="map"&&(activeTab==="search"||activeTab==="results")?"none":"flex",flexDirection:"column",gap:10,padding:"0 16px"}}>
           {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : (openNowOnly ? displayResults.filter(r => r.isOpen && r.isOpen.includes("Open")) : displayResults)).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
           </div>
-          {(activeTab === "search" || activeTab === "results") && (
-            <button onClick={openSuggestSpot} style={{width:"calc(100% - 32px)",margin:"4px 16px 20px",display:"flex",alignItems:"center",justifyContent:"center",gap:8,background:"#fff",border:"1.5px dashed #e0d8d0",borderRadius:14,padding:"13px",cursor:"pointer",fontFamily:"inherit",fontWeight:700,fontSize:13,color:"#999"}}>
-              Spot missing? ➕ Suggest it
-            </button>
-          )}
         </>
       )}
+      {/* CONTACT MODAL */}
       {contactModal && (
         <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
           <div style={{background:"#fff",borderRadius:24,padding:"24px",width:"100%",maxWidth:420,boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}>
