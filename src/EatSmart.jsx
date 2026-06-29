@@ -1067,7 +1067,7 @@ export default function EatSmart() {
             <span style={{fontSize:15,color:"#1a1a1a",fontWeight:800}}>{displayResults.length} <span style={{fontWeight:400,color:"#888",fontSize:13}}>{displayResults.length === 1 ? "spot" : "spots"}</span>{resultsCity ? <span style={{fontWeight:400,color:"#aaa",fontSize:12}}> · {resultsCity}</span> : null}</span>
           </div>
 
-          {/* single scrollable filter chip row — the whole control surface, one line */}
+          {/* simple control row — Map + Cuisine + Open now. The cards & map do the rest. */}
           <div style={{display:"flex",gap:8,overflowX:"auto",padding:"0 16px 12px",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
             {/* Map toggle */}
             <button onClick={()=>setViewMode(viewMode==="map"?"list":"map")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:5,background:viewMode==="map"?"#e83a2a":"#1a1a1a",color:"#fff",border:"none",borderRadius:20,padding:"8px 14px",fontSize:13,fontWeight:800,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap"}}>{viewMode==="map"?"☰ List":"🗺 Map"}</button>
@@ -1080,28 +1080,6 @@ export default function EatSmart() {
                 {["Fish & Chips","Cafe","Burgers","Pizza","Indian","Sushi","Chinese","Thai","Japanese","Korean","Italian","Mexican","Vietnamese","Mediterranean","Seafood","Healthy"].map(c=>(<option key={c} value={c}>{c}</option>))}
               </select>
               {cuisineFilters[0] && <button onClick={()=>{setCuisineFilters([]);if(searched){setFindTerm("");runSearch("");}}} style={{position:"absolute",right:-4,top:-4,width:18,height:18,borderRadius:"50%",background:"#e83a2a",color:"#fff",border:"2px solid #faf9f7",fontSize:10,fontWeight:700,cursor:"pointer",lineHeight:1,padding:0,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>}
-            </div>
-
-            {/* Budget chip */}
-            <div style={{flexShrink:0,position:"relative"}}>
-              <select value={priceFilter} onChange={e => setPriceFilter(e.target.value)}
-                style={{appearance:"none",WebkitAppearance:"none",border:"1.5px solid",borderColor:priceFilter!=="Any"?"#e83a2a":"#e8e1da",background:priceFilter!=="Any"?"#fdecea":"#fff",color:priceFilter!=="Any"?"#e83a2a":"#555",borderRadius:20,padding:"8px 30px 8px 14px",fontSize:13,fontWeight:700,fontFamily:"inherit",cursor:"pointer",whiteSpace:"nowrap",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 12px center"}}>
-                <option value="Any">💰 Budget</option>
-                <option value="$">$ · Under $15</option>
-                <option value="$$">$$ · $15–35</option>
-                <option value="$$$">$$$ · $35–60</option>
-                <option value="$$$$">$$$$ · $60+</option>
-              </select>
-              {priceFilter!=="Any" && <button onClick={()=>setPriceFilter("Any")} style={{position:"absolute",right:-4,top:-4,width:18,height:18,borderRadius:"50%",background:"#e83a2a",color:"#fff",border:"2px solid #faf9f7",fontSize:10,fontWeight:700,cursor:"pointer",lineHeight:1,padding:0,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>}
-            </div>
-
-            {/* Sort chip */}
-            <div style={{flexShrink:0,position:"relative"}}>
-              <select value={sortBy} onChange={e=>setSortBy(e.target.value)}
-                style={{appearance:"none",WebkitAppearance:"none",border:"1.5px solid #e8e1da",background:"#fff",color:"#555",borderRadius:20,padding:"8px 30px 8px 14px",fontSize:13,fontWeight:700,fontFamily:"inherit",cursor:"pointer",whiteSpace:"nowrap",backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.5' fill='none'/></svg>\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 12px center"}}>
-                <option value="rating">↕ Top rated</option>
-                <option value="nearest">↕ Nearest</option>
-              </select>
             </div>
 
             {/* Open now toggle */}
