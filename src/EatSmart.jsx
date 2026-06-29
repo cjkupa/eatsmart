@@ -993,10 +993,30 @@ export default function EatSmart() {
       {/* HERO EMPTY STATE */}
       {!searched && (
         <div style={{padding:"24px 16px 20px"}}>
-          <div style={{textAlign:"center",marginBottom:24}}>
-            <div style={{fontSize:56,marginBottom:10}}>🍴</div>
-            <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:4}}>Ready to eat?</div>
-            <div style={{fontSize:14,color:"#888"}}>Search by city, suburb or street and by budget</div>
+          <div style={{textAlign:"center",marginBottom:18}}>
+            <div style={{fontSize:52,marginBottom:8}}>🍴</div>
+            <div style={{fontWeight:800,fontSize:22,color:"#1a1a1a",marginBottom:6,lineHeight:1.25}}>Find food that fits your budget</div>
+            <div style={{fontSize:14,color:"#888"}}>Great spots near you — by area, budget and type.</div>
+          </div>
+
+          {/* Trust signals */}
+          <div style={{display:"flex",justifyContent:"center",gap:6,flexWrap:"wrap",marginBottom:22}}>
+            {["🇳🇿 Built in NZ","✓ Free to use","✓ No signup"].map(t=>(
+              <span key={t} style={{fontSize:11,fontWeight:700,color:"#777",background:"#f4f1ee",borderRadius:20,padding:"5px 11px"}}>{t}</span>
+            ))}
+          </div>
+
+          {/* How it works */}
+          <div style={{background:"#fff",border:"1.5px solid #f0ebe6",borderRadius:16,padding:"14px 16px",marginBottom:24,boxShadow:"0 1px 4px rgba(0,0,0,0.04)"}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#bbb",letterSpacing:0.5,marginBottom:10}}>HOW IT WORKS</div>
+            <div style={{display:"flex",justifyContent:"space-between",gap:8}}>
+              {[{n:"1",t:"Pick your area",e:"📍"},{n:"2",t:"Set your budget",e:"💰"},{n:"3",t:"Find your food",e:"🍴"}].map(s=>(
+                <div key={s.n} style={{flex:1,textAlign:"center"}}>
+                  <div style={{fontSize:22,marginBottom:4}}>{s.e}</div>
+                  <div style={{fontSize:12,fontWeight:700,color:"#444",lineHeight:1.3}}>{s.t}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {recentSearches.length > 0 && (
