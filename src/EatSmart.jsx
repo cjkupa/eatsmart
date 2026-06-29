@@ -628,6 +628,12 @@ export default function EatSmart() {
     setTimeout(() => handleSearch(r.cuisines || []), 50);
   }
 
+  function openSuggestSpot() {
+    setContactForm({ name: "", email: "", message: "Suggest a spot 🍴\n\nName of the place:\nArea/suburb:\nWhy it's good (optional):\n" });
+    setContactModal(true);
+    setActiveTab("contact");
+  }
+
   async function handleContactSubmit() {
     if (!contactForm.message) return;
     setContactSubmitting(true);
@@ -1055,6 +1061,11 @@ export default function EatSmart() {
               ))}
             </div>
           </div>
+
+          {/* Suggest a spot — gets users involved + gathers local data */}
+          <button onClick={openSuggestSpot} style={{width:"100%",marginTop:20,display:"flex",alignItems:"center",justifyContent:"center",gap:8,background:"#fff",border:"1.5px dashed #e0d8d0",borderRadius:14,padding:"14px",cursor:"pointer",fontFamily:"inherit",fontWeight:700,fontSize:14,color:"#777"}}>
+            ➕ Know a great spot? Suggest it
+          </button>
         </div>
       )}
 
@@ -1139,9 +1150,13 @@ export default function EatSmart() {
           <div style={{display:viewMode==="map"&&(activeTab==="search"||activeTab==="results")?"none":"flex",flexDirection:"column",gap:10,padding:"0 16px"}}>
           {(activeTab === "opennow" ? openSpots : activeTab === "saved" ? savedSpots : (openNowOnly ? displayResults.filter(r => r.isOpen && r.isOpen.includes("Open")) : displayResults)).slice(0, resultLimit).map(spot => <SpotCard key={spot.id} spot={spot} />)}
           </div>
+          {(activeTab === "search" || activeTab === "results") && (
+            <button onClick={openSuggestSpot} style={{width:"calc(100% - 32px)",margin:"4px 16px 20px",display:"flex",alignItems:"center",justifyContent:"center",gap:8,background:"#fff",border:"1.5px dashed #e0d8d0",borderRadius:14,padding:"13px",cursor:"pointer",fontFamily:"inherit",fontWeight:700,fontSize:13,color:"#999"}}>
+              Spot missing? ➕ Suggest it
+            </button>
+          )}
         </>
       )}
-      {/* CONTACT MODAL */}
       {contactModal && (
         <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
           <div style={{background:"#fff",borderRadius:24,padding:"24px",width:"100%",maxWidth:420,boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}>
